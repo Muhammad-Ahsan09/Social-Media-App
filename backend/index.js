@@ -10,7 +10,10 @@ const {getChat, sendMessage} = require("./controllers/chat-controllers")
 const { getSearchResults } = require("./controllers/search-controllers")
 const { postComment, getComments } = require("./controllers/comment-controllers")
 const {app, server} = require("./socket/socket")
+const dotenv = require("dotenv")
 
+
+dotenv.config()
 
 // const app = express()
 
@@ -91,6 +94,8 @@ app.get("/api/search/:search_query", getSearchResults)
 app.patch("/api/profile_image/:userid", upload.single("profileImage") ,updateProfileImage)
 // upload.single("profileImage"), 
 
-server.listen(8000,  () => {
+const PORT = process.env.PORT || 8000
+
+server.listen(PORT,  () => {
     console.log("sever started at port 8000")
 })
