@@ -29,9 +29,9 @@ const RightSidebar = () => {
     //     name: "Username"
 
     // }
-    return <div className=" pt-12">
+    return <div className="hidden lg:block lg:w-1/5 pt-12">
         <div className="flex items-center">
-            <img src={`http://localhost:8000/profile-images/${user.profile_pic_url}`} alt="" width="60" 
+            <img src={`${user.profile_pic_url}`} alt="" width="60" 
             className="rounded-full h-12 w-12"/>
             <p className="ml-5">{user.full_name}</p>
 
@@ -45,36 +45,14 @@ const RightSidebar = () => {
                 Suggested for you
             </p>
 
-        {/* <div className="flex items-center mb-5 mt-5">
-            <img src={`http://localhost:8000/${user.profile_pic_url}`} alt="" width="60"  height="60" 
-            className="rounded-full max-h-14"/>
-            <p className="ml-5">{user.name}</p>
-
-            <p className="absolute right-5 text-blue-500 cursor-pointer">Follow</p>
-        </div>
-
-        <div className="flex items-center mb-5">
-            <img src={`http://localhost:8000/${user.profile_pic_url}`} alt="" width="60"  height="60" 
-            className="rounded-full max-h-14"/>
-            <p className="ml-5">{user.name}</p>
-
-            <p className="absolute right-5 text-blue-500 cursor-pointer">Follow</p>
-        </div>
-
-        <div className="flex items-center">
-            <img src={`http://localhost:8000/${user.profile_pic_url}`} alt="" width="60"  height="60" 
-            className="rounded-full max-h-14"/>
-            <p className="ml-5">{user.name}</p>
-
-            <p className="absolute right-5 text-blue-500 cursor-pointer">Follow</p>
-        </div> */}
+        
 
         {
             
             friendSuggestions.map((suggestion, index) => <div className="flex items-center mt-3" key={index}>
-                {/* {console.log(friendSuggestions)} */}
+                
                                                     <Link to={`/profile/${suggestion.id}`} className="flex items-center">
-                                                        <img src={`http://localhost:8000/profile-images/${suggestion.profile_pic_url}`} alt="" width="60"  height="60" 
+                                                        <img src={`${suggestion.profile_pic_url}`} alt="" width="60"  height="60" 
                                                         className="rounded-full h-12 w-12"/>
                                                         <p className="ml-5">{suggestion.full_name}</p>
                                                     </Link>

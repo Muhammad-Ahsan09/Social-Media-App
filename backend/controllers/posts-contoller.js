@@ -2,13 +2,37 @@ const { pool } = require("../database")
 const sharp = require("sharp")
 const path = require("path")
 const fs = require("fs")
+const dotenv = require("dotenv")
+const cloudinary = require("cloudinary").v2
+
+
+dotenv.config()
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+})
 
 const uploadPost = async (req, res) => {
     try {
         const {description, user_id} = req.body;
-        const image_name = req.file.filename;
+        // const image_name = req.file.filename;
+
+        const result = await cloudinary.uploader.upload(
+            `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+            {
+                folder: "post-images"
+            }
+        );
+
+        image_name = result.secure_url
+
+        console.log("image_url",image_name)
+
 
         const response = await pool.query("INSERT INTO posts(user_id, description, imageUrl) values (?,?,?)", [user_id, description, image_name])
+        console.log("image-url:", image_name)
         
 
         console.log(req.file)

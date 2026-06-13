@@ -27,6 +27,8 @@ io.on("connection", (socket) => {
         socket.on("send-message", (message, sender_id, friend_id) => {
             io.to(userSocketMap[friend_id]).emit("recieve-message", {message, sender_id})  
         })
+
+        
         
     } catch (error) {
         console.log(error.message)

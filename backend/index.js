@@ -11,28 +11,31 @@ const { getSearchResults } = require("./controllers/search-controllers")
 const { postComment, getComments } = require("./controllers/comment-controllers")
 const {app, server} = require("./socket/socket")
 
+
 // const app = express()
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        let destinationPath = ""
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         let destinationPath = ""
 
-        if(file.fieldname === "file"){
-            destinationPath = "public/post-images"
-        }
+//         if(file.fieldname === "file"){
+//             destinationPath = "public/post-images"
+//         }
 
-        else if(file.fieldname === "profileImage")
-        {
-            destinationPath = "public/profile-images"
-        }
-        return cb(null, destinationPath)
-    },
+//         else if(file.fieldname === "profileImage")
+//         {
+//             destinationPath = "public/profile-images"
+//         }
+//         return cb(null, destinationPath)
+//     },
 
-    filename: (req, file, cb) => {
-        return cb(null, `${Date.now()}-${file.originalname}`)
-    }
+//     filename: (req, file, cb) => {
+//         return cb(null, `${Date.now()}-${file.originalname}`)
+//     }
 
-})
+// })
+
+const storage = multer.memoryStorage()
 
 const upload = multer({storage})
 

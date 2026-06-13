@@ -47,7 +47,7 @@ const FriendRequests = ({currentUserId}) => {
             <div className="flex  items-center">
                 <Link to={`/profile/${request.id}`}>
                     <div>
-                        <img src={`http://localhost:8000/profile-images/${request.profile_pic_url}`} alt="" 
+                        <img src={`${request.profile_pic_url}`} alt="" 
                         className="h-16 w-16 rounded-full"/>
                     </div>
 

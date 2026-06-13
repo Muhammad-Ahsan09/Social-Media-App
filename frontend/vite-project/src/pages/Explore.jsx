@@ -20,7 +20,7 @@ const Explore = ({setUser, currentUserId}) => {
         <div className="flex w-5/6 flex-wrap">
             {
                 posts.map((post) => <div className="m-2">
-                    <img src={`http://localhost:8000/post-images/${post.imageUrl}`}
+                    <img src={`${post.imageUrl}`}
                     className="max-h-72"    
                 alt="" />
                 </div>)

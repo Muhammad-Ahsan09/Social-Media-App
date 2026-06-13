@@ -62,7 +62,7 @@ const PostDetail = ({setUser, currentUserId}) => {
             <div className="pl-4 pr-4 border-r-2">
 
                 <div className="flex justify-center items-center mr-5 pb-5 border-b">
-                    <img src={`http://localhost:8000/post-images/${post.imageUrl}`} className="" />
+                    <img src={`${post.imageUrl}`} className="" />
                 </div>
 
                 <div>
@@ -76,7 +76,7 @@ const PostDetail = ({setUser, currentUserId}) => {
                     comments.map((comment) => <div className="pt-4">
 
                         <div className="flex items-center pb-2">
-                            <img src={`http://localhost:8000/profile-images/${comment.profile_pic_url}`}
+                            <img src={`${comment.profile_pic_url}`}
                             className="h-10 w-10 rounded-full" alt="" />
 
                             <h1 className="ml-4 font-semibold">

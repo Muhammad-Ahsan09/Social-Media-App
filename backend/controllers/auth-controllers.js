@@ -11,7 +11,7 @@ const signup = async (req, res) => {
 
         const {full_name, username, email, password} = req.body;
 
-        const profile_pic_url = path.join( "default-profile-pic.jpeg" )
+        const profile_pic_url = " https://res.cloudinary.com/dp34vubev/image/upload/v1781372352/post-images/uhdzkp9ro0u35wr2trj1.avif"
         
 
         const salt = await bcrypt.genSalt(10)
@@ -44,7 +44,15 @@ const login = async (req, res) => {
         const secretkey = process.env.SECRET_KEY;
 
         // profile_pic_url = path.join(__dirname, "../public/profile-images/default-profile-pic.png" )
-        //     console.log(profile_pic_url)
+        // const cloudinary_image_data = await cloudinary.uploader.upload(
+        //     `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+        //     {
+        //         folder: "post-images"
+        //     }
+        // );
+
+        // const profile_pic_url = cloudinary_image_data.secure_url
+        // console.log(profile_pic_url)
 
         const {email, password} = req.body;
 

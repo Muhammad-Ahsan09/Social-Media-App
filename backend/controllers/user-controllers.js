@@ -3,6 +3,16 @@ const jwt = require("jsonwebtoken")
 const dotenv = require("dotenv")
 const path = require("path")
 const fs = require("fs")
+const cloudinary = require("cloudinary").v2
+
+
+dotenv.config()
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+})
 
 const getUserData = async (req, res) => {
     try {
@@ -72,20 +82,29 @@ const isSignedIn = async (req, res) => {
 const updateProfileImage = async (req, res) => {
     try {
         const userid = req.params.userid
-        const image_name = req.file.filename
+        // const image_name = req.file.filename
+
+        const result = await cloudinary.uploader.upload(
+            `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
+            {
+                folder: "post-images"
+            }
+        );
+
+        image_name = result.secure_url
         console.log(image_name)
         
         const response = await pool.query(`SELECT profile_pic_url FROM users WHERE id = ?;`, [userid])
         console.log(response[0][0].profile_pic_url)
 
-        if(response[0][0].profile_pic_url != "default-profile-pic.png") {
-            fs.unlink(`public/profile-images/${response[0][0].profile_pic_url}`, (err) => {
-                if(err){
-                    console.log(err.message)
-                }
+        // if(response[0][0].profile_pic_url != "default-profile-pic.png") {
+        //     fs.unlink(`public/profile-images/${response[0][0].profile_pic_url}`, (err) => {
+        //         if(err){
+        //             console.log(err.message)
+        //         }
     
-            });
-        }
+        //     });
+        // }
         
 
         await pool.query(`UPDATE users SET profile_pic_url = ? WHERE id = ?;`, [image_name, userid, image_name])

@@ -95,8 +95,11 @@ const CreatePost = ({ setPosting}) => {
 
                 !fileDone &&
                 <form>
-                    <input  type="file" id="image" value={file} 
-                    className="cursor-pointer" onChange={(e) => {setFileRecieved(true); setFile(e.target.files[0])}}/>
+                    <div>
+                        <label className="bg-blue-500 text-white p-2 text-sm cursor-pointer rounded" htmlFor="image">Select from computer</label>
+                        <input  type="file" id="image" value={file} 
+                        className="hidden cursor-pointer" onChange={(e) => {setFileRecieved(true); setFile(e.target.files[0])}}/>
+                    </div>
                 </form>
             }
             

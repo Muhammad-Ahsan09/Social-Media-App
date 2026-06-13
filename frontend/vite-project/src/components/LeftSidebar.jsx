@@ -50,7 +50,7 @@ const LeftSidebar = ({setUser, currentUserId}) => {
         
     }
 
-    return <div className=" w-1/5 border-r-2 border-gray-300 dark:border-gray-700 transition-all pt-9 sticky top-0 self-start sections-container overflow-hidden">
+    return <div className="hidden md:block md:w-1/5 border-r-2 border-gray-300 dark:border-gray-700 transition-all pt-9 sticky top-0 h-screen overflow-hidden">
         
         
         <div className="flex justify-center">

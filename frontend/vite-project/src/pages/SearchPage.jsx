@@ -67,14 +67,14 @@ const SearchPage = ({ setUser, currentUserId }) => {
                                     {/* {console.log(post.profile_pic_url)} */}
                                     <Link to={`/profile/${post.user_id}`}>
                                         <div className="flex">
-                                            <img src={`http://localhost:8000/profile-images/${post.profile_pic_url}`} alt="" className="rounded-full h-12 w-12 cursor-pointer" />
+                                            <img src={`${post.profile_pic_url}`} alt="" className="rounded-full h-12 w-12 cursor-pointer" />
                                             <div className="ml-4 flex items-center font-semibold ">{post.full_name}</div>
                                         </div>
                                     </Link>
 
                                     <Link to={`/posts/${post.id}`}>
                                         <div className="">
-                                            <img src={`http://localhost:8000/post-images/${post.imageUrl}`} alt="" height="75%" className="mt-5 rounded w-full" />
+                                            <img src={`${post.imageUrl}`} alt="" height="75%" className="mt-5 rounded w-full" />
                                         </div>
                                     </Link>
                                     <div className="mt-4">
@@ -130,7 +130,7 @@ const SearchPage = ({ setUser, currentUserId }) => {
 
                             <Link to={`/profile/${user.id}`} className="flex items-center">
                                 <div>
-                                    <img src={`http://localhost:8000/profile-images/${user.profile_pic_url}`}
+                                    <img src={`${user.profile_pic_url}`}
                                         alt="" className="w-16 h-16 rounded-full" />
                                 </div>
 

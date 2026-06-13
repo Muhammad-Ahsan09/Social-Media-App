@@ -138,7 +138,7 @@ const Chat = ({ setUser, currentUserId }) => {
         <div className="border-l flex w-1/6 items-start justify-center border-b-2 p-4 ">
             <div>
                 <div>
-                    <img src={`http://localhost:8000/profile-images/${friend.profile_pic_url}`}
+                    <img src={`${friend.profile_pic_url}`}
                      className="w-28 h-28 rounded-full" />
                 </div>
 

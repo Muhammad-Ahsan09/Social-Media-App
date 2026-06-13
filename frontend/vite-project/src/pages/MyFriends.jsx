@@ -38,7 +38,7 @@ const MyFriends = ({ setUser, currentUserId }) => {
                             <div className="flex items-center">
                                 <Link to={`/profile/${friend.id}`} className="flex items-center">
                                     <div>
-                                        <img src={`http://localhost:8000/profile-images/${friend.profile_pic_url}`}
+                                        <img src={`${friend.profile_pic_url}`}
                                             alt="" className="w-16 h-16 rounded-full" />
                                     </div>
 

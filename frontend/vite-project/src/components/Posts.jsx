@@ -86,32 +86,32 @@ const Posts = () => {
 
     
 
-    return <div className="  pl-20 mt-8 mb-52">
+    return <div className="md:pl-20 mt-8 mb-52">
         
         {
             
             
-            posts.map((post, index) =>  <div className="w-2/3 mb-7" key={index}>
+            posts.map((post, index) =>  <div className="w-full md:w-2/3 mb-7" key={index}>
                 
                 {
                    
                    
-                    <div>
+                    <div className="">
                         <Link to={`/profile/${post.user_id}`}>
                             <div className="flex">
-                                <img src={`http://localhost:8000/profile-images/${post.profile_pic_url}`} className="rounded-full h-12 w-12 cursor-pointer"/>
+                                <img src={`${post.profile_pic_url}`} className="rounded-full h-12 w-12 cursor-pointer"/>
                                 <div className="ml-4 flex items-center font-semibold ">{post.full_name}</div>
                             </div>
                         </Link>
 
                         <Link to={`/posts/${post.id}`}>
                             <div className="">
-                                <LazyImage src={`http://localhost:8000/post-images/${post.imageUrl}`} alt="" height="75%" />
+                                <LazyImage src={`${post.imageUrl}`} alt="" height="75%" />
                             </div>
                         </Link>
 
                         
-                        <div className="mt-4">
+                        <div className="ml-4 mt-4">
                             {
                                
                                 likedPostsId.includes(post.id) ?
@@ -125,18 +125,18 @@ const Posts = () => {
                             <button><TbLocationShare className="w-10 h-7" /></button>
                         </div>
 
-                        <div className="font-semibold">
+                        <div className="ml-4 font-semibold">
                             {post.likes} Likes
                         </div>
 
-                        <div className="flex">
+                        <div className="ml-4 flex">
                             <p className="h-5 overflow-hidden">
                                 {post.description}
                             </p>
                             ...
                         </div> 
 
-                        <p className="text-slate-500 mt-4">
+                        <p className="ml-3 text-slate-500 mt-4">
                             <Link to={`/posts/${post.id}`}>
                                 <button>View all comments</button>
                             </Link>
@@ -146,7 +146,7 @@ const Posts = () => {
                         <div>
                             {/* <form> */}
                                 <input type="text"  placeholder="Add a comment..." 
-                                className="outline-none border-b w-full mt-2 transition-all text-slate-500 dark:bg-black"
+                                className="pl-3 md:pl-0 outline-none border-b w-full mt-2 transition-all text-slate-500 dark:bg-black"
                                 onKeyDown={(e) => {handleComment(e, post.id)}}
                                 />
                                 {/* <button type="submit">Submit</button> */}

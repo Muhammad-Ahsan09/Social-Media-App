@@ -122,7 +122,7 @@ const MyProfilePage = ({ currentUserId }) => {
             <div className="flex w-full justify-center items-center border-b pb-20">
                 <div className="-ml-20 cursor-pointer mt-20" onClick={() => { currentUserId == userid && setClickedProfilePic(true) }}  >
                     <div className="rounded-full border-2 border-slate-300 p-1">
-                        <img src={`http://localhost:8000/profile-images/${user.profile_pic_url}`} alt=""
+                        <img src={`${user.profile_pic_url}`} alt=""
                             className="rounded-full w-40 h-40" />
                     </div>
                 </div>
@@ -212,7 +212,7 @@ const MyProfilePage = ({ currentUserId }) => {
                         {
                             posts.map((post) => <div className={` p-5 cursor-pointer hover:opacity-50`}>
                                     <Link to={`/posts/${post.id}`}>
-                                        <LazyImage src={`http://localhost:8000/post-images/${post.imageUrl}`} className="" />
+                                        <LazyImage src={`${post.imageUrl}`} className="" />
                                     </Link>
                                 
                             </div>)
