@@ -44,7 +44,7 @@ const upload = multer({storage})
 
 
 app.use(cors({
-    origin: "https://social-media-app-d66c.vercel.app/",
+    origin: "https://social-media-app-d66c.vercel.app",
     credentials: true
 }))
 
