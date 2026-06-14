@@ -100,6 +100,6 @@ app.patch("/api/profile_image/:userid", upload.single("profileImage") ,updatePro
 
 const PORT = process.env.PORT || 8000
 
-server.listen(PORT,  () => {
+app.listen(PORT,  () => {
     console.log("sever started at port 8000")
 })
