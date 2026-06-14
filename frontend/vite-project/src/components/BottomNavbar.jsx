@@ -19,7 +19,7 @@ const BottomNavbar = ({currentUserId}) => {
             <MdExplore />
         </Link>
 
-        <Link to="/friends">
+        <Link to="/my_friends">
             <FaUserFriends />
         </Link>
 
