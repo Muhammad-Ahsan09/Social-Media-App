@@ -20,7 +20,8 @@ const MyFriends = ({ setUser, currentUserId }) => {
         getFreinds()
     }, [])
 
-    return <div className="flex">
+    return <> 
+    <div className="flex flex-col md:flex-row">
         <LeftSidebar setUser={setUser} currentUserId={currentUserId} />
 
         {
@@ -66,6 +67,7 @@ const MyFriends = ({ setUser, currentUserId }) => {
         }
 
     </div>
+    </>
 }
 
 export default MyFriends

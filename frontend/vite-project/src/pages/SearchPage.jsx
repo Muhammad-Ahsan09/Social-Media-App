@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { IoIosHeart } from "react-icons/io";
 import { IoChatbubbleOutline } from "react-icons/io5";
 import { TbLocationShare } from "react-icons/tb";
+import BottomNavbar from "../components/BottomNavbar";
 
 
 const SearchPage = ({ setUser, currentUserId }) => {
@@ -40,7 +41,8 @@ const SearchPage = ({ setUser, currentUserId }) => {
         console.log("Posts and users:", posts)
     }
 
-    return <div className="flex">
+    return <> 
+    <div className="flex flex-col md:flex-row">
         <LeftSidebar setUser={setUser} currentUserId={currentUserId} />
 
         <div className="w-5/6 p-5 ">
@@ -153,6 +155,8 @@ const SearchPage = ({ setUser, currentUserId }) => {
         </div>
 
     </div>
+    <BottomNavbar/>
+    </>
 }
 
 export default SearchPage;
