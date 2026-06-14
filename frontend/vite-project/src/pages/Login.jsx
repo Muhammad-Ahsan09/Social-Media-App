@@ -48,7 +48,7 @@ const Login = ({setUser}) => {
           <h1 className="text-2xl font-bold">INSTAGRAM</h1>
         </div>
         
-        <p className="text-gray-400 font-semibold text-lg">Login up to see photos and videos <p className="flex justify-center ">from your friends.</p> </p>
+        <div className="text-gray-400 font-semibold text-lg">Login up to see photos and videos <p className="flex justify-center ">from your friends.</p> </div>
         
         {/* email field */}
 
