@@ -36,7 +36,7 @@ const LeftSidebar = ({setUser, currentUserId}) => {
     const handleLogout = async (e) => {
         e.preventDefault()
 
-        await fetch("http://localhost:8000/api/auth/logout", {
+        await fetch("https://social-media-app-five-rust.vercel.app/api/auth/logout", {
             method: "POST",
             headers: {
                 "Content-Type" : "application/json"

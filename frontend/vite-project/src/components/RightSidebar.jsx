@@ -11,12 +11,12 @@ const RightSidebar = () => {
 
     useEffect(() => {
         const getUserData = async () => {
-            const res = await fetch(`http://localhost:8000/api/users/${userid}`)
+            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/users/${userid}`)
             setUser(await res.json())
         }
 
         const getFreindSuggestions = async () => {
-            const res = await fetch(`http://localhost:8000/api/friendsuggestions/${userid}`)
+            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/friendsuggestions/${userid}`)
             setFriendSuggestions(await res.json())
         }
 

@@ -18,7 +18,7 @@ const MyProfilePage = ({ currentUserId }) => {
 
     useEffect(() => {
         const checkSentRequest = async () => {
-            const res = await fetch(`http://localhost:8000/api/sent_friend_request/${currentUserId}/${userid}`)
+            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/sent_friend_request/${currentUserId}/${userid}`)
             const data = await res.json()
             setSentRequest(data)
             console.log(sentRequest)
@@ -29,7 +29,7 @@ const MyProfilePage = ({ currentUserId }) => {
 
     useEffect(() => {
         const getUser = async () => {
-            const res = await fetch(`http://localhost:8000/api/users/${userid}`)
+            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/users/${userid}`)
             setUser(await res.json())
         }
 
@@ -42,7 +42,7 @@ const MyProfilePage = ({ currentUserId }) => {
 
     useEffect(() => {
         const getFriends = async () => {
-            const res = await fetch(`http://localhost:8000/api/friends/${currentUserId}`)
+            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/friends/${currentUserId}`)
             let data = await res.json()
             console.log("Friends", data)
             data = data.map((friend) => friend.id)
@@ -55,7 +55,7 @@ const MyProfilePage = ({ currentUserId }) => {
 
     useEffect(() => {
         const getPosts = async () => {
-            const res = await fetch(`http://localhost:8000/api/userposts/${userid}`)
+            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/userposts/${userid}`)
             const data = await res.json()
 
             setPosts(data)
@@ -73,7 +73,7 @@ const MyProfilePage = ({ currentUserId }) => {
 
         console.log(image)
 
-        const data = await fetch(`http://localhost:8000/api/profile_image/${userid}`, {
+        const data = await fetch(`https://social-media-app-five-rust.vercel.app/api/profile_image/${userid}`, {
             method: "PATCH",
             body: form
         })
@@ -88,7 +88,7 @@ const MyProfilePage = ({ currentUserId }) => {
         e.preventDefault()
 
         // setFriends([...friends, userid])
-        const res = await fetch(`http://localhost:8000/api/friend_requests/${currentUserId}/${userid}`, {
+        const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/friend_requests/${currentUserId}/${userid}`, {
             method: "POST",
         })
 
@@ -104,7 +104,7 @@ const MyProfilePage = ({ currentUserId }) => {
 
         const newFriends = friends.map((friend) => friend.id != userid)
         setFriends(newFriends)
-        const res = await fetch(`http://localhost:8000/api/friends/${userid}/${currentUserId}`, {
+        const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/friends/${userid}/${currentUserId}`, {
             method: "DELETE"
         })
 

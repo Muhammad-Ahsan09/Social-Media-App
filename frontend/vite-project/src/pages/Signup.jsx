@@ -30,7 +30,7 @@ const Signup = () => {
       return;
     }
 
-    const res = await fetch("http://localhost:8000/api/auth/signup", {
+    const res = await fetch("https://social-media-app-five-rust.vercel.app/api/auth/signup", {
       method: "POST",
       headers: {
         "Content-Type" : "application/json"

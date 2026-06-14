@@ -9,7 +9,7 @@ const Chat = ({ setUser, currentUserId }) => {
 
     const [chats, setChats] = useState([])
 
-    const socket = io("http://localhost:8000")
+    const socket = io("https://social-media-app-five-rust.vercel.app/")
 
     socket.on("connect", () => {
         socket.emit("user-connected", currentUserId)
@@ -31,7 +31,7 @@ const Chat = ({ setUser, currentUserId }) => {
 
     useEffect(() => {
         const getFriend = async () => {
-            const res = await fetch(`http://localhost:8000/api/users/${friend_id}`)
+            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/users/${friend_id}`)
             const data = await res.json()
 
             // console.log(data)
@@ -43,7 +43,7 @@ const Chat = ({ setUser, currentUserId }) => {
 
     useEffect(() => {
         const getChat = async () => {
-            const res = await fetch(`http://localhost:8000/api/chats/${friend_id}/${currentUserId}`)
+            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/chats/${friend_id}/${currentUserId}`)
 
             const data = await res.json()
             // console.log(data)
@@ -60,7 +60,7 @@ const Chat = ({ setUser, currentUserId }) => {
             socket.emit("send-message", message,currentUserId, friend_id)
             setChats([...chats, {message, sender_id:currentUserId}])
 
-            await fetch(`http://localhost:8000/api/chats/${friend_id}`, {
+            await fetch(`https://social-media-app-five-rust.vercel.app/api/chats/${friend_id}`, {
                 method: "POST",
                 headers: {
                     "Content-Type" : "application/json"

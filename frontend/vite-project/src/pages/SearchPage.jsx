@@ -16,7 +16,7 @@ const SearchPage = ({ setUser, currentUserId }) => {
 
     useEffect(() => {
         const getLikedPosts = async () => {
-            const res = await fetch(`http://localhost:8000/api/liked_posts/${currentUserId}`)
+            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/liked_posts/${currentUserId}`)
             let data = await res.json()
 
             data = data.map((post) => post.id)
@@ -31,7 +31,7 @@ const SearchPage = ({ setUser, currentUserId }) => {
         if (search.length === "") {
             return;
         }
-        const res = await fetch(`http://localhost:8000/api/search/${search}`)
+        const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/search/${search}`)
         const data = await res.json()
 
         setPosts(data[0])

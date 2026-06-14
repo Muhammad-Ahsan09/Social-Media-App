@@ -14,7 +14,7 @@ const PostDetail = ({setUser, currentUserId}) => {
 
     useEffect(() => {
         const getPost = async () => {
-            const res = await fetch(`http://localhost:8000/api/posts/${post_id}`)
+            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/posts/${post_id}`)
             const data = await res.json()
 
             setPost(data)
@@ -25,7 +25,7 @@ const PostDetail = ({setUser, currentUserId}) => {
 
     useEffect(() => {
         const getComments = async () => {
-            const res = await fetch(`http://localhost:8000/api/comments/${post_id}`)
+            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/comments/${post_id}`)
             const data = await res.json()
 
             setComments(data)
@@ -35,7 +35,7 @@ const PostDetail = ({setUser, currentUserId}) => {
     })
 
     const handleDeletePost = async (e) => {
-       const res =  await fetch(`http://localhost:8000/api/posts/${post_id}`, {
+       const res =  await fetch(`https://social-media-app-five-rust.vercel.app/api/posts/${post_id}`, {
             method: "DELETE"
         })
 

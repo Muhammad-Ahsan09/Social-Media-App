@@ -7,7 +7,7 @@ const Explore = ({setUser, currentUserId}) => {
 
     useEffect(() => {
         const getPosts = async () => {
-            const res =  await fetch("http://localhost:8000/api/posts")
+            const res =  await fetch("https://social-media-app-five-rust.vercel.app/api/posts")
             const data = await res.json()
             setPosts(data)
          }

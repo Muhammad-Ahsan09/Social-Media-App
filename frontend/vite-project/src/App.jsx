@@ -35,7 +35,7 @@ function App() {
 
   useEffect(() => {
     const getUserStatus = async () => {
-      const res = await fetch("http://localhost:8000/api/issignedin", {
+      const res = await fetch("https://social-media-app-five-rust.vercel.app/api/issignedin", {
         credentials: "include"
       })
       

@@ -27,7 +27,7 @@ const Posts = () => {
 
     useEffect(() => {
         const getPosts = async () => {
-           const res =  await fetch("http://localhost:8000/api/posts")
+           const res =  await fetch("https://social-media-app-five-rust.vercel.app/api/posts")
            setPosts(await res.json())
         }
         getPosts()
@@ -37,7 +37,7 @@ const Posts = () => {
 
     useEffect(() => {
         const getLikedPosts = async () => {
-           const res =  await fetch(`http://localhost:8000/api/liked_posts/${current_user_id}`)
+           const res =  await fetch(`https://social-media-app-five-rust.vercel.app/api/liked_posts/${current_user_id}`)
            let data = await res.json()
 
            data = data.map((post) => post.id)
@@ -49,7 +49,7 @@ const Posts = () => {
 
     const handleLikePost = async (postid) => {
         setLikedPostsId([...likedPostsId, postid])
-        const res = await fetch(`http://localhost:8000/api/posts/like/${postid}/${current_user_id}`, {
+        const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/posts/like/${postid}/${current_user_id}`, {
             method: "PATCH"
         })
 
@@ -59,7 +59,7 @@ const Posts = () => {
 
     const handleUnlikePost = async (postid) => {
         setLikedPostsId(likedPostsId.filter((id) => id != postid))
-        await fetch(`http://localhost:8000/api/posts/unlike/${postid}/${current_user_id}`,{
+        await fetch(`https://social-media-app-five-rust.vercel.app/api/posts/unlike/${postid}/${current_user_id}`,{
             method: "PATCH"
         })
     }
@@ -70,7 +70,7 @@ const Posts = () => {
         if(e.key === "Enter")
         {
             const comment = e.target.value
-            await fetch(`http://localhost:8000/api/comments/${current_user_id}/${post_id}`, {
+            await fetch(`https://social-media-app-five-rust.vercel.app/api/comments/${current_user_id}/${post_id}`, {
                 method: "POST",
                 body: JSON.stringify({comment}),
                 headers: {

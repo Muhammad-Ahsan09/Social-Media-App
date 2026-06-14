@@ -11,7 +11,7 @@ const MyFriends = ({ setUser, currentUserId }) => {
 
     useEffect(() => {
         const getFreinds = async () => {
-            const res = await fetch(`http://localhost:8000/api/friends/${currentUserId}`)
+            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/friends/${currentUserId}`)
             const data = await res.json()
             console.log(data)
             setFriends(data)

@@ -12,7 +12,7 @@ const FriendRequests = ({currentUserId}) => {
     const [requests, setRequests] = useState([])
     useEffect(() => {
         const getFriendRequests = async () => {
-            const res = await fetch(`http://localhost:8000/api/friend_requests/${currentUserId}`)
+            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/friend_requests/${currentUserId}`)
             const data = await res.json()
 
             setRequests(data)
@@ -28,7 +28,7 @@ const FriendRequests = ({currentUserId}) => {
         setRequests(newRequests)
         console.log(requests)
         
-        const res = await fetch(`http://localhost:8000/api/friend_request/${requestUserId}/${currentUserId}`, {
+        const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/friend_request/${requestUserId}/${currentUserId}`, {
             method: "PATCH"
         })
 
