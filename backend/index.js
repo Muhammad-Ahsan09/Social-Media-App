@@ -52,6 +52,8 @@ app.use(express.json())
 app.use(cookieParser())
 app.use(express.static("public"))
 
+app.get("/", () => {"<h1>Server working</h1>"})
+
 app.post("/api/auth/signup", signup)
 app.post("/api/auth/login",  login)
 app.post("/api/auth/logout",  logout)
