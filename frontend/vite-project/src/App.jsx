@@ -52,6 +52,7 @@ function App() {
   
   return <BrowserRouter>
           <Routes>
+            <Route path="/" element={ !user ? <Suspense fallback={<div>Loading...</div>}> <Signup setUser={setUser}/></Suspense> : <Navigate to={`/${user.id}`}/> }/>
             <Route path="/signup" element={ !user ? <Suspense fallback={<div>Loading...</div>}> <Signup setUser={setUser}/></Suspense> : <Navigate to={`/${user.id}`}/> }/>
             <Route path="/login" element={ !user ? <Suspense fallback={<div>Loading...</div>}> <Login setUser={setUser} /></Suspense> : <Navigate to={`/${user.id}`}/>}/>
             <Route path="/:userid" element={ user ? <Suspense fallback={<div>Loading...</div>}>  <Home setUser={setUser} currentUserId={user.id} /> </Suspense> : <Navigate to="/signup"/>}/>
