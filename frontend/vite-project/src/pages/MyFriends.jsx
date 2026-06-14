@@ -3,6 +3,7 @@ import LeftSidebar from "../components/LeftSidebar"
 import { TbH1 } from "react-icons/tb"
 import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
+import BottomNavbar from "../components/BottomNavbar";
 
 
 const MyFriends = ({ setUser, currentUserId }) => {
@@ -67,6 +68,7 @@ const MyFriends = ({ setUser, currentUserId }) => {
         }
 
     </div>
+    <BottomNavbar/>
     </>
 }
 

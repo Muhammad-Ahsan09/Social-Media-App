@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import LeftSidebar from "../components/LeftSidebar"
 import { Link, useParams } from "react-router-dom"
 import LazyImage from "../components/Image"
+import BottomNavbar from "../components/BottomNavbar"
 
 const MyProfilePage = ({ currentUserId }) => {
 
@@ -115,7 +116,8 @@ const MyProfilePage = ({ currentUserId }) => {
 
 
 
-    return <div className={`flex ${clickedProfilePic && "bg-black bg-opacity-50"} transition-all w-full`}>
+    return <>
+    <div className={`flex flex-col md:flex-row ${clickedProfilePic && "bg-black bg-opacity-50"} transition-all w-full`}>
         <LeftSidebar currentUserId={currentUserId} />
 
         <div className="main-section w-4/6 ">
@@ -232,6 +234,8 @@ const MyProfilePage = ({ currentUserId }) => {
 
 
     </div>
+    <BottomNavbar/>
+    </>
 
 
 }

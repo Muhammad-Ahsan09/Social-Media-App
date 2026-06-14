@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import LeftSidebar from "../components/LeftSidebar"
+import BottomNavbar from "../components/BottomNavbar"
 
 const Explore = ({setUser, currentUserId}) => {
 
@@ -14,7 +15,8 @@ const Explore = ({setUser, currentUserId}) => {
          getPosts()
     }, [])
 
-    return <div className="flex">
+    return <> 
+    <div className="flex flex-col md:flex-row">
         <LeftSidebar setUser={setUser} currentUserId={currentUserId}/>
     
         <div className="flex w-5/6 flex-wrap">
@@ -27,6 +29,10 @@ const Explore = ({setUser, currentUserId}) => {
             }
         </div>
     </div>
+
+    <BottomNavbar/>
+
+    </>
 }
 
 export default Explore

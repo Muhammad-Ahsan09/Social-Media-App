@@ -3,6 +3,7 @@ import LeftSidebar from "../components/LeftSidebar"
 import { FaRegCheckCircle } from "react-icons/fa";
 import { RxCrossCircled } from "react-icons/rx";
 import { Link } from "react-router-dom";
+import BottomNavbar from "../components/BottomNavbar";
 
 
 
@@ -36,7 +37,8 @@ const FriendRequests = ({currentUserId}) => {
         console.log(data)
     }
 
-    return <div className="flex transition-all">
+    return <>
+    <div className="flex flex-col md:flex-row transition-all">
 
         <LeftSidebar currentUserId={currentUserId}/>
         
@@ -78,6 +80,9 @@ const FriendRequests = ({currentUserId}) => {
         }
         
         </div>
+
+        <BottomNavbar/>
+        </>
 }
 
 export default FriendRequests
