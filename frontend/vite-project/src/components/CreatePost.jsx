@@ -29,7 +29,7 @@ const CreatePost = ({ setPosting}) => {
         form.append("user_id", user_id)
         form.append("file", file)
         
-        const res = await fetch("https://social-media-app-five-rust.vercel.app//api/posts", {
+        const res = await fetch("https://social-media-app-five-rust.vercel.app/api/posts", {
             method: "POST",
             body: form
         })
