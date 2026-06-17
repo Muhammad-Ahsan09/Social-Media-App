@@ -117,7 +117,7 @@ const MyProfilePage = ({ currentUserId }) => {
 
 
     return <>
-        <div className="flex flex-col md:flex-row transition-all w-full">
+        <div className={`flex flex-col md:flex-row transition-all w-full`}>
 
         {
     clickedProfilePic &&
@@ -192,7 +192,35 @@ const MyProfilePage = ({ currentUserId }) => {
 
                         <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-4 md:mt-0 md:ml-10">
 
-                            
+                            {
+                                currentUserId == userid ?
+                                    <div className="font-medium">
+                                        <button className="bg-slate-200 pl-2 pr-2 pt-1 pb-1 rounded dark:bg-gray-800 ">Edit profile</button>
+                                    </div> :
+
+                                    friends.includes(Number(userid)) ?
+
+                                        <div className="font-medium" onClick={(e) => { handleClickUnfollowButton(e) }}>
+                                            <button className="bg-slate-200 pl-2 pr-2 pt-1 pb-1 rounded dark:bg-gray-800 ">Unfollow</button>
+                                        </div>
+
+                                        :
+
+                                        sentRequest ?
+                                            <div className="font-medium" >
+                                                <button className="bg-slate-200 pl-2 pr-2 pt-1 pb-1 rounded dark:bg-gray-800 ">Sent Request</button>
+                                            </div>
+
+                                            :
+                                            <div className="font-medium" onClick={(e) => { handleClickFollowButton(e); setSentRequest(true) }}>
+                                                <button className="bg-slate-200 pl-2 pr-2 pt-1 pb-1 rounded dark:bg-gray-800 ">Follow</button>
+                                            </div>
+
+
+
+
+                            }
+
 
                             <div className="font-medium">
                                 <button className="bg-slate-200 pl-2 pr-2 pt-1 pb-1 rounded dark:bg-gray-800 ">View Archive</button>
@@ -206,43 +234,7 @@ const MyProfilePage = ({ currentUserId }) => {
 
                 </div>
                 <div className="w-full">
-                    {
-                        clickedProfilePic &&
-                        <div className="fixed inset-0 flex justify-center items-center z-50">
-
-                            <div className="bg-white dark:bg-gray-900 shadow-lg rounded-md
-                                        w-[90%] md:w-1/3
-                                        max-w-md
-                                        h-auto">
-                                <div className="flex justify-center items-center py-5 border-b">
-                                    Change Profile Photo
-                                </div>
-
-                                <div className="flex justify-center items-center cursor-pointer border-b py-5 text-blue-400 font-medium">
-
-                                    <form>
-                                        <input type="file" id="image"
-                                            className="cursor-pointer" onChange={(e) => { setImage(e.target.files[0]) }} />
-                                    </form>
-
-
-                                    <button onClick={(e) => { handleImageUpload(e) }}>
-                                        Upload Photo
-                                    </button>
-                                </div>
-
-                                <div className="flex justify-center items-center cursor-pointer border-b py-5 text-blue-400 font-medium"
-                                >
-                                    Remove Current Photo
-                                </div>
-
-                                <div className="flex justify-center items-center cursor-pointer py-5 text-red-500"
-                                    onClick={() => { setClickedProfilePic(false) }}>
-                                    Cancel
-                                </div>
-                            </div>
-                        </div>
-                    }
+                   
                     <div className="font-bold flex items-center justify-center w-full py-4 text-lg">
                         POSTS
                     </div>
