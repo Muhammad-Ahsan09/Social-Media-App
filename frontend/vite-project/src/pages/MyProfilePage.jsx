@@ -119,61 +119,62 @@ const MyProfilePage = ({ currentUserId }) => {
     return <>
         <div className={`flex flex-col md:flex-row transition-all w-full`}>
 
-        {
-    clickedProfilePic &&
-    <div className="fixed inset-0 bg-black/50 z-40 flex justify-center items-center">
+            {
+                clickedProfilePic &&
+                <div  className="fixed inset-0 bg-black/50 z-40 flex justify-center items-center"
+                onClick={() => setClickedProfilePic(false)}>
 
-        <div
-            className="bg-white dark:bg-gray-900 shadow-lg rounded-md
+                    <div
+                        className="bg-white dark:bg-gray-900 shadow-lg rounded-md
             w-[90%] md:w-1/3 max-w-md"
-            onClick={(e) => e.stopPropagation()}
-        >
+                        onClick={(e) => e.stopPropagation()}
+                    >
 
-            <div className="flex justify-center items-center py-5 border-b">
-                Change Profile Photo
-            </div>
+                        <div className="flex justify-center items-center py-5 border-b">
+                            Change Profile Photo
+                        </div>
 
-            <div className="flex flex-col items-center justify-center py-5 border-b">
+                        <div className="flex flex-col items-center justify-center py-5 border-b">
 
-                <form>
-                    <input
-                        type="file"
-                        id="image"
-                        className="cursor-pointer"
-                        onChange={(e) => {
-                            setImage(e.target.files[0]);
-                        }}
-                    />
-                </form>
+                            <form>
+                                <input
+                                    type="file"
+                                    id="image"
+                                    className="cursor-pointer"
+                                    onChange={(e) => {
+                                        setImage(e.target.files[0]);
+                                    }}
+                                />
+                            </form>
 
-                <button
-                    className="mt-3 text-blue-400 font-medium"
-                    onClick={(e) => {
-                        handleImageUpload(e);
-                    }}
-                >
-                    Upload Photo
-                </button>
+                            <button
+                                className="mt-3 text-blue-400 font-medium"
+                                onClick={(e) => {
+                                    handleImageUpload(e);
+                                }}
+                            >
+                                Upload Photo
+                            </button>
 
-            </div>
+                        </div>
 
-            <div className="flex justify-center items-center cursor-pointer py-5 border-b text-blue-400 font-medium">
-                Remove Current Photo
-            </div>
+                        <div className="flex justify-center items-center cursor-pointer py-5 border-b text-blue-400 font-medium">
+                            Remove Current Photo
+                        </div>
 
-            <div
-                className="flex justify-center items-center cursor-pointer py-5 text-red-500"
-                onClick={() => {
-                    setClickedProfilePic(false);
-                }}
-            >
-                Cancel
-            </div>
+                        <div
+                            className="flex justify-center items-center cursor-pointer py-5 text-red-500"
+                            onClick={() => {
+                                setClickedProfilePic(false);
+                            }}
+                        >
+                            Cancel
+                        </div>
 
-        </div>
+                    </div>
 
-    </div>
-}
+                </div>
+            }
             <LeftSidebar currentUserId={currentUserId} />
 
             <div className="main-section w-full md:w-4/6 pb-20 md:pb-0 ">
@@ -234,7 +235,7 @@ const MyProfilePage = ({ currentUserId }) => {
 
                 </div>
                 <div className="w-full">
-                   
+
                     <div className="font-bold flex items-center justify-center w-full py-4 text-lg">
                         POSTS
                     </div>
