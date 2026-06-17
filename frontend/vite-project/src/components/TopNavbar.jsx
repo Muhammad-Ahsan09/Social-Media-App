@@ -1,4 +1,4 @@
-const TopNavbar = () => {
+const TopNavbar = ({setUser}) => {
 
     const handleLogout = async (e) => {
         e.preventDefault()
