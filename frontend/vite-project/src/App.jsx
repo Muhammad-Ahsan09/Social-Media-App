@@ -33,21 +33,21 @@ function App() {
 
   
 
-  // useEffect(() => {
-  //   const getUserStatus = async () => {
-  //     const res = await fetch("https://social-media-app-five-rust.vercel.app/api/issignedin", {
-  //       credentials: "include"
-  //     })
+  useEffect(() => {
+    const getUserStatus = async () => {
+      const res = await fetch("https://social-media-app-five-rust.vercel.app/api/issignedin", {
+        credentials: "include"
+      })
       
-  //     const data = await res.json()
-  //     setUser(data)
+      const data = await res.json()
+      setUser(data)
       
-  //     console.log("User:", data)
-  //   }
+      console.log("User:", data)
+    }
 
-  //   getUserStatus()
+    getUserStatus()
 
-  // }, [])
+  }, [])
   
   
   return <BrowserRouter>
