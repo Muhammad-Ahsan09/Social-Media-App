@@ -117,124 +117,162 @@ const MyProfilePage = ({ currentUserId }) => {
 
 
     return <>
-    <div className={`flex flex-col md:flex-row ${clickedProfilePic && "bg-black bg-opacity-50"} transition-all w-full`}>
-        <LeftSidebar currentUserId={currentUserId} />
+        <div className="flex flex-col md:flex-row transition-all w-full">
 
-        <div className="main-section w-4/6 ">
-            <div className="flex w-full justify-center items-center border-b pb-20">
-                <div className="-ml-20 cursor-pointer mt-20" onClick={() => { currentUserId == userid && setClickedProfilePic(true) }}  >
-                    <div className="rounded-full border-2 border-slate-300 p-1">
-                        <img src={`${user.profile_pic_url}`} alt=""
-                            className="rounded-full w-40 h-40" />
+        {
+    clickedProfilePic &&
+    <div className="fixed inset-0 bg-black/50 z-40 flex justify-center items-center">
+
+        <div
+            className="bg-white dark:bg-gray-900 shadow-lg rounded-md
+            w-[90%] md:w-1/3 max-w-md"
+            onClick={(e) => e.stopPropagation()}
+        >
+
+            <div className="flex justify-center items-center py-5 border-b">
+                Change Profile Photo
+            </div>
+
+            <div className="flex flex-col items-center justify-center py-5 border-b">
+
+                <form>
+                    <input
+                        type="file"
+                        id="image"
+                        className="cursor-pointer"
+                        onChange={(e) => {
+                            setImage(e.target.files[0]);
+                        }}
+                    />
+                </form>
+
+                <button
+                    className="mt-3 text-blue-400 font-medium"
+                    onClick={(e) => {
+                        handleImageUpload(e);
+                    }}
+                >
+                    Upload Photo
+                </button>
+
+            </div>
+
+            <div className="flex justify-center items-center cursor-pointer py-5 border-b text-blue-400 font-medium">
+                Remove Current Photo
+            </div>
+
+            <div
+                className="flex justify-center items-center cursor-pointer py-5 text-red-500"
+                onClick={() => {
+                    setClickedProfilePic(false);
+                }}
+            >
+                Cancel
+            </div>
+
+        </div>
+
+    </div>
+}
+            <LeftSidebar currentUserId={currentUserId} />
+
+            <div className="main-section w-full md:w-4/6 pb-20 md:pb-0 ">
+                <div className="flex flex-col md:flex-row w-full justify-center items-center border-b pb-10 md:pb-20 px-4">
+                    <div className="cursor-pointer mt-10 md:mt-20 md:-ml-20" onClick={() => { currentUserId == userid && setClickedProfilePic(true) }}  >
+                        <div className="rounded-full border-2 border-slate-300 p-1">
+                            <img src={`${user.profile_pic_url}`} alt=""
+                                className="rounded-full w-28 h-28 md:w-40 md:h-40" />
+                        </div>
                     </div>
+
+                    <div className="flex flex-col md:flex-row items-center mt-5 md:mt-0">
+                        <div className="text-lg md:text-xl md:ml-24 text-center md:text-left">
+                            <h1>{user.full_name}</h1>
+                        </div>
+
+                        <div className="flex flex-wrap justify-center md:justify-start gap-3 mt-4 md:mt-0 md:ml-10">
+
+                            
+
+                            <div className="font-medium">
+                                <button className="bg-slate-200 pl-2 pr-2 pt-1 pb-1 rounded dark:bg-gray-800 ">View Archive</button>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+
+
                 </div>
-
-                <div className="flex items-center ">
-                    <div className=" text-xl ml-24">
-                        <h1>{user.full_name}</h1>
-                    </div>
-
+                <div className="w-full">
                     {
-                        currentUserId == userid ?
-                            <div className="ml-10 font-medium">
-                                <button className="bg-slate-200 pl-2 pr-2 pt-1 pb-1 rounded dark:bg-gray-800 ">Edit profile</button>
-                            </div> :
+                        clickedProfilePic &&
+                        <div className="fixed inset-0 flex justify-center items-center z-50">
 
-                            friends.includes(Number(userid)) ?
-
-                                <div className="ml-10 font-medium" onClick={(e) => { handleClickUnfollowButton(e) }}>
-                                    <button className="bg-slate-200 pl-2 pr-2 pt-1 pb-1 rounded dark:bg-gray-800 ">Unfollow</button>
+                            <div className="bg-white dark:bg-gray-900 shadow-lg rounded-md
+                                        w-[90%] md:w-1/3
+                                        max-w-md
+                                        h-auto">
+                                <div className="flex justify-center items-center py-5 border-b">
+                                    Change Profile Photo
                                 </div>
 
-                                :
+                                <div className="flex justify-center items-center cursor-pointer border-b py-5 text-blue-400 font-medium">
 
-                                sentRequest ?
-                                    <div className="ml-10 font-medium" >
-                                        <button className="bg-slate-200 pl-2 pr-2 pt-1 pb-1 rounded dark:bg-gray-800 ">Sent Request</button>
-                                    </div>
-
-                                    :
-                                    <div className="ml-10 font-medium" onClick={(e) => { handleClickFollowButton(e); setSentRequest(true) }}>
-                                        <button className="bg-slate-200 pl-2 pr-2 pt-1 pb-1 rounded dark:bg-gray-800 ">Follow</button>
-                                    </div>
+                                    <form>
+                                        <input type="file" id="image"
+                                            className="cursor-pointer" onChange={(e) => { setImage(e.target.files[0]) }} />
+                                    </form>
 
 
+                                    <button onClick={(e) => { handleImageUpload(e) }}>
+                                        Upload Photo
+                                    </button>
+                                </div>
 
+                                <div className="flex justify-center items-center cursor-pointer border-b py-5 text-blue-400 font-medium"
+                                >
+                                    Remove Current Photo
+                                </div>
 
+                                <div className="flex justify-center items-center cursor-pointer py-5 text-red-500"
+                                    onClick={() => { setClickedProfilePic(false) }}>
+                                    Cancel
+                                </div>
+                            </div>
+                        </div>
                     }
-
-
-                    <div className="ml-5 font-medium">
-                        <button className="bg-slate-200 pl-2 pr-2 pt-1 pb-1 rounded dark:bg-gray-800 ">View Archive</button>
+                    <div className="font-bold flex items-center justify-center w-full py-4 text-lg">
+                        POSTS
                     </div>
 
+                    <div className="grid grid-cols-2 md:grid-cols-3 w-full">
 
-                </div>
-
-
-            </div>
-            <div className="w-full">
-            {
-                clickedProfilePic && <div className="fixed shadow-lg  bg-white left-1/2 
-            rounded-md w-1/3 h-1/3 -translate-x-1/2 -translate-y-1/2 transition-all">
-                    <div className="flex justify-center items-center h-1/3 border-b">
-                        Change Profile Photo
-                    </div>
-
-                    <div className="flex justify-center items-center cursor-pointer border-b h-1/5 text-blue-400 font-medium">
-
-                        <form>
-                            <input type="file" id="image"
-                                className="cursor-pointer" onChange={(e) => { setImage(e.target.files[0]) }} />
-                        </form>
-
-
-                        <button onClick={(e) => { handleImageUpload(e) }}>
-                            Upload Photo
-                        </button>
-                    </div>
-
-                    <div className="flex justify-center items-center cursor-pointer border-b h-1/5 text-blue-400 font-medium"
-                    >
-                        Remove Current Photo
-                    </div>
-
-                    <div className="flex justify-center items-center cursor-pointer h-1/5 text-red-500"
-                        onClick={() => { setClickedProfilePic(false) }}>
-                        Cancel
-                    </div>
-                </div> 
-            }
-                <div className="font-bold flex items-center justify-center w-full">
-                    POSTS
-                </div>
-
-                <div className="grid grid-cols-3 w-full">
-                    
                         {
-                            posts.map((post) => <div className={` p-5 cursor-pointer hover:opacity-50`}>
-                                    <Link to={`/posts/${post.id}`}>
-                                        <LazyImage src={`${post.imageUrl}`} className="" />
-                                    </Link>
-                                
+                            posts.map((post) => <div className={`p-1 md:p-5 cursor-pointer hover:opacity-50`}>
+                                <Link to={`/posts/${post.id}`}>
+                                    <LazyImage src={`${post.imageUrl}`} className="w-full aspect-square object-cover rounded" />
+                                </Link>
+
                             </div>)
                         }
+                    </div>
                 </div>
-            </div>
 
-            {/* <div>
+                {/* <div>
                 <h1>My Posts</h1>
             </div> */}
 
 
-            
+
+
+            </div>
+
+
 
         </div>
-
-
-
-    </div>
-    <BottomNavbar/>
+        <BottomNavbar />
     </>
 
 
