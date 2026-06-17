@@ -29,7 +29,7 @@ const Explore = lazy(() => import("./pages/Explore"))
 
 function App() {
 
-  const [user, setUser] = useState(true)
+  const [user, setUser] = useState(false)
 
   
 
