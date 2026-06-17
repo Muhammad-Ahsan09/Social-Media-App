@@ -48,38 +48,43 @@ const CreatePost = ({ setPosting}) => {
     }
 
 
-    return <div className="rounded-md h-full dark:bg-gray-800">
-        <div className="flex justify-center items-center h-10 border-b-2">
+    return <div className="rounded-md w-full h-full dark:bg-gray-800 bg-white">
+        <div className="relative flex justify-center items-center h-12 border-b-2">
             <h1>Create new post</h1>
-            <div className="cursor-pointer transition-all rounded-full p-4
-            absolute right-2 hover:bg-slate-300 w-5 h-5 flex justify-center items-center"
+            <div className="cursor-pointer transition-all rounded-full
+                            absolute right-3 top-1/2 -translate-y-1/2
+                            hover:bg-slate-300 dark:hover:bg-gray-700
+                            w-8 h-8 flex justify-center items-center"
             onClick={() => {setPosting(false)}}>
                 X
             </div>
         </div>
 
-        <div className="h-1/2 text-xl">
+        <div className="min-h-[250px] md:min-h-[300px] text-lg md:text-xl">
 
             {
                 fileDone ?
                 <>
                     <form onSubmit={(e) => {handleFormSubmit(e)}} encType="multipart/form-data">
-                        <textarea name="" id="" cols="30" rows="10" value={description}
+                        <textarea name="" id=""  rows="8" value={description}
                         onChange={(e) => {setDescription(e.target.value)}}
-                        className="outline-none pl-4 pt-5 font-normal w-full pr-4 dark:bg-gray-800" placeholder="Enter the description here">
+                        className="outline-none p-4 font-normal w-full min-h-[250px]
+                                    resize-none dark:bg-gray-800" placeholder="Enter the description here">
 
                         </textarea>
                         <div className="flex justify-center items-center">
                             <button type="submit" 
-                            className="bg-blue-500 text-white pl-10 pr-10 rounded-md" >Post</button>
+                            className="bg-blue-500 text-white px-8 py-2 rounded-md" >Post</button>
                         </div>
                     </form>
                 </>
                 
                 : 
                 <>
-                    <IoMdPhotos className="w-20 h-20 ml-auto mr-auto mt-10"/>
-                    <h1 className="ml-20  mt-5">Drag photos and videos here</h1>
+                    <IoMdPhotos className="w-16 h-16 md:w-20 md:h-20 mx-auto mt-10"/>
+                    <h1 className="ml-20 mt-5">
+                        Drag photos and videos here
+                    </h1>
                 </>
             }
             
@@ -91,12 +96,12 @@ const CreatePost = ({ setPosting}) => {
 
             {
                 fileRecieved && !fileDone ?  <button onClick={() => {setFileDone(true)}}
-                className="bg-blue-500 w-40 rounded-md h-7 text-white">next</button> : 
+                className="bg-blue-500 w-32 md:w-40 rounded-md h-9 text-white">next</button> : 
 
                 !fileDone &&
                 <form>
                     <div>
-                        <label className="bg-blue-500 text-white p-2 text-sm cursor-pointer rounded" htmlFor="image">Select from computer</label>
+                        <label className="bg-blue-500 text-white px-4 py-2 text-sm cursor-pointer rounded" htmlFor="image">Select from computer</label>
                         <input  type="file" id="image" value={file} 
                         className="hidden cursor-pointer" onChange={(e) => {setFileRecieved(true); setFile(e.target.files[0])}}/>
                     </div>
