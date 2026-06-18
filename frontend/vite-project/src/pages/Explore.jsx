@@ -18,7 +18,7 @@ const Explore = ({setUser, currentUserId}) => {
 
     return <> 
     <TopNavbar />
-    <div className="flex flex-col md:flex-row">
+    <div className="flex flex-col md:flex-row pt-14 md:pt-0">
         <LeftSidebar setUser={setUser} currentUserId={currentUserId}/>
     
         <div className="flex w-5/6 flex-wrap">

@@ -119,7 +119,7 @@ const MyProfilePage = ({ currentUserId }) => {
 
     return <>
         <TopNavbar />
-        <div className={`flex flex-col md:flex-row transition-all w-full`}>
+        <div className={`flex flex-col md:flex-row transition-all w-full pt-14 md:pt-0`}>
 
             {
                 clickedProfilePic &&
