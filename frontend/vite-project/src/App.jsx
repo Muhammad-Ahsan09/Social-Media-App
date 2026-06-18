@@ -14,19 +14,6 @@ const PostDetail = lazy(() => import("./pages/PostDetail"))
 const Explore = lazy(() => import("./pages/Explore"))
 
 
-
-// import Signup from "./pages/Signup"
-// import Login from "./pages/Login"
-// import { createContext, useEffect, useState } from "react"
-// import MyProfilePage from "./pages/MyProfilePage"
-// import FriendRequests from "./pages/FriendRequests"
-// import MyFriends from "./pages/MyFriends"
-// import Chat from "./pages/Chat"
-// import SearchPage from "./pages/SearchPage"
-// import PostDetail from "./pages/PostDetail"
-// import Explore from "./pages/Explore"
-
-
 function App() {
 
   const [user, setUser] = useState(false)
