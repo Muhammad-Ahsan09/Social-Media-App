@@ -4,6 +4,7 @@ import { TbH1 } from "react-icons/tb"
 import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import BottomNavbar from "../components/BottomNavbar";
+import TopNavbar from "../components/TopNavbar";
 
 
 const MyFriends = ({ setUser, currentUserId }) => {
@@ -22,6 +23,7 @@ const MyFriends = ({ setUser, currentUserId }) => {
     }, [])
 
     return <> 
+    <TopNavbar />
     <div className="flex flex-col md:flex-row">
         <LeftSidebar setUser={setUser} currentUserId={currentUserId} />
 

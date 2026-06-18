@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import LeftSidebar from "../components/LeftSidebar";
 import { useNavigate, useParams } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+import TopNavbar from "../components/TopNavbar";
+import BottomNavbar from "../components/BottomNavbar";
 
 const PostDetail = ({ setUser, currentUserId }) => {
 
@@ -54,7 +56,10 @@ const PostDetail = ({ setUser, currentUserId }) => {
         console.log(data)
     }
 
-    return <div className="flex flex-col md:flex-row">
+    return <>
+    
+    <TopNavbar/>
+    <div className="flex flex-col md:flex-row">
         <LeftSidebar setUser={setUser} currentUserId={currentUserId} />
 
         <div className=" w-full md:w-5/6
@@ -127,6 +132,8 @@ const PostDetail = ({ setUser, currentUserId }) => {
         <Toaster />
 
     </div>
+    <BottomNavbar />
+    </>
 }
 
 export default PostDetail;

@@ -3,6 +3,7 @@ import LeftSidebar from "../components/LeftSidebar"
 import { Link, useParams } from "react-router-dom"
 import LazyImage from "../components/Image"
 import BottomNavbar from "../components/BottomNavbar"
+import TopNavbar from "../components/TopNavbar"
 
 const MyProfilePage = ({ currentUserId }) => {
 
@@ -117,6 +118,7 @@ const MyProfilePage = ({ currentUserId }) => {
 
 
     return <>
+        <TopNavbar />
         <div className={`flex flex-col md:flex-row transition-all w-full`}>
 
             {

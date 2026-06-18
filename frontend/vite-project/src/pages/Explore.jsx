@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import LeftSidebar from "../components/LeftSidebar"
 import BottomNavbar from "../components/BottomNavbar"
+import TopNavbar from "../components/TopNavbar"
 
 const Explore = ({setUser, currentUserId}) => {
 
@@ -16,6 +17,7 @@ const Explore = ({setUser, currentUserId}) => {
     }, [])
 
     return <> 
+    <TopNavbar />
     <div className="flex flex-col md:flex-row">
         <LeftSidebar setUser={setUser} currentUserId={currentUserId}/>
     
