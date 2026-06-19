@@ -16,25 +16,32 @@ const Explore = ({setUser, currentUserId}) => {
          getPosts()
     }, [])
 
-    return <> 
+    return <>
     <TopNavbar />
+  
     <div className="flex flex-col md:flex-row pt-14 md:pt-0">
-        <LeftSidebar setUser={setUser} currentUserId={currentUserId}/>
-    
-        <div className="flex w-5/6 flex-wrap">
-            {
-                posts.map((post) => <div className="m-2">
-                    <img src={`${post.imageUrl}`}
-                    className="max-h-72"    
-                alt="" />
-                </div>)
-            }
+      <LeftSidebar
+        setUser={setUser}
+        currentUserId={currentUserId}
+      />
+  
+      <div className="w-full md:w-5/6 p-2 md:p-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {posts.map((post) => (
+            <div key={post._id}>
+              <img
+                src={post.imageUrl}
+                alt=""
+                className="w-full h-40 sm:h-56 object-cover rounded"
+              />
+            </div>
+          ))}
         </div>
+      </div>
     </div>
-
-    <BottomNavbar/>
-
-    </>
+  
+    <BottomNavbar />
+  </>
 }
 
 export default Explore
