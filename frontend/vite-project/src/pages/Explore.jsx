@@ -28,6 +28,7 @@ const Explore = ({setUser, currentUserId}) => {
       <div className="w-full md:w-5/6 p-2 md:p-4">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {posts.map((post) => (
+            <Link to={`/posts/${post.id}`}>
             <div key={post._id}>
               <img
                 src={post.imageUrl}
@@ -35,6 +36,7 @@ const Explore = ({setUser, currentUserId}) => {
                 className="w-full h-40 sm:h-56 object-cover rounded"
               />
             </div>
+            </Link>
           ))}
         </div>
       </div>
