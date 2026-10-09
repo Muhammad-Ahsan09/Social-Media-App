@@ -28,7 +28,7 @@ const Login = ({setUser}) => {
     })
 
     const data = await res.json()
-    if(res.ok){
+    if(data.success){
       
       setUser(data)
       
@@ -36,9 +36,6 @@ const Login = ({setUser}) => {
     else{
       toast.error(data.message)
     }
-
-
-
   }
 
   return <>
