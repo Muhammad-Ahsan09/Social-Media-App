@@ -91,7 +91,7 @@ const login = async (req, res) => {
             })
         }
 
-        const result = await pool.query("SELECT id, full_name, username, email FROM users WHERE email = ? ", [email])
+        const result = await pool.query("SELECT id, full_name, username, email, password FROM users WHERE email = ? ", [email])
 
         const user = result[0][0];
 
@@ -104,7 +104,10 @@ const login = async (req, res) => {
 
         if(!isPasswordCorrect){
             console.log("no password")
-            return res.status(404).json({message: "Invalid credentials"})
+            return res.status(404).json({
+                success: false,
+                message: "Invalid credentials"
+            })
         }
 
         const token = jwt.sign({userid: user.id}, secretkey, {expiresIn: '15d'})
@@ -129,13 +132,29 @@ const login = async (req, res) => {
     }
 }
 
+// const logout = (req, res) => {
+//     try {
+//         res.cookie("jwt", "", {maxAge: 0})
+//         res.json({message: "Logged out succesfully"})
+//     } catch (error) {
+//         console.log(error.message)
+//     }
+// }
+
 const logout = (req, res) => {
-    try {
-        res.cookie("jwt", "", {maxAge: 0})
-        res.json({message: "Logged out succesfully"})
-    } catch (error) {
-        console.log(error.message)
-    }
-}
+  try {
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict", // Match setting from login/register route
+      path: "/",          // Ensure root path is targeted
+    });
+
+    return res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error("Logout Error:", error.message);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 module.exports = {signup, login, logout}

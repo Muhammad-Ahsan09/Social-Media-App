@@ -22,7 +22,6 @@ const Posts = () => {
 
     const current_user_id = params.userid
 
-    // console.log(current_user_id)
 
 
     useEffect(() => {
@@ -41,7 +40,6 @@ const Posts = () => {
            let data = await res.json()
 
            data = data.map((post) => post.id)
-           console.log(data)
            setLikedPostsId(data)
         }
         getLikedPosts()
@@ -54,7 +52,6 @@ const Posts = () => {
         })
 
         const data = await res.json()
-        console.log(data)
     }
 
     const handleUnlikePost = async (postid) => {
