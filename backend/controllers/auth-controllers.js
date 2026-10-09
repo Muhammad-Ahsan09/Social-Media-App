@@ -98,7 +98,9 @@ const login = async (req, res) => {
         if (!user){
             console.log("no user")
             
-            return res.status(404).json({message: "Invalid credentials"})
+            return res.status(404).json({
+                success: false,
+                message: "Invalid credentials"})
         }
         const isPasswordCorrect = await bcrypt.compare(password, user.password || "")
 
