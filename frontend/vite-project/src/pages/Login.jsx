@@ -30,7 +30,7 @@ const Login = ({setUser}) => {
     const data = await res.json()
     if(data.success){
       
-      setUser(data)
+      setUser(data.user)
       
     }
     else{
