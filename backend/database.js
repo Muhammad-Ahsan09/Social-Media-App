@@ -10,10 +10,10 @@ const pool = mysql.createPool({
     database: process.env.TIDB_DATABASE,
     password: process.env.TIDB_PASSWORD,
     port: process.env.TIDB_PORT,
-
     ssl: {
         rejectUnauthorized: true
-    }
+    },
+
 }).promise()
 
 module.exports = {pool}

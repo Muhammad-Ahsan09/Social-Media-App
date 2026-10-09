@@ -11,7 +11,30 @@ const signup = async (req, res) => {
 
         const {full_name, username, email, password} = req.body;
 
-        const profile_pic_url = " https://res.cloudinary.com/dp34vubev/image/upload/v1781372352/post-images/uhdzkp9ro0u35wr2trj1.avif"
+        if(!full_name || !username || !email || !password) {
+            return res.json({
+                success: false,
+                message: "All fields are required"
+            })
+        }
+
+        if(password.length < 6) {
+            return res.json({
+                success: false,
+                message: "Password length must be greater than 6 characters"
+            })
+        }
+
+        const [userExisting] = await pool.query("SELECT id, full_name, username, email, profile_pic_url FROM users WHERE email = ?", [email])
+
+        if(userExisting.length > 0) {
+            return res.json({
+                success:false,
+                message: "User with this email already exists" 
+            })
+        }
+
+        const profile_pic_url = "https://res.cloudinary.com/dp34vubev/image/upload/v1781372352/post-images/uhdzkp9ro0u35wr2trj1.avif"
         
 
         const salt = await bcrypt.genSalt(10)
@@ -20,6 +43,7 @@ const signup = async (req, res) => {
 
         const results = await pool.query(`INSERT INTO users(full_name, username, email, profile_pic_url, password)
                     VALUES (?, ?, ?, ?, ?)`, [full_name, username, email, profile_pic_url, hashedPassword]);
+        
 
         const user = await pool.query(`SELECT id, full_name, username, email, profile_pic_url FROM users WHERE email = ?`, [email])
 
@@ -35,7 +59,10 @@ const signup = async (req, res) => {
         res.status(200).json({user: user[0][0]})
 
     } catch(error) {
-        console.log(error.message)
+        return res.json({
+            success: false,
+            message: error.message
+        })
     }
 }
 
@@ -57,7 +84,14 @@ const login = async (req, res) => {
 
         const {email, password} = req.body;
 
-        const result = await pool.query("SELECT id, full_name, username, email, password FROM users WHERE email = ? ", [email])
+        if(!email || !password) {
+            return res.json({
+                success: false,
+                message: "All fields are required"
+            })
+        }
+
+        const result = await pool.query("SELECT id, full_name, username, email FROM users WHERE email = ? ", [email])
 
         const user = result[0][0];
 
@@ -86,6 +120,11 @@ const login = async (req, res) => {
         res.status(201).json(user)
 
     } catch (error) {
+
+        return res.json({
+            success: false,
+            message: error.message
+        })
         console.log(error.message)
     }
 }
