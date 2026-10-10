@@ -60,13 +60,7 @@ const Posts = () => {
     };
 
     // 🎥 Helper function to safely detect video assets
-    const isVideoFile = (url) => {
-        if (!url) return false;
-        const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov', '.m3u8'];
-        const hasVideoExtension = videoExtensions.some(ext => url.toLowerCase().endsWith(ext));
-        const hasVideoPath = url.toLowerCase().includes('/video/upload/');
-        return hasVideoExtension || hasVideoPath;
-    };
+    
 
     return (
         <div className="md:pl-20 mt-8 mb-52">
@@ -82,7 +76,7 @@ const Posts = () => {
 
                         {/* Media Display Window */}
                         <div className="mt-3 overflow-hidden rounded-md bg-black flex items-center justify-center max-h-[500px]">
-                            {isVideoFile(post.imageUrl) ? (
+                            {post.resource_type === "video" ? (
                                 /* Video Card Presentation Container */
                                 <video 
                                     src={post.imageUrl} 

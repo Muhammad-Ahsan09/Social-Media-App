@@ -24,9 +24,13 @@ const uploadPost = async (req, res) => {
       return res.status(400).json({ error: "No file provided" });
     }
 
+    let resource_type = "image"
+
     // Determine configuration options based on file type
     let uploadOptions = {};
     if (req.file.mimetype.startsWith("video/")) {
+
+      resource_type = "video";
       uploadOptions = {
         folder: "post-videos",
         resource_type: "video",
@@ -34,6 +38,7 @@ const uploadPost = async (req, res) => {
         eager_async: true
       };
     } else if (req.file.mimetype.startsWith("image/")) {
+         resource_type = "image";
       uploadOptions = {
         folder: "post-images",
         resource_type: "image",
@@ -62,8 +67,8 @@ const uploadPost = async (req, res) => {
 
     // Save to the database
     await pool.query(
-      "INSERT INTO posts(user_id, description, imageUrl) values (?,?,?)", 
-      [user_id, description, media_url]
+      "INSERT INTO posts(user_id, description, imageUrl, resource_type) values (?,?,?)", 
+      [user_id, description, media_url, resource_type]
     ); 
 
     return res.status(200).json({ message: "Successful", url: media_url }); 
@@ -77,7 +82,7 @@ const uploadPost = async (req, res) => {
 
 const getPosts = async (req, res) => {
     try {
-        const response = await pool.query(`SELECT posts.id, posts.user_id, posts.description, posts.imageUrl, posts.likes,
+        const response = await pool.query(`SELECT posts.id, posts.user_id, posts.description, posts.imageUrl, posts.resource_type, posts.likes,
          users.profile_pic_url, users.full_name
          FROM posts JOIN users ON posts.user_id = users.id ORDER BY RAND() LIMIT 10;`);
 
