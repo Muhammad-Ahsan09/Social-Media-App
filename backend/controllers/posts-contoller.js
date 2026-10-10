@@ -67,7 +67,7 @@ const uploadPost = async (req, res) => {
 
     // Save to the database
     await pool.query(
-      "INSERT INTO posts(user_id, description, imageUrl, resource_type) values (?,?,?)", 
+      "INSERT INTO posts(user_id, description, imageUrl, resource_type) values (?,?,?,?)", 
       [user_id, description, media_url, resource_type]
     ); 
 
