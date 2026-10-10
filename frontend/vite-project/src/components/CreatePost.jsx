@@ -23,7 +23,7 @@ const CreatePost = ({ setPosting }) => {
         form.append("file", file); // Multer expects this key to match your backend (e.g., upload.single('file'))
         
         try {
-            const res = await fetch("backend_url", {
+            const res = await fetch("https://social-media-app-five-rust.vercel.app/api/posts", {
                 method: "POST",
                 body: form
             });
