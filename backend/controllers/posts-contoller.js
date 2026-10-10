@@ -11,39 +11,69 @@ dotenv.config()
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
-const uploadPost = async (req, res) => {
-    try {
-        const {description, user_id} = req.body;
-        // const image_name = req.file.filename;
+const streamifier = require('streamifier'); // Clean utility to convert a Buffer into a Readable Stream
 
-        const result = await cloudinary.uploader.upload(
-            `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
-            {
-                folder: "post-images"
-            }
-        );
-
-        image_name = result.secure_url
-
-        console.log("image_url",image_name)
-
-
-        const response = await pool.query("INSERT INTO posts(user_id, description, imageUrl) values (?,?,?)", [user_id, description, image_name])
-        console.log("image-url:", image_name)
-        
-
-        console.log(req.file)
-        res.json({message: "Successful"})
-
-
-
-    } catch (error) {
-        console.log(error.message)        
+const uploadPost = async (req, res) => { 
+  try { 
+    const { description, user_id } = req.body; 
+    
+    if (!req.file) {
+      return res.status(400).json({ error: "No file provided" });
     }
-}
+
+    // Determine configuration options based on file type
+    let uploadOptions = {};
+    if (req.file.mimetype.startsWith("video/")) {
+      uploadOptions = {
+        folder: "post-videos",
+        resource_type: "video",
+        eager: [{ streaming_profile: "full_hd", format: "m3u8" }],
+        eager_async: true
+      };
+    } else if (req.file.mimetype.startsWith("image/")) {
+      uploadOptions = {
+        folder: "post-images",
+        resource_type: "image",
+        transformation: [{ width: 1200, crop: "limit", quality: "auto" }]
+      };
+    } else {
+      return res.status(400).json({ error: "Unsupported file type. Use an image or video." });
+    }
+
+    // Helper function to handle Cloudinary's callback-based stream via a Promise
+    const uploadToCloudinary = (fileBuffer, options) => {
+      return new Promise((resolve, reject) => {
+        const cStream = cloudinary.uploader.upload_stream(options, (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        });
+        
+        // Pipe the file buffer directly into the Cloudinary upload stream
+        streamifier.createReadStream(fileBuffer).pipe(cStream);
+      });
+    };
+
+    // Execute the stream upload
+    const result = await uploadToCloudinary(req.file.buffer, uploadOptions);
+    const media_url = result.secure_url; 
+
+    // Save to the database
+    await pool.query(
+      "INSERT INTO posts(user_id, description, imageUrl) values (?,?,?)", 
+      [user_id, description, media_url]
+    ); 
+
+    return res.status(200).json({ message: "Successful", url: media_url }); 
+
+  } catch (error) { 
+    console.error("Stream upload error:", error.message); 
+    return res.status(500).json({ error: "Internal server error" });
+  } 
+};
+
 
 const getPosts = async (req, res) => {
     try {
