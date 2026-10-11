@@ -69,6 +69,8 @@ const SearchPage = ({ setUser, currentUserId }) => {
                                     {/* {console.log(post.profile_pic_url)} */}
                                     <Link to={`/profile/${post.user_id}`}>
                                         <div className="flex">
+
+                                            
                                             <img src={`${post.profile_pic_url}`} alt="" className="rounded-full h-10 w-10 md:h-12 md:w-12 cursor-pointer" />
                                             <div className="ml-3 md:ml-4 flex items-center font-semibold text-sm md:text-base">{post.full_name}</div>
                                         </div>
@@ -76,7 +78,23 @@ const SearchPage = ({ setUser, currentUserId }) => {
 
                                     <Link to={`/posts/${post.id}`}>
                                         <div className="">
-                                            <img src={`${post.imageUrl}`} alt="" height="75%" className="mt-5 rounded w-full max-h-[500px] object-cover" />
+                                             {isVideoFile(post.imageUrl) ? (
+                <video
+                  src={post.imageUrl}
+                  controls
+                  muted
+                  loop
+                  playsInline
+                  className="w-full h-auto max-h-[500px] object-contain"
+                />
+              ) : (
+                <img
+                  src={`${post.imageUrl}`}
+                  className="mt-5 rounded w-full max-h-[500px] object-cover"
+                  alt={post.description || "Post content"}
+                />
+              )}
+                                            {/* <img src={`${post.imageUrl}`} alt="" height="75%" className="mt-5 rounded w-full max-h-[500px] object-cover" /> */}
                                         </div>
                                     </Link>
                                     <div className="mt-4">
