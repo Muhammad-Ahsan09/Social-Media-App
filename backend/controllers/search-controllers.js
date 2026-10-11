@@ -6,7 +6,7 @@ const getSearchResults = async (req, res) => {
 
         
         const posts = await pool.query(`
-        SELECT posts.id, posts.user_id, posts.description, posts.imageUrl, posts.likes,
+        SELECT posts.id, posts.user_id, posts.description, posts.imageUrl, posts.likes, posts.resource_type
         users.profile_pic_url, users.full_name FROM posts JOIN users ON posts.user_id = users.id WHERE description LIKE "%${search_query}%";`)
 
         const users = await pool.query(`SELECT * FROM users WHERE full_name LIKE "%${search_query}%";`)
