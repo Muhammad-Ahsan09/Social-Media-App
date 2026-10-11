@@ -78,7 +78,7 @@ const SearchPage = ({ setUser, currentUserId }) => {
 
                                     <Link to={`/posts/${post.id}`}>
                                         <div className="">
-                                             {isVideoFile(post.imageUrl) ? (
+                                             {post.resource_type === "video" ? (
                 <video
                   src={post.imageUrl}
                   controls
