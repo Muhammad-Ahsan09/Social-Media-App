@@ -5,45 +5,61 @@ import TopNavbar from "../components/TopNavbar"
 import { Link } from "react-router-dom"
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
-const Explore = ({setUser, currentUserId}) => {
+const Explore = ({ setUser, currentUserId }) => {
 
-    const [posts, setPosts] = useState([])
+  const [posts, setPosts] = useState([])
 
-    useEffect(() => {
-        const getPosts = async () => {
-            const res =  await fetch(BACKEND_URL + "/api/posts")
-            const data = await res.json()
-            setPosts(data)
-         }
-         getPosts()
-    }, [])
+  useEffect(() => {
+    const getPosts = async () => {
+      const res = await fetch(BACKEND_URL + "/api/posts")
+      const data = await res.json()
+      setPosts(data)
+    }
+    getPosts()
+  }, [])
 
-    return <>
+  return <>
     <TopNavbar />
-  
+
     <div className="flex flex-col md:flex-row pt-14 md:pt-0">
       <LeftSidebar
         setUser={setUser}
         currentUserId={currentUserId}
       />
-  
+
       <div className="w-full md:w-5/6 p-2 md:p-4">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {posts.map((post) => (
             <Link to={`/posts/${post.id}`}>
-            <div key={post._id}>
-              <img
-                src={post.imageUrl}
-                alt=""
-                className="w-full h-40 sm:h-56 object-cover rounded"
-              />
-            </div>
+
+              <div key={post._id}>
+                {
+                  post.resource_type === "video" ? (
+                    <video
+                      src={post.imageUrl}
+                      controls
+                      muted
+                      loop
+                      playsInline
+                      className="w-full h-auto max-h-[500px] object-contain"
+                    />
+                  ) : (
+
+                    <img
+                      src={post.imageUrl}
+                      alt=""
+                      className="w-full h-40 sm:h-56 object-cover rounded"
+                    />
+                  )
+                }
+
+              </div>
             </Link>
           ))}
         </div>
       </div>
     </div>
-  
+
     <BottomNavbar />
   </>
 }
