@@ -76,7 +76,7 @@ const Posts = () => {
                         </Link>
 
                         {/* Media Display Window */}
-                        <div className="mt-3 overflow-hidden rounded-md bg-black flex items-center justify-center max-h-[500px]">
+                        <div>
                             {post.resource_type === "video" ? (
                                 /* Video Card Presentation Container */
                                 <video 
