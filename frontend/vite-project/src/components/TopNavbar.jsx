@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FaRegPlusSquare } from "react-icons/fa";
 import CreatePost from "./CreatePost";
+const BACKEND_URL = import.meta.env.BACKEND_URL
 
 const TopNavbar = ({setUser}) => {
 
@@ -14,7 +15,7 @@ const TopNavbar = ({setUser}) => {
     const handleLogout = async (e) => {
         e.preventDefault()
 
-        await fetch("https://social-media-app-five-rust.vercel.app/api/auth/logout", {
+        await fetch(BACKEND_URL + "/api/auth/logout", {
             method: "POST",
             headers: {
                 "Content-Type" : "application/json"

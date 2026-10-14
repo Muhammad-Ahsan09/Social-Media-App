@@ -5,6 +5,7 @@ import { TbLocationShare } from "react-icons/tb";
 import { Link, useParams } from "react-router-dom";
 import { IoIosHeart } from "react-icons/io";
 import LazyImage from "./Image";
+const BACKEND_URL = import.meta.env.BACKEND_URL
 
 const Posts = () => {
     const [posts, setPosts] = useState([]);
@@ -15,7 +16,7 @@ const Posts = () => {
     
     useEffect(() => {
         const getPosts = async () => {
-           const res = await fetch("https://social-media-app-five-rust.vercel.app/api/posts");
+           const res = await fetch(BACKEND_URL + "/api/posts");
            setPosts(await res.json());
         }
         getPosts();
@@ -23,7 +24,7 @@ const Posts = () => {
 
     useEffect(() => {
         const getLikedPosts = async () => {
-           const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/liked_posts/${current_user_id}`);
+           const res = await fetch(BACKEND_URL + `/api/liked_posts/${current_user_id}`);
            let data = await res.json();
            data = data.map((post) => post.id);
            setLikedPostsId(data);
@@ -33,14 +34,14 @@ const Posts = () => {
 
     const handleLikePost = async (postid) => {
         setLikedPostsId([...likedPostsId, postid]);
-        await fetch(`https://social-media-app-five-rust.vercel.app/api/posts/like/${postid}/${current_user_id}`, {
+        await fetch(BACKEND_URL + `/api/posts/like/${postid}/${current_user_id}`, {
             method: "PATCH"
         });
     };
 
     const handleUnlikePost = async (postid) => {
         setLikedPostsId(likedPostsId.filter((id) => id != postid));
-        await fetch(`https://social-media-app-five-rust.vercel.app/api/posts/unlike/${postid}/${current_user_id}`, {
+        await fetch(BACKEND_URL + `/api/posts/unlike/${postid}/${current_user_id}`, {
             method: "PATCH"
         });
     };
@@ -48,7 +49,7 @@ const Posts = () => {
     const handleComment = async (e, post_id) => {
         if (e.key === "Enter") {
             const comment = e.target.value;
-            await fetch(`https://social-media-app-five-rust.vercel.app/api/comments/${current_user_id}/${post_id}`, {
+            await fetch(BACKEND_URL + `/api/comments/${current_user_id}/${post_id}`, {
                 method: "POST",
                 body: JSON.stringify({ comment }),
                 headers: {

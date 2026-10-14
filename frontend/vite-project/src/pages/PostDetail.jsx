@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
 import TopNavbar from "../components/TopNavbar";
 import BottomNavbar from "../components/BottomNavbar";
+const BACKEND_URL = import.meta.env.BACKEND_URL
 
 const PostDetail = ({ setUser, currentUserId }) => {
   const params = useParams();
@@ -16,7 +17,7 @@ const PostDetail = ({ setUser, currentUserId }) => {
   useEffect(() => {
     const getPost = async () => {
       const res = await fetch(
-        `https://social-media-app-five-rust.vercel.app/api/posts/${post_id}`
+        BACKEND_URL + `/api/posts/${post_id}`
       );
       const data = await res.json();
       setPost(data);
@@ -27,7 +28,7 @@ const PostDetail = ({ setUser, currentUserId }) => {
   useEffect(() => {
     const getComments = async () => {
       const res = await fetch(
-        `https://social-media-app-five-rust.vercel.app/api/comments/${post_id}`
+        BACKEND_URL + `/api/comments/${post_id}`
       );
       const data = await res.json();
       setComments(data);
@@ -37,7 +38,7 @@ const PostDetail = ({ setUser, currentUserId }) => {
 
   const handleDeletePost = async (e) => {
     const res = await fetch(
-      `https://social-media-app-five-rust.vercel.app/api/posts/${post_id}`,
+      BACKEND_URL + `/api/posts/${post_id}`,
       { method: "DELETE" }
     );
     const data = await res.json();
@@ -47,7 +48,6 @@ const PostDetail = ({ setUser, currentUserId }) => {
         navigate(`/${currentUserId}`);
       }, 500);
     }
-    console.log(data);
   };
 
   // 🎥 Helper function to safely detect video assets

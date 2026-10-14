@@ -6,6 +6,7 @@ import { IoIosHeart } from "react-icons/io";
 import { IoChatbubbleOutline } from "react-icons/io5";
 import { TbLocationShare } from "react-icons/tb";
 import BottomNavbar from "../components/BottomNavbar";
+const BACKEND_URL = import.meta.env.BACKEND_URL
 
 
 const SearchPage = ({ setUser, currentUserId }) => {
@@ -17,11 +18,10 @@ const SearchPage = ({ setUser, currentUserId }) => {
 
     useEffect(() => {
         const getLikedPosts = async () => {
-            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/liked_posts/${currentUserId}`)
+            const res = await fetch(`${BACKEND_URL}/${currentUserId}`)
             let data = await res.json()
 
             data = data.map((post) => post.id)
-            console.log(data)
             setLikedPostsId(data)
         }
         getLikedPosts()
@@ -32,14 +32,27 @@ const SearchPage = ({ setUser, currentUserId }) => {
         if (search.length === "") {
             return;
         }
-        const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/search/${search}`)
+        const res = await fetch(`${BACKEND_URL}/api/search/${search}`)
         const data = await res.json()
 
         setPosts(data[0])
         setUsers(data[1])
-
-        console.log("Posts and users:", posts)
     }
+
+    const handleLikePost = async (postid) => {
+        setLikedPostsId([...likedPostsId, postid]);
+        await fetch(`${BACKEND_URL}/api/posts/like/${postid}/${current_user_id}`, {
+            method: "PATCH"
+        });
+    };
+
+    const handleUnlikePost = async (postid) => {
+        setLikedPostsId(likedPostsId.filter((id) => id != postid));
+        await fetch(`${BACKEND_URL}/api/posts/unlike/${postid}/${current_user_id}`, {
+            method: "PATCH"
+        });
+    };
+
 
     return <> 
     <div className="flex flex-col md:flex-row">

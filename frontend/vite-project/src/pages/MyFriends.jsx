@@ -5,6 +5,7 @@ import { IoChatbubbleEllipsesOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import BottomNavbar from "../components/BottomNavbar";
 import TopNavbar from "../components/TopNavbar";
+const BACKEND_URL = import.meta.env.BACKEND_URL
 
 
 const MyFriends = ({ setUser, currentUserId }) => {
@@ -13,7 +14,7 @@ const MyFriends = ({ setUser, currentUserId }) => {
 
     useEffect(() => {
         const getFreinds = async () => {
-            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/friends/${currentUserId}`)
+            const res = await fetch(BACKEND_URL + `/api/friends/${currentUserId}`)
             const data = await res.json()
             console.log(data)
             setFriends(data)

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react"
 import { Link, useParams } from "react-router-dom"
+const BACKEND_URL = import.meta.env.BACKEND_URL
 
 const RightSidebar = () => {
 
@@ -11,12 +12,12 @@ const RightSidebar = () => {
 
     useEffect(() => {
         const getUserData = async () => {
-            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/users/${userid}`)
+            const res = await fetch(BACKEND_URL + `/api/users/${userid}`)
             setUser(await res.json())
         }
 
         const getFreindSuggestions = async () => {
-            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/friendsuggestions/${userid}`)
+            const res = await fetch(BACKEND_URL + `/api/friendsuggestions/${userid}`)
             setFriendSuggestions(await res.json())
         }
 
@@ -24,11 +25,6 @@ const RightSidebar = () => {
         getFreindSuggestions()
     }, [])
 
-    // const user = {
-    //     profilePicUrl: "images/MuhammadAhsan.jpg",
-    //     name: "Username"
-
-    // }
     return <div className="hidden lg:block lg:w-1/5 pt-12">
         <div className="flex items-center">
             <img src={`${user.profile_pic_url}`} alt="" width="60" 

@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { IoMdPhotos } from "react-icons/io";
 import { useParams } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
+const BACKEND_URL = import.meta.env.BACKEND_URL
 
 const CreatePost = ({ setPosting }) => {
     const [fileRecieved, setFileRecieved] = useState(false);
@@ -23,7 +24,7 @@ const CreatePost = ({ setPosting }) => {
         form.append("file", file); // Multer expects this key to match your backend (e.g., upload.single('file'))
         
         try {
-            const res = await fetch("https://social-media-app-five-rust.vercel.app/api/posts", {
+            const res = await fetch(`${BACKEND_URL}/api/posts`, {
                 method: "POST",
                 body: form
             });

@@ -1,6 +1,7 @@
 import { useState } from "react"
 import {Link, useNavigate} from "react-router-dom"
 import toast, { Toaster } from 'react-hot-toast';
+const BACKEND_URL = import.meta.env.BACKEND_URL
 
 const Login = ({setUser}) => {
 
@@ -14,7 +15,7 @@ const Login = ({setUser}) => {
   const handleFormSubmit = async (e) => {
     e.preventDefault()
 
-    const res = await fetch("https://social-media-app-five-rust.vercel.app/api/auth/login", {
+    const res = await fetch(BACKEND_URL + "/api/auth/login", {
       method: "POST",
       headers : {
         "Content-Type" : "application/json"

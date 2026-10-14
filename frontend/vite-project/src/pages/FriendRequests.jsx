@@ -4,6 +4,7 @@ import { FaRegCheckCircle } from "react-icons/fa";
 import { RxCrossCircled } from "react-icons/rx";
 import { Link } from "react-router-dom";
 import BottomNavbar from "../components/BottomNavbar";
+const BACKEND_URL = import.meta.env.BACKEND_URL
 
 
 
@@ -13,7 +14,7 @@ const FriendRequests = ({currentUserId}) => {
     const [requests, setRequests] = useState([])
     useEffect(() => {
         const getFriendRequests = async () => {
-            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/friend_requests/${currentUserId}`)
+            const res = await fetch(BACKEND_URL + `/api/friend_requests/${currentUserId}`)
             const data = await res.json()
 
             setRequests(data)
@@ -29,7 +30,7 @@ const FriendRequests = ({currentUserId}) => {
         setRequests(newRequests)
         console.log(requests)
         
-        const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/friend_request/${requestUserId}/${currentUserId}`, {
+        const res = await fetch(BACKEND_URL + `/api/friend_request/${requestUserId}/${currentUserId}`, {
             method: "PATCH"
         })
 

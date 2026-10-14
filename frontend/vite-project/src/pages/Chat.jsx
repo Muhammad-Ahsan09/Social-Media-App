@@ -3,13 +3,14 @@ import LeftSidebar from "../components/LeftSidebar"
 import { Link, useParams } from "react-router-dom"
 import { IoIosSend } from "react-icons/io";
 import {io} from "socket.io-client"
+const BACKEND_URL = import.meta.env.BACKEND_URL
 
 
 const Chat = ({ setUser, currentUserId }) => {
 
     const [chats, setChats] = useState([])
 
-    const socket = io("https://social-media-app-five-rust.vercel.app/")
+    const socket = io(`${BACKEND_URL}/`)
 
     socket.on("connect", () => {
         socket.emit("user-connected", currentUserId)
@@ -17,8 +18,6 @@ const Chat = ({ setUser, currentUserId }) => {
         socket.on("recieve-message", (text) => {
             
             setChats([...chats, text])
-            // console.log(text)
-
         })
     })
 
@@ -31,7 +30,7 @@ const Chat = ({ setUser, currentUserId }) => {
 
     useEffect(() => {
         const getFriend = async () => {
-            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/users/${friend_id}`)
+            const res = await fetch(BACKEND_URL + `/api/users/${friend_id}`)
             const data = await res.json()
 
             // console.log(data)
@@ -43,7 +42,7 @@ const Chat = ({ setUser, currentUserId }) => {
 
     useEffect(() => {
         const getChat = async () => {
-            const res = await fetch(`https://social-media-app-five-rust.vercel.app/api/chats/${friend_id}/${currentUserId}`)
+            const res = await fetch(BACKEND_URL + `/api/chats/${friend_id}/${currentUserId}`)
 
             const data = await res.json()
             // console.log(data)
@@ -60,7 +59,7 @@ const Chat = ({ setUser, currentUserId }) => {
             socket.emit("send-message", message,currentUserId, friend_id)
             setChats([...chats, {message, sender_id:currentUserId}])
 
-            await fetch(`https://social-media-app-five-rust.vercel.app/api/chats/${friend_id}`, {
+            await fetch(BACKEND_URL + `/api/chats/${friend_id}`, {
                 method: "POST",
                 headers: {
                     "Content-Type" : "application/json"
@@ -84,25 +83,11 @@ const Chat = ({ setUser, currentUserId }) => {
         <LeftSidebar setUser={setUser} currentUserId={currentUserId} />
 
         <div className="h-1/4 w-5/6 pl-4 pt-4 ">
-            {/* <div className="flex items-center border-b-2 p-4">
-                <div>
-                    <img src={`http://localhost:8000/profile-images/${friend.profile_pic_url}`}
-                        alt="" className="w-12 h-12 rounded-full" />
-                </div>
-
-                <div className="ml-10 font-medium text-lg">
-                    <h1>{friend.full_name}</h1>
-                </div>
-
-                
-            </div> */}
-
             <div className="chat-window absolute h-3/4 w-3/5 pt-5 overflow-scroll scroll-hidden">
                     {
                         chats.map((chat) => <>
                         
                             {
-                                
                                 chat.sender_id == currentUserId ?
                                 <div className="flex justify-end">
                                     <div className="flex justify-end bg-gray-400 mb-5 text-white pl-3 pt-1 pb-1 pr-5 w-max rounded">

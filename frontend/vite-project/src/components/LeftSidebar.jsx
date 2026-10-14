@@ -13,6 +13,7 @@ import { BiLogOut } from "react-icons/bi";
 import { FaUserFriends } from "react-icons/fa";
 import { IoMoon } from "react-icons/io5";
 import { IoSunny } from "react-icons/io5";
+const BACKEND_URL = import.meta.env.BACKEND_URL
 
 
 
@@ -36,7 +37,7 @@ const LeftSidebar = ({setUser, currentUserId}) => {
     const handleLogout = async (e) => {
         e.preventDefault()
 
-        await fetch("https://social-media-app-five-rust.vercel.app/api/auth/logout", {
+        await fetch(`${BACKEND_URL}/api/auth/logout`, {
             method: "POST",
             headers: {
                 "Content-Type" : "application/json"

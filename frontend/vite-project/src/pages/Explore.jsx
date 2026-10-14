@@ -3,6 +3,7 @@ import LeftSidebar from "../components/LeftSidebar"
 import BottomNavbar from "../components/BottomNavbar"
 import TopNavbar from "../components/TopNavbar"
 import { Link } from "react-router-dom"
+const BACKEND_URL = import.meta.env.BACKEND_URL
 
 const Explore = ({setUser, currentUserId}) => {
 
@@ -10,7 +11,7 @@ const Explore = ({setUser, currentUserId}) => {
 
     useEffect(() => {
         const getPosts = async () => {
-            const res =  await fetch("https://social-media-app-five-rust.vercel.app/api/posts")
+            const res =  await fetch(BACKEND_URL + "/api/posts")
             const data = await res.json()
             setPosts(data)
          }

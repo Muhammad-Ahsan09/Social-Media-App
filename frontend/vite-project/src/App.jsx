@@ -12,6 +12,7 @@ const Chat = lazy(() => import("./pages/Chat"))
 const SearchPage = lazy(() => import("./pages/SearchPage"))
 const PostDetail = lazy(() => import("./pages/PostDetail"))
 const Explore = lazy(() => import("./pages/Explore"))
+const BACKEND_URL = import.meta.env.BACKEND_URL
 
 
 function App() {
@@ -22,14 +23,12 @@ function App() {
 
   useEffect(() => {
     const getUserStatus = async () => {
-      const res = await fetch("https://social-media-app-five-rust.vercel.app/api/issignedin", {
+      const res = await fetch(BACKEND_URL + "/api/issignedin", {
         credentials: "include"
       })
       
       const data = await res.json()
       setUser(data)
-      
-      console.log("User:", data)
     }
 
     getUserStatus()

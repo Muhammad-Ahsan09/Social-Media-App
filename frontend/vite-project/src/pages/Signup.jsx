@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Toaster, toast } from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
+const BACKEND_URL = import.meta.env.BACKEND_URL
 
 const Signup = () => {
 
@@ -30,7 +31,7 @@ const Signup = () => {
       return;
     }
 
-    const res = await fetch("https://social-media-app-five-rust.vercel.app/api/auth/signup", {
+    const res = await fetch(BACKEND_URL + "/api/auth/signup", {
       method: "POST",
       headers: {
         "Content-Type" : "application/json"

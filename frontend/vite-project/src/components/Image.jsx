@@ -7,7 +7,6 @@ const LazyImage = ({src}) => {
 
     let callback = (entries, observer) => {
         entries.forEach((entry) => {
-            console.log(entry);
         })
     }
 
