@@ -12,7 +12,8 @@ const Chat = lazy(() => import("./pages/Chat"))
 const SearchPage = lazy(() => import("./pages/SearchPage"))
 const PostDetail = lazy(() => import("./pages/PostDetail"))
 const Explore = lazy(() => import("./pages/Explore"))
-const BACKEND_URL = import.meta.env.BACKEND_URL
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 
 function App() {

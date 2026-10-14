@@ -13,7 +13,7 @@ import { BiLogOut } from "react-icons/bi";
 import { FaUserFriends } from "react-icons/fa";
 import { IoMoon } from "react-icons/io5";
 import { IoSunny } from "react-icons/io5";
-const BACKEND_URL = import.meta.env.BACKEND_URL
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 
 

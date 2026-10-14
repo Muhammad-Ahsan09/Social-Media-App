@@ -4,7 +4,7 @@ import { FaRegCheckCircle } from "react-icons/fa";
 import { RxCrossCircled } from "react-icons/rx";
 import { Link } from "react-router-dom";
 import BottomNavbar from "../components/BottomNavbar";
-const BACKEND_URL = import.meta.env.BACKEND_URL
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 
 

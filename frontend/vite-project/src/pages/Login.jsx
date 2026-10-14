@@ -1,7 +1,7 @@
 import { useState } from "react"
 import {Link, useNavigate} from "react-router-dom"
 import toast, { Toaster } from 'react-hot-toast';
-const BACKEND_URL = import.meta.env.BACKEND_URL
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 const Login = ({setUser}) => {
 
@@ -35,6 +35,7 @@ const Login = ({setUser}) => {
       
     }
     else{
+      console.log(data)
       toast.error(data.message)
     }
   }

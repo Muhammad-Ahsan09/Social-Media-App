@@ -4,7 +4,7 @@ import { Link, useParams } from "react-router-dom"
 import LazyImage from "../components/Image"
 import BottomNavbar from "../components/BottomNavbar"
 import TopNavbar from "../components/TopNavbar"
-const BACKEND_URL = import.meta.env.BACKEND_URL
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 const MyProfilePage = ({ currentUserId }) => {
 

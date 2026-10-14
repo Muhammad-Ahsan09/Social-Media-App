@@ -6,7 +6,7 @@ import { IoIosHeart } from "react-icons/io";
 import { IoChatbubbleOutline } from "react-icons/io5";
 import { TbLocationShare } from "react-icons/tb";
 import BottomNavbar from "../components/BottomNavbar";
-const BACKEND_URL = import.meta.env.BACKEND_URL
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 
 const SearchPage = ({ setUser, currentUserId }) => {

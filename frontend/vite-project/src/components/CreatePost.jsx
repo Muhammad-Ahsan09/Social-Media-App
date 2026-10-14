@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { IoMdPhotos } from "react-icons/io";
 import { useParams } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";
-const BACKEND_URL = import.meta.env.BACKEND_URL
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 const CreatePost = ({ setPosting }) => {
     const [fileRecieved, setFileRecieved] = useState(false);

@@ -42,9 +42,12 @@ const storage = multer.memoryStorage()
 
 const upload = multer({storage})
 
-
+// {
+//     origin: "https://social-media-app-d66c.vercel.app",
+//     credentials: true
+// }
 app.use(cors({
-    origin: "https://social-media-app-d66c.vercel.app",
+    origin: "http://localhost:5173",
     credentials: true
 }))
 

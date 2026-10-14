@@ -5,7 +5,7 @@ import { TbLocationShare } from "react-icons/tb";
 import { Link, useParams } from "react-router-dom";
 import { IoIosHeart } from "react-icons/io";
 import LazyImage from "./Image";
-const BACKEND_URL = import.meta.env.BACKEND_URL
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 const Posts = () => {
     const [posts, setPosts] = useState([]);

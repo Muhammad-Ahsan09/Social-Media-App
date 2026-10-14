@@ -3,7 +3,7 @@ import LeftSidebar from "../components/LeftSidebar"
 import { Link, useParams } from "react-router-dom"
 import { IoIosSend } from "react-icons/io";
 import {io} from "socket.io-client"
-const BACKEND_URL = import.meta.env.BACKEND_URL
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 
 const Chat = ({ setUser, currentUserId }) => {
