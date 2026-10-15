@@ -18,7 +18,7 @@ const SearchPage = ({ setUser, currentUserId }) => {
 
     useEffect(() => {
         const getLikedPosts = async () => {
-            const res = await fetch(`${BACKEND_URL}/${currentUserId}`)
+            const res = await fetch(`${BACKEND_URL}/api/liked_posts/${currentUserId}`)
             let data = await res.json()
 
             data = data.map((post) => post.id)
@@ -41,14 +41,14 @@ const SearchPage = ({ setUser, currentUserId }) => {
 
     const handleLikePost = async (postid) => {
         setLikedPostsId([...likedPostsId, postid]);
-        await fetch(`${BACKEND_URL}/api/posts/like/${postid}/${current_user_id}`, {
+        await fetch(`${BACKEND_URL}/api/posts/like/${postid}/${currentUserId}`, {
             method: "PATCH"
         });
     };
 
     const handleUnlikePost = async (postid) => {
         setLikedPostsId(likedPostsId.filter((id) => id != postid));
-        await fetch(`${BACKEND_URL}/api/posts/unlike/${postid}/${current_user_id}`, {
+        await fetch(`${BACKEND_URL}/api/posts/unlike/${postid}/${currentUserId}`, {
             method: "PATCH"
         });
     };
