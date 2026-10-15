@@ -1,6 +1,6 @@
 import { Suspense, lazy } from "react"
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
-import { createContext, useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 
 const Home = lazy(() => import("./pages/Home"))
 const Signup = lazy(() => import("./pages/Signup"))

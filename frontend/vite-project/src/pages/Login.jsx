@@ -1,12 +1,9 @@
 import { useState } from "react"
-import {Link, useNavigate} from "react-router-dom"
+import { Link } from "react-router-dom"
 import toast, { Toaster } from 'react-hot-toast';
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 const Login = ({setUser}) => {
-
-  const navigate = useNavigate()
-
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")

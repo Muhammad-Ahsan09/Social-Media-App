@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { FaRegPlusSquare } from "react-icons/fa";
 import CreatePost from "./CreatePost";
+import { IoMoon, IoSunny } from "react-icons/io5";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 const TopNavbar = ({setUser}) => {
+
+    const [darkMode, setDarkMode] = useState(false)
 
     const [selectedSection, setSelectedSection] = useState(0)
     const [create, setCreate] = useState(false)
@@ -55,12 +58,32 @@ const TopNavbar = ({setUser}) => {
             </div>
 
             {/* Logout Button */}
-            <button
-                onClick={handleLogout}
-                className="bg-slate-200 dark:bg-gray-800 px-3 py-1 rounded text-sm font-medium"
-            >
-                Logout
-            </button>
+            <div className="flex gap-x-5">
+
+                <button
+                    type="button"
+                    aria-label="Toggle theme"
+                    onClick={() => {
+                        document.body.classList.toggle("dark");
+                        setDarkMode(!darkMode);
+                    }}
+                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#D6DFD9] bg-[#EEF2EE] text-[#536E62] transition-all duration-200 hover:bg-[#DFEAE2] hover:text-[#294C46] dark:border-[#40574C] dark:bg-[#253A31] dark:text-[#C4D9CC] dark:hover:bg-[#344B40]"
+                >
+                    {darkMode ? (
+                        <IoSunny className="h-[18px] w-[18px]" />
+                    ) : (
+                        <IoMoon className="h-[18px] w-[18px]" />
+                    )}
+                </button>
+
+                <button
+                    onClick={handleLogout}
+                    className="bg-slate-200 dark:bg-gray-800 px-3 py-1 rounded text-sm font-medium"
+                >
+                    Logout
+                </button>
+
+            </div>
 
             {
     posting &&

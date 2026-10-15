@@ -43,8 +43,6 @@ const Signup = () => {
         password})
     })
 
-    const user = await res.json()
-
     if(!res.ok) {
       toast.error("an error occurred")
     }
