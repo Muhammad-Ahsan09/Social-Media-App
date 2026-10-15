@@ -51,144 +51,231 @@ const LeftSidebar = ({setUser, currentUserId}) => {
         
     }
 
-    return <div className="hidden md:block md:w-1/5 border-r-2 border-gray-300 dark:border-gray-700 transition-all pt-9 sticky top-0 h-screen overflow-hidden">
-        
-        
-        <div className="flex justify-center">
-            <div className="mr-5 mt-1 text-2xl">
-                <button onClick={() => {document.body.classList.toggle('dark'); setDarkMode(!darkMode)}}>
-                    {
-                        darkMode ? < IoSunny className=""/> : <IoMoon/>
-                    }
-                    
-                </button>
-            </div>
-            <h1 className="font-bold text-2xl">GET SOCIAL</h1>
-        </div>
+return (
+  <aside className="hidden md:flex md:w-1/5 md:min-w-[220px] md:max-w-[280px] flex-col border-r border-[#D6DFD9] bg-[#F6F7F4] text-[#294C46] transition-colors duration-300 dark:border-[#344A43] dark:bg-[#182823] dark:text-[#E1EAE4]">
 
-        <div className="flex justify-center mt-6">
-            <div className="w-full flex flex-col items-center ">
+    {/* Brand and theme toggle */}
+    <div className="flex items-center justify-between px-6 pt-9 pb-8">
+      <h1 className="text-[22px] font-bold tracking-[0.2em] text-[#294C46] dark:text-[#D5E9DF]">
+        SOLACE
+      </h1>
 
-                
-                    <div className={ ` ${selectedSection === 0 ? "font-bold" : ""} mt-3 flex items-center pl-2  cursor-pointer rounded
-                        hover:bg-slate-300 dark:hover:bg-slate-800 transition-all duration-200 w-3/4 h-9`}  onClick={() => {setSelectedSection(0)}}>
-                            <Link to={`/${currentUserId}`} className="flex">
-                                <IoHomeSharp className="mr-5 w-6 h-6"/> 
-                                <h1>Home</h1>
-                            </Link>
-                    </div>
-                
-
-                <div className={` ${selectedSection === 1 ? "font-bold" : "" } mt-3 flex items-center pl-2 cursor-pointer rounded
-                    hover:bg-slate-300 dark:hover:bg-slate-800 transition-all duration-200 w-3/4 h-9`} onClick={() => {setSelectedSection(1)}}>
-                        <Link to="/search" className="flex">
-                            <FaSearch className="mr-5 w-6 h-6"/> 
-                            <h1>Search</h1>
-                        </Link>
-                </div>
-
-                <div className={`${selectedSection === 2 ? "font-bold" : "" } mt-3 flex items-center pl-2  cursor-pointer rounded
-                    hover:bg-slate-300 dark:hover:bg-slate-800 transition-all duration-200 w-3/4 h-9`} onClick={() => {setSelectedSection(2)}}>
-                        <Link to="/explore" className="flex">
-                            <MdExplore className="mr-5 w-6 h-6"/>
-                            <h1>Explore</h1>
-                        </Link>
-                </div>
-
-                <div className={`${selectedSection === 3 ? "font-bold": "" } mt-3 flex items-center pl-2 cursor-pointer rounded
-                    hover:bg-slate-300 dark:hover:bg-slate-800 transition-all duration-200 w-3/4 h-9`} onClick={() => {setSelectedSection(3)}}>
-                        <BiSolidMoviePlay className="mr-5 w-6 h-6"/> 
-                        <h1>Reels</h1>
-                </div>
-
-                <div className={`${selectedSection === 4 ? "font-bold" : "" } mt-3 flex items-center pl-2 cursor-pointer rounded
-                    hover:bg-slate-300 dark:hover:bg-slate-800 transition-all duration-200 w-3/4 h-9`} onClick={() => {setSelectedSection(4)}}>
-
-                        <Link to="/my_friends" className="flex">
-                            {/* <LuMessageCircle className="mr-5 w-6 h-6"/>  */}
-                            <FaUserFriends className="mr-5 w-6 h-6 "/>
-                            <h1>Friends</h1>
-                        
-                            {/* <h1>Messages</h1> */}
-                        </Link>
-                </div>
-
-                <div className={`${selectedSection === 5 ? "font-bold" : "" } mt-3 flex items-center pl-2  cursor-pointer rounded
-                    hover:bg-slate-300 dark:hover:bg-slate-800 transition-all duration-200 w-3/4 h-9`}onClick={() => {setSelectedSection(5)}}>
-                        <FaRegHeart className="mr-5 w-6 h-6"/> 
-                       
-                        <h1>Notifications</h1>
-
-                </div>
-
-                <div className={`${selectedSection === 6 ? "font-bold" : "" } mt-3 flex items-center pl-2 cursor-pointer rounded
-                    hover:bg-slate-300 dark:hover:bg-slate-800 transition-all duration-200 w-3/4 h-9`} onClick={() => {setSelectedSection(6); create ? setCreate(false) : setCreate(true)}} >
-                        <FaRegPlusSquare className="mr-5 min-w-6 min-h-6"/> 
-                        <h1>Create</h1>
-
-                        <div className={`${create ? "" : "hidden" } absolute mt-28 -ml-3 dark:bg-gray-800 
-                         rounded-md border bg-white h-20 w-4/5  transition-all shadow-md `}  >
-                            <p className="hover:bg-slate-300 dark:hover:bg-gray-700
-                            h-10 w-full pl-3 pt-2 border-b font-normal rounded-md"
-                            onClick={() => {setPosting(true)}}>
-                                Post
-                            </p>
-
-                            <p className="hover:bg-slate-300 h-10 w-full pl-3 pt-2 font-normal rounded-md dark:hover:bg-gray-700">
-                                AI
-                            </p>
-                        </div>
-                </div>
-
-                <div className={` ${selectedSection === 7 ? "bg-slate-300" : "" } mt-3 flex items-center pl-2 font-semibold cursor-pointer rounded
-                    hover:bg-slate-300 dark:hover:bg-slate-800 transition-all duration-200 w-3/4 h-9`} onClick={() => {setSelectedSection(7)}}>
-                        
-                        <Link to={`/profile/${currentUserId}`}>
-                             <h1>Profile</h1>
-                        </Link>
-                </div>
-
-                
-                <div className={`${selectedSection === 8 ? "bg-slate-300" : "" } mt-3 flex items-center pl-2 font-semibold cursor-pointer rounded
-                    hover:bg-slate-300 dark:hover:bg-slate-800 transition-all duration-200 w-3/4 h-9`} onClick={() => {setSelectedSection(8)}}>
-                        <Link to={`/friend_requests`} className="flex">
-                            <FaUserFriends className="mr-5 w-6 h-6 "/>
-                            <h1>Requests</h1>
-                        </Link>
-                </div>
-                
-
-                {/* <div className={`${selectedSection === 1 ? "bg-slate-300" : "" } mt-3 flex items-center pl-2 font-semibold cursor-pointer rounded
-                    hover:bg-slate-300 transition-all duration-200 w-3/4 h-9`} onClick={() => {setSelectedSection(9)}}>
-                        <FaGripLines className="mr-5 w-6 h-6"/>
-                        <h1>More</h1>
-                </div> */}
-
-
-
-                
-
-                <div className={`${selectedSection === 5 ? "bg-slate-300" : "" } mt-3 flex items-center pl-2 font-semibold cursor-pointer rounded
-                    hover:bg-slate-300 dark:hover:bg-slate-800 transition-all duration-200 w-3/4 h-9`} onClick={(e) => {handleLogout(e)}}>
-                        <BiLogOut className="mr-5 w-6 h-6" />
-                       
-                        <h1>Logout</h1>
-                </div>
-
-                {
-                    posting && <div className="fixed shadow-lg  bg-white left-1/2 
-                    rounded-md w-1/3 h-2/3 -translate-x-1/2 transition-all">
-                        <CreatePost setPosting={setPosting}/>
-                        </div>
-                }
-
-                
-
-                
-            </div>
-        </div>
-
+      <button
+        type="button"
+        aria-label="Toggle theme"
+        onClick={() => {
+          document.body.classList.toggle("dark");
+          setDarkMode(!darkMode);
+        }}
+        className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#D6DFD9] bg-[#EEF2EE] text-[#536E62] transition-all duration-200 hover:bg-[#DFEAE2] hover:text-[#294C46] dark:border-[#40574C] dark:bg-[#253A31] dark:text-[#C4D9CC] dark:hover:bg-[#344B40]"
+      >
+        {darkMode ? (
+          <IoSunny className="h-[18px] w-[18px]" />
+        ) : (
+          <IoMoon className="h-[18px] w-[18px]" />
+        )}
+      </button>
     </div>
+
+    {/* Navigation */}
+    <nav className="flex-1 px-4 pb-6">
+      <p className="mb-3 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#89968D] dark:text-[#8FA69A]">
+        Your space
+      </p>
+
+      <div className="flex flex-col gap-1.5">
+
+        {/* Home */}
+        <Link
+          to={`/${currentUserId}`}
+          onClick={() => setSelectedSection(0)}
+          className={`flex h-11 items-center gap-3 rounded-xl px-3 text-[14px] transition-all duration-200 ${
+            selectedSection === 0
+              ? "bg-[#DDEBE2] font-semibold text-[#294C46] dark:bg-[#30483B] dark:text-[#E0F0E5]"
+              : "text-[#64766B] hover:bg-[#E9EFEB] dark:text-[#B3C6B9] dark:hover:bg-[#253A31]"
+          }`}
+        >
+          <IoHomeSharp className="h-[19px] w-[19px] shrink-0" />
+          <span>Home</span>
+        </Link>
+
+        {/* Search */}
+        <Link
+          to="/search"
+          onClick={() => setSelectedSection(1)}
+          className={`flex h-11 items-center gap-3 rounded-xl px-3 text-[14px] transition-all duration-200 ${
+            selectedSection === 1
+              ? "bg-[#DDEBE2] font-semibold text-[#294C46] dark:bg-[#30483B] dark:text-[#E0F0E5]"
+              : "text-[#64766B] hover:bg-[#E9EFEB] dark:text-[#B3C6B9] dark:hover:bg-[#253A31]"
+          }`}
+        >
+          <FaSearch className="h-[18px] w-[18px] shrink-0" />
+          <span>Search</span>
+        </Link>
+
+        {/* Explore */}
+        <Link
+          to="/explore"
+          onClick={() => setSelectedSection(2)}
+          className={`flex h-11 items-center gap-3 rounded-xl px-3 text-[14px] transition-all duration-200 ${
+            selectedSection === 2
+              ? "bg-[#DDEBE2] font-semibold text-[#294C46] dark:bg-[#30483B] dark:text-[#E0F0E5]"
+              : "text-[#64766B] hover:bg-[#E9EFEB] dark:text-[#B3C6B9] dark:hover:bg-[#253A31]"
+          }`}
+        >
+          <MdExplore className="h-[20px] w-[20px] shrink-0" />
+          <span>Explore</span>
+        </Link>
+
+        {/* Reels */}
+        <button
+          type="button"
+          onClick={() => setSelectedSection(3)}
+          className={`flex h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-[14px] transition-all duration-200 ${
+            selectedSection === 3
+              ? "bg-[#DDEBE2] font-semibold text-[#294C46] dark:bg-[#30483B] dark:text-[#E0F0E5]"
+              : "text-[#64766B] hover:bg-[#E9EFEB] dark:text-[#B3C6B9] dark:hover:bg-[#253A31]"
+          }`}
+        >
+          <BiSolidMoviePlay className="h-[20px] w-[20px] shrink-0" />
+          <span>Reels</span>
+        </button>
+
+        {/* Friends */}
+        <Link
+          to="/my_friends"
+          onClick={() => setSelectedSection(4)}
+          className={`flex h-11 items-center gap-3 rounded-xl px-3 text-[14px] transition-all duration-200 ${
+            selectedSection === 4
+              ? "bg-[#DDEBE2] font-semibold text-[#294C46] dark:bg-[#30483B] dark:text-[#E0F0E5]"
+              : "text-[#64766B] hover:bg-[#E9EFEB] dark:text-[#B3C6B9] dark:hover:bg-[#253A31]"
+          }`}
+        >
+          <FaUserFriends className="h-[20px] w-[20px] shrink-0" />
+          <span>Friends</span>
+        </Link>
+
+        {/* Notifications */}
+        <button
+          type="button"
+          onClick={() => setSelectedSection(5)}
+          className={`flex h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-[14px] transition-all duration-200 ${
+            selectedSection === 5
+              ? "bg-[#DDEBE2] font-semibold text-[#294C46] dark:bg-[#30483B] dark:text-[#E0F0E5]"
+              : "text-[#64766B] hover:bg-[#E9EFEB] dark:text-[#B3C6B9] dark:hover:bg-[#253A31]"
+          }`}
+        >
+          <FaRegHeart className="h-[20px] w-[20px] shrink-0" />
+          <span>Notifications</span>
+        </button>
+
+        {/* Create */}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedSection(6);
+              setCreate(!create);
+            }}
+            className={`flex h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-[14px] transition-all duration-200 ${
+              selectedSection === 6 || create
+                ? "bg-[#DDEBE2] font-semibold text-[#294C46] dark:bg-[#30483B] dark:text-[#E0F0E5]"
+                : "text-[#64766B] hover:bg-[#E9EFEB] dark:text-[#B3C6B9] dark:hover:bg-[#253A31]"
+            }`}
+          >
+            <FaRegPlusSquare className="h-[19px] w-[19px] shrink-0" />
+            <span>Create</span>
+            <span className="ml-auto text-[11px] text-[#89968D]">
+              {create ? "−" : "+"}
+            </span>
+          </button>
+
+          {create && (
+            <div className="ml-3 mt-1 overflow-hidden rounded-xl border border-[#D6DFD9] bg-[#F6F7F4] p-1 shadow-sm dark:border-[#40574C] dark:bg-[#20342B]">
+              <button
+                type="button"
+                onClick={() => {
+                  setPosting(true);
+                  setCreate(false);
+                }}
+                className="h-10 w-full rounded-lg px-4 text-left text-[13px] text-[#536E62] transition hover:bg-[#E9EFEB] dark:text-[#C4D9CC] dark:hover:bg-[#30483B]"
+              >
+                Create a post
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setCreate(false)}
+                className="h-10 w-full rounded-lg px-4 text-left text-[13px] text-[#536E62] transition hover:bg-[#E9EFEB] dark:text-[#C4D9CC] dark:hover:bg-[#30483B]"
+              >
+                AI
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Personal section */}
+      <div className="mb-3 mt-9 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#89968D] dark:text-[#8FA69A]">
+        Personal
+      </div>
+
+      <div className="flex flex-col gap-1.5">
+
+        {/* Profile */}
+        <Link
+          to={`/profile/${currentUserId}`}
+          onClick={() => setSelectedSection(7)}
+          className={`flex h-11 items-center gap-3 rounded-xl px-3 text-[14px] transition-all duration-200 ${
+            selectedSection === 7
+              ? "bg-[#DDEBE2] font-semibold text-[#294C46] dark:bg-[#30483B] dark:text-[#E0F0E5]"
+              : "text-[#64766B] hover:bg-[#E9EFEB] dark:text-[#B3C6B9] dark:hover:bg-[#253A31]"
+          }`}
+        >
+          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#DDEBE2] text-[11px] font-bold text-[#397E6D] dark:bg-[#40594A] dark:text-[#D5E9DF]">
+            P
+          </span>
+          <span>Profile</span>
+        </Link>
+
+        {/* Friend requests */}
+        <Link
+          to="/friend_requests"
+          onClick={() => setSelectedSection(8)}
+          className={`flex h-11 items-center gap-3 rounded-xl px-3 text-[14px] transition-all duration-200 ${
+            selectedSection === 8
+              ? "bg-[#DDEBE2] font-semibold text-[#294C46] dark:bg-[#30483B] dark:text-[#E0F0E5]"
+              : "text-[#64766B] hover:bg-[#E9EFEB] dark:text-[#B3C6B9] dark:hover:bg-[#253A31]"
+          }`}
+        >
+          <FaUserFriends className="h-[20px] w-[20px] shrink-0" />
+          <span>Requests</span>
+        </Link>
+      </div>
+    </nav>
+
+    {/* Bottom actions */}
+    <div className="mt-auto border-t border-[#DFE6E0] p-4 dark:border-[#344A43]">
+      <button
+        type="button"
+        onClick={(e) => handleLogout(e)}
+        className="flex h-11 w-full items-center gap-3 rounded-xl px-3 text-[14px] text-[#78877F] transition-all duration-200 hover:bg-[#F0E4E1] hover:text-[#9D5148] dark:text-[#B3C6B9] dark:hover:bg-[#3B2927] dark:hover:text-[#E6A59C]"
+      >
+        <BiLogOut className="h-[20px] w-[20px] shrink-0" />
+        <span>Log out</span>
+      </button>
+    </div>
+
+    {/* Create post modal */}
+    {posting && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#20342B]/30 p-4 backdrop-blur-sm">
+        <div className="max-h-[85vh] w-full max-w-xl overflow-y-auto rounded-2xl border border-[#D6DFD9] bg-[#F6F7F4] p-5 shadow-[0_20px_60px_-20px_rgba(41,76,70,0.3)] dark:border-[#40574C] dark:bg-[#20342B]">
+          <CreatePost setPosting={setPosting} />
+        </div>
+      </div>
+    )}
+  </aside>
+);
 }
 
 export default LeftSidebar;

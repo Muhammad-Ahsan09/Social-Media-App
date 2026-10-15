@@ -40,44 +40,126 @@ const Login = ({setUser}) => {
     }
   }
 
-  return <>
-    <form className=" flex h-screen justify-center items-center " onSubmit={(e) => {handleFormSubmit(e)}}>
-      <div className="border-2 p-10">
-        <div className="flex justify-center">
-          <h1 className="text-2xl font-bold">INSTAGRAM</h1>
+return (
+  <>
+    <main className="relative flex min-h-screen items-center justify-center bg-[#E9EFEB] px-4 py-10 text-[#294C46]">
+      {/* Subtle background accents */}
+      <div className="pointer-events-none absolute right-0 top-0 h-72 w-72 rounded-full bg-[#A9DCC8]/15 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-0 left-0 h-72 w-72 rounded-full bg-[#78C9CD]/10 blur-3xl" />
+
+      <form
+        onSubmit={handleFormSubmit}
+        className="relative w-full max-w-[420px] rounded-[24px] border border-[#D6DFD9] bg-[#F6F7F4] px-6 py-9 shadow-[0_12px_40px_-24px_rgba(41,76,70,0.22)] sm:px-10 sm:py-10"
+      >
+        {/* Logo and brand */}
+        <div className="mb-9 flex flex-col items-center">
+          <div className="mb-4 flex h-[62px] w-[62px] items-center justify-center rounded-[19px] bg-gradient-to-br from-[#A9DCC8] to-[#78C9CD]">
+            <svg
+              viewBox="0 0 100 100"
+              className="h-12 w-12"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-label="Solace logo"
+              role="img"
+            >
+              <circle cx="68" cy="19" r="12" fill="#173D3A" />
+              <path
+                d="M66 32 C49 37 25 42 34 51 C39 56 65 58 60 68 C56 76 34 80 22 91 H59 C78 87 91 69 79 59 C68 50 43 49 46 43 C49 38 59 34 66 32Z"
+                fill="#173D3A"
+              />
+            </svg>
+          </div>
+
+          <h1 className="text-[25px] font-bold tracking-[0.22em] text-[#294C46]">
+            SOLACE
+          </h1>
+
+          <p className="mt-2 text-center text-sm text-[#78877F]">
+            A little space for every chapter of you.
+          </p>
         </div>
-        
-        <div className="text-gray-400 font-semibold text-lg">Login up to see photos and videos <p className="flex justify-center ">from your friends.</p> </div>
-        
-        {/* email field */}
 
-        <div className="mt-7">
-          <input type="email" name="email" onChange={(e) => {setEmail(e.target.value)}}
-          className="bg-slate-100 h-12 w-72 pl-5 border-2 rounded dark:bg-black" placeholder="someone@example.com"/>
+        {/* Heading */}
+        <div className="mb-7">
+          <h2 className="text-[23px] font-semibold tracking-tight text-[#294C46]">
+            Welcome back
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-[#78877F]">
+            Your moments, your memories, your journey.
+          </p>
         </div>
 
+        {/* Email */}
+        <div className="space-y-2">
+          <label
+            htmlFor="email"
+            className="text-[13px] font-medium text-[#435D53]"
+          >
+            Email address
+          </label>
 
-        {/* password field */}
-        <div className="mt-3">
-          <input type="password" name="password" onChange={(e) => {setPassword(e.target.value)}}
-           className="bg-slate-100 h-12 w-72 pl-5 border-2 rounded dark:bg-black" placeholder="Password"/>
+          <input
+            id="email"
+            type="email"
+            name="email"
+            autoComplete="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com"
+            className="h-[49px] w-full rounded-xl border border-[#D6DFD9] bg-[#EEF2EE] px-4 text-sm text-[#294C46] outline-none transition placeholder:text-[#929F97] focus:border-[#78BFA7] focus:bg-[#F9FAF8] focus:ring-2 focus:ring-[#A9DCC8]/30"
+          />
         </div>
 
-        <div>
-          <button type="submit" className="bg-blue-400 w-72 mt-5 rounded h-8 text-white">Sign in</button>
+        {/* Password */}
+        <div className="mt-4 space-y-2">
+          <label
+            htmlFor="password"
+            className="text-[13px] font-medium text-[#435D53]"
+          >
+            Password
+          </label>
+
+          <input
+            id="password"
+            type="password"
+            name="password"
+            autoComplete="current-password"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter your password"
+            className="h-[49px] w-full rounded-xl border border-[#D6DFD9] bg-[#EEF2EE] px-4 text-sm text-[#294C46] outline-none transition placeholder:text-[#929F97] focus:border-[#78BFA7] focus:bg-[#F9FAF8] focus:ring-2 focus:ring-[#A9DCC8]/30"
+          />
         </div>
 
-        {/* <p className="text-gray-400 mt-5">
-          By signing up you agree to our Terms, Data <p className="flex justify-center">policy and Cookie policy</p>
-        </p> */}
-        <p className="text-gray-400 mt-5">
-        Don't have an account? <span className="text-blue-400"><Link to="/signup"> Sign up</Link></span>
-        </p>
-      </div>
+        {/* Submit button */}
+        <button
+          type="submit"
+          className="mt-7 h-[50px] w-full rounded-xl bg-gradient-to-r from-[#A9DCC8] to-[#78C9CD] text-sm font-semibold text-[#193F39] transition duration-200 hover:brightness-[0.97] active:scale-[0.99] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#397E6D]"
+        >
+          Sign in
+        </button>
 
-      <Toaster />
-    </form>
+        {/* Signup link */}
+        <div className="mt-7 flex flex-wrap items-center justify-center gap-1.5 border-t border-[#DFE6E0] pt-6 text-sm">
+          <span className="text-[#78877F]">
+            Don't have an account?
+          </span>
+
+          <Link
+            to="/signup"
+            className="font-semibold text-[#397E6D] transition hover:text-[#245D50]"
+          >
+            Sign up
+          </Link>
+        </div>
+      </form>
+    </main>
+
+    <Toaster />
   </>
+);
 }
 
 export default Login;
