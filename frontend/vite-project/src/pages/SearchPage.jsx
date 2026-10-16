@@ -54,140 +54,311 @@ const SearchPage = ({ setUser, currentUserId }) => {
     };
 
 
-    return <> 
-    <div className="flex flex-col md:flex-row">
-        <LeftSidebar setUser={setUser} currentUserId={currentUserId} />
 
-        <div className="w-full md:w-5/6 p-3 md:p-5">
-            <div className="border-b-2 dark:border-slate-800 flex items-center dark:bg-black bg-slate-100 rounded-md pr-4 sticky top-0 z-10">
-                <input type="text" value={search} onChange={(e) => { setSearch(e.target.value) }}
-                    className=" h-10 p-3 outline-none w-full bg-slate-100 dark:bg-black" placeholder="Search Here..." />
+return (
+    <>
+        <div className="min-h-screen bg-[#E9EFEB] text-[#294C46]
+            dark:bg-[#182823] dark:text-[#E1EAE4]
+            transition-colors duration-200">
 
-                <button className="">
-                    <FaSearch className="h-6 w-6" onClick={handleSearch} />
-                </button>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 p-3 md:p-5 h-full">
-                <div className="lg:border-r-2 lg:pr-5">
-                    
-                    {
-                        posts.length != 0  ?
-
-                        posts.map((post, index) => <div className="w-full md:w-4/5 lg:w-2/3 mb-7" key={index}>
-
-                            {
-
-                                <div>
-                                    {/* {console.log(post.profile_pic_url)} */}
-                                    <Link to={`/profile/${post.user_id}`}>
-                                        <div className="flex">
-
-                                            
-                                            <img src={`${post.profile_pic_url}`} alt="" className="rounded-full h-10 w-10 md:h-12 md:w-12 cursor-pointer" />
-                                            <div className="ml-3 md:ml-4 flex items-center font-semibold text-sm md:text-base">{post.full_name}</div>
-                                        </div>
-                                    </Link>
-
-                                    <Link to={`/posts/${post.id}`}>
-                                        <div className="">
-                                             {post.resource_type === "video" ? (
-                <video
-                  src={post.imageUrl}
-                  controls
-                  muted
-                  loop
-                  playsInline
-                  className="w-full h-auto max-h-[500px] object-contain"
+            <div className="flex flex-col md:flex-row">
+                <LeftSidebar
+                    setUser={setUser}
+                    currentUserId={currentUserId}
                 />
-              ) : (
-                <img
-                  src={`${post.imageUrl}`}
-                  className="mt-5 rounded w-full max-h-[500px] object-cover"
-                  alt={post.description || "Post content"}
-                />
-              )}
-                                            {/* <img src={`${post.imageUrl}`} alt="" height="75%" className="mt-5 rounded w-full max-h-[500px] object-cover" /> */}
+
+                <div className="w-full md:w-5/6 min-w-0 p-3 pt-16 md:p-5">
+
+                    {/* Search Bar */}
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            handleSearch();
+                        }}
+                        className="flex items-center gap-3
+                        sticky top-14 md:top-0 z-10
+                        rounded-2xl px-4
+                        border border-[#D6DFD9] dark:border-[#344A43]
+                        bg-[#F6F7F4] dark:bg-[#20342B]
+                        shadow-sm shadow-[#294C46]/5
+                        transition-colors duration-200"
+                    >
+                        <FaSearch className="h-5 w-5 shrink-0
+                            text-[#78877F] dark:text-[#9EB1A4]" />
+
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="h-12 w-full min-w-0 bg-transparent
+                            outline-none text-sm
+                            text-[#294C46] dark:text-[#E1EAE4]
+                            placeholder:text-[#78877F]
+                            dark:placeholder:text-[#9EB1A4]"
+                            placeholder="Search people and posts..."
+                        />
+
+                        <button
+                            type="submit"
+                            className="shrink-0 rounded-xl px-4 py-2
+                            bg-[#397E6D] text-white
+                            hover:bg-[#306D5E]
+                            dark:bg-[#A9DCC8] dark:text-[#20342B]
+                            dark:hover:bg-[#BCE6D5]
+                            text-sm font-medium transition-colors"
+                        >
+                            Search
+                        </button>
+                    </form>
+
+                    {/* Search Results */}
+                    <div className="grid grid-cols-1 lg:grid-cols-2
+                        gap-6 lg:gap-8 mt-6 pb-20 md:pb-5">
+
+                        {/* Posts Column */}
+                        <section className="min-w-0 lg:border-r
+                            lg:border-[#D6DFD9] lg:dark:border-[#344A43]
+                            lg:pr-6">
+
+                            <h2 className="text-lg font-semibold mb-5">
+                                Posts
+                            </h2>
+
+                            {posts.length !== 0 ? (
+                                posts.map((post, index) => (
+                                    <article
+                                        className="w-full md:max-w-[500px]
+                                        mb-6 rounded-2xl p-4
+                                        bg-[#F6F7F4] dark:bg-[#20342B]
+                                        border border-[#D6DFD9]
+                                        dark:border-[#344A43]
+                                        shadow-sm shadow-[#294C46]/5"
+                                        key={post.id ?? index}
+                                    >
+                                        {/* User Information */}
+                                        <Link
+                                            to={`/profile/${post.user_id}`}
+                                            className="flex items-center gap-3 mb-4"
+                                        >
+                                            <img
+                                                src={post.profile_pic_url}
+                                                alt=""
+                                                className="h-11 w-11 rounded-full
+                                                object-cover ring-2
+                                                ring-[#D6DFD9] dark:ring-[#40574C]"
+                                            />
+
+                                            <span className="font-semibold text-sm
+                                                text-[#294C46] dark:text-[#E1EAE4]">
+                                                {post.full_name}
+                                            </span>
+                                        </Link>
+
+                                        {/* Post Media */}
+                                        <Link
+                                            to={`/posts/${post.id}`}
+                                            className="block overflow-hidden rounded-xl
+                                            bg-[#E9EFEB] dark:bg-[#182823]"
+                                        >
+                                            {post.resource_type === "video" ? (
+                                                <video
+                                                    src={post.imageUrl}
+                                                    controls
+                                                    muted
+                                                    loop
+                                                    playsInline
+                                                    className="block w-full max-h-[65vh]
+                                                    object-contain"
+                                                />
+                                            ) : (
+                                                <img
+                                                    src={post.imageUrl}
+                                                    alt={post.description || "Post content"}
+                                                    className="mt-0 block w-full max-h-[500px]
+                                                    rounded-xl object-contain"
+                                                />
+                                            )}
+                                        </Link>
+
+                                        {/* Post Actions */}
+                                        <div className="flex items-center gap-5 mt-4 mb-3">
+                                            {likedPostsId.includes(post.id) ? (
+                                                <button
+                                                    type="button"
+                                                    aria-label="Unlike post"
+                                                    onClick={() => handleUnlikePost(post.id)}
+                                                    className="text-rose-500 hover:scale-110
+                                                    transition-transform"
+                                                >
+                                                    <IoIosHeart className="h-6 w-6" />
+                                                </button>
+                                            ) : (
+                                                <button
+                                                    type="button"
+                                                    aria-label="Like post"
+                                                    onClick={() => handleLikePost(post.id)}
+                                                    className="text-[#536E62] dark:text-[#C4D9CC]
+                                                    hover:text-rose-500
+                                                    transition-colors"
+                                                >
+                                                    <FaRegHeart className="h-6 w-6" />
+                                                </button>
+                                            )}
+
+                                            <button
+                                                type="button"
+                                                aria-label="Comments"
+                                                className="text-[#536E62] dark:text-[#C4D9CC]
+                                                hover:text-[#397E6D]
+                                                dark:hover:text-[#A9DCC8]
+                                                transition-colors"
+                                            >
+                                                <IoChatbubbleOutline className="h-6 w-6" />
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                aria-label="Share post"
+                                                className="text-[#536E62] dark:text-[#C4D9CC]
+                                                hover:text-[#397E6D]
+                                                dark:hover:text-[#A9DCC8]
+                                                transition-colors"
+                                            >
+                                                <TbLocationShare className="h-6 w-6" />
+                                            </button>
                                         </div>
-                                    </Link>
-                                    <div className="mt-4">
-                                        {
 
-                                            likedPostsId.includes(post.id) ?
-                                                <button> <IoIosHeart className="w-8 h-8 md:w-10 md:h-8" onClick={() => { handleUnlikePost(post.id) }} /> </button>
-                                                :
-                                                <button onClick={() => { handleLikePost(post.id) }}><FaRegHeart className="w-8 h-7 md:w-10 md:h-7" /></button>
-                                        }
+                                        {/* Likes */}
+                                        <p className="font-semibold text-sm mb-2">
+                                            {post.likes} Likes
+                                        </p>
 
-
-                                        <button><IoChatbubbleOutline className="w-8 h-7 md:w-10 md:h-7" /></button>
-                                        <button><TbLocationShare className="w-8 h-7 md:w-10 md:h-7" /></button>
-                                    </div>
-
-                                    <div className="font-semibold">
-                                        {post.likes} Likes
-                                    </div>
-
-                                    <div className="flex">
-                                        <p className="h-5 overflow-hidden">
+                                        {/* Description */}
+                                        <p className="text-sm leading-relaxed
+                                            text-[#536E62] dark:text-[#C4D9CC]
+                                            break-words line-clamp-3">
                                             {post.description}
                                         </p>
-                                        ...
+
+                                        {/* Comments */}
+                                        <button
+                                            type="button"
+                                            className="block text-sm mt-3
+                                            text-[#78877F] dark:text-[#9EB1A4]
+                                            hover:text-[#397E6D]
+                                            dark:hover:text-[#A9DCC8]
+                                            transition-colors"
+                                        >
+                                            View all comments
+                                        </button>
+
+                                        <input
+                                            type="text"
+                                            placeholder="Add a comment..."
+                                            className="w-full mt-3 py-2
+                                            bg-transparent outline-none
+                                            border-b border-[#D6DFD9]
+                                            dark:border-[#40574C]
+                                            text-sm text-[#294C46]
+                                            dark:text-[#E1EAE4]
+                                            placeholder:text-[#78877F]
+                                            dark:placeholder:text-[#9EB1A4]
+                                            focus:border-[#78C9CD]
+                                            transition-colors"
+                                        />
+                                    </article>
+                                ))
+                            ) : (
+                                search.length !== 0 && (
+                                    <div className="rounded-2xl p-8 text-center
+                                        bg-[#F6F7F4] dark:bg-[#20342B]
+                                        border border-[#D6DFD9]
+                                        dark:border-[#344A43]">
+                                        <FaSearch className="h-7 w-7 mx-auto mb-3
+                                            text-[#9BAFA3] dark:text-[#718F7F]" />
+                                        <h3 className="font-semibold">
+                                            No related posts found
+                                        </h3>
+                                        <p className="text-sm mt-1
+                                            text-[#78877F] dark:text-[#9EB1A4]">
+                                            Try searching with different keywords.
+                                        </p>
                                     </div>
+                                )
+                            )}
+                        </section>
 
-                                    <p className="text-slate-500 mt-4">
-                                        View all comments
-                                    </p>
+                        {/* People Column */}
+                        <section className="min-w-0">
+                            <h2 className="text-lg font-semibold mb-5">
+                                People
+                            </h2>
 
-                                    <div>
-                                        <input type="text" name="" id="" placeholder="Add a comment..."
-                                            className="outline-none dark:bg-black border-b w-full mt-2 text-slate-500" />
+                            {users.length !== 0 ? (
+                                <div className="rounded-2xl overflow-hidden
+                                    bg-[#F6F7F4] dark:bg-[#20342B]
+                                    border border-[#D6DFD9]
+                                    dark:border-[#344A43]">
+
+                                    {users.map((user) => (
+                                        <Link
+                                            to={`/profile/${user.id}`}
+                                            key={user.id}
+                                            className="flex items-center gap-4 p-4
+                                            border-b last:border-b-0
+                                            border-[#D6DFD9] dark:border-[#344A43]
+                                            hover:bg-[#E9EFEB]
+                                            dark:hover:bg-[#253A31]
+                                            transition-colors"
+                                        >
+                                            <img
+                                                src={user.profile_pic_url}
+                                                alt=""
+                                                className="w-12 h-12 md:w-14 md:h-14
+                                                rounded-full object-cover
+                                                ring-2 ring-[#D6DFD9]
+                                                dark:ring-[#40574C]"
+                                            />
+
+                                            <div className="min-w-0">
+                                                <h3 className="font-semibold text-sm
+                                                    truncate">
+                                                    {user.full_name}
+                                                </h3>
+                                                <p className="text-xs mt-1
+                                                    text-[#78877F] dark:text-[#9EB1A4]">
+                                                    View profile
+                                                </p>
+                                            </div>
+                                        </Link>
+                                    ))}
+                                </div>
+                            ) : (
+                                search.length !== 0 && (
+                                    <div className="rounded-2xl p-8 text-center
+                                        bg-[#F6F7F4] dark:bg-[#20342B]
+                                        border border-[#D6DFD9]
+                                        dark:border-[#344A43]">
+                                        <h3 className="font-semibold">
+                                            No related users found
+                                        </h3>
+                                        <p className="text-sm mt-1
+                                            text-[#78877F] dark:text-[#9EB1A4]">
+                                            Try another name or keyword.
+                                        </p>
                                     </div>
-                                </div>
-                            }
-                            
-                        </div>)
-
-                        :
-                        search.length != 0 &&
-                        <div className="flex items-center justify-center text-2xl font-medium text-slate-400">
-                            <h1>No Related Posts Found</h1>
-                        </div>
-                    }
-                </div>
-
-                <div>
-                    {
-                        users.length != 0 ?
-                        users.map((user) => <div className="flex items-center border-b-2 p-3 md:p-4" key={user.id}>
-
-                            <Link to={`/profile/${user.id}`} className="flex items-center">
-                                <div>
-                                    <img src={`${user.profile_pic_url}`}
-                                        alt="" className="w-12 h-12 md:w-16 md:h-16 rounded-full" />
-                                </div>
-
-                                <div className="ml-4 md:ml-10 font-medium text-base md:text-lg">
-                                    <h1>{user.full_name}</h1>
-                                </div>
-                            </Link>
-
-                        </div>)
-
-                        :
-                        search.length != 0 &&
-                        <div className="flex items-center justify-center text-2xl font-medium text-slate-400">
-                            <h1>No Related Users Found</h1>
-                        </div>
-                    }
+                                )
+                            )}
+                        </section>
+                    </div>
                 </div>
             </div>
-
         </div>
 
-    </div>
-    <BottomNavbar/>
+        <BottomNavbar />
     </>
+);
+
 }
 
 export default SearchPage;
