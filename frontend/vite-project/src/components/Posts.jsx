@@ -11,23 +11,23 @@ const Posts = () => {
     const [posts, setPosts] = useState([]);
     const [likedPostsId, setLikedPostsId] = useState([]);
     const params = useParams();
-    
+
     const current_user_id = params.userid;
-    
+
     useEffect(() => {
         const getPosts = async () => {
-           const res = await fetch(BACKEND_URL + "/api/posts");
-           setPosts(await res.json());
+            const res = await fetch(BACKEND_URL + "/api/posts");
+            setPosts(await res.json());
         }
         getPosts();
     }, []);
 
     useEffect(() => {
         const getLikedPosts = async () => {
-           const res = await fetch(BACKEND_URL + `/api/liked_posts/${current_user_id}`);
-           let data = await res.json();
-           data = data.map((post) => post.id);
-           setLikedPostsId(data);
+            const res = await fetch(BACKEND_URL + `/api/liked_posts/${current_user_id}`);
+            let data = await res.json();
+            data = data.map((post) => post.id);
+            setLikedPostsId(data);
         }
         getLikedPosts();
     }, [current_user_id]);
@@ -61,15 +61,15 @@ const Posts = () => {
     };
 
     // 🎥 Helper function to safely detect video assets
-    
+
 
     return (
-        <div className="mt-8 mb-32 w-full px-4 text-[#294C46] sm:px-6 md:mb-40 md:pl-20 md:pr-8">
+        <div className="mt-8 mb-32 w-full px-0 text-[#294C46] sm:px-6 md:mb-40 md:pl-20 md:pr-8">
 
             {posts.map((post, index) => (
                 <article
                     key={post.id ?? index}
-                    className="mb-8 w-full max-w-[620px] overflow-hidden rounded-2xl border border-[#D6DFD9] bg-[#F6F7F4] shadow-[0_8px_30px_-24px_rgba(41,76,70,0.25)] transition-colors duration-300 dark:border-[#344A43] dark:bg-[#1D3028] dark:text-[#E1EAE4] sm:mb-10"
+                    className="mb-8 w-full max-w-[620px] overflow-hidden rounded-none border-y border-[#D6DFD9] bg-[#F6F7F4] shadow-[0_8px_30px_-24px_rgba(41,76,70,0.25)] transition-colors duration-300 dark:border-[#344A43] dark:bg-[#1D3028] dark:text-[#E1EAE4] sm:mb-10 sm:rounded-2xl sm:border"
                 >
 
                     {/* Post header */}
@@ -96,7 +96,7 @@ const Posts = () => {
                     </div>
 
                     {/* Post media */}
-                    <div className="overflow-hidden bg-[#E9EFEB] dark:bg-[#17251F]">
+                    <div className="overflow-hidden bg-[#E9EFEB] dark:bg-[#17251F] ">
                         {post.resource_type === "video" ? (
                             <video
                                 src={post.imageUrl}
@@ -216,6 +216,7 @@ const Posts = () => {
 
         </div>
     );
+
 };
 
 export default Posts;
