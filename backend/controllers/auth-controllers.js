@@ -5,7 +5,6 @@ const dotenv = require("dotenv")
 const path = require("path")
 
 const signup = async (req, res) => {
-    dotenv.config()
     const secretkey = process.env.SECRET_KEY;
     try {
 
@@ -68,7 +67,6 @@ const signup = async (req, res) => {
 
 const login = async (req, res) => {
     try {
-        dotenv.config()
         const secretkey = process.env.SECRET_KEY;
 
         // profile_pic_url = path.join(__dirname, "../public/profile-images/default-profile-pic.png" )
@@ -137,29 +135,29 @@ const login = async (req, res) => {
     }
 }
 
-const logout = (req, res) => {
-    try {
-        res.cookie("jwt", "", {maxAge: 0})
-        res.json({message: "Logged out succesfully"})
-    } catch (error) {
-        console.log(error.message)
-    }
-}
-
 // const logout = (req, res) => {
-//   try {
-//     res.clearCookie("jwt", {
-//       httpOnly: true,
-//       secure: process.env.NODE_ENV === "production",
-//       sameSite: "strict", // Match setting from login/register route
-//       path: "/",          // Ensure root path is targeted
-//     });
+//     try {
+//         res.cookie("jwt", "", {maxAge: 0})
+//         res.json({message: "Logged out succesfully"})
+//     } catch (error) {
+//         console.log(error.message)
+//     }
+// }
 
-//     return res.status(200).json({ message: "Logged out successfully" });
-//   } catch (error) {
-//     console.error("Logout Error:", error.message);
-//     return res.status(500).json({ error: "Internal Server Error" });
-//   }
-// };
+const logout = (req, res) => {
+  try {
+    res.clearCookie("jwt", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict", // Match setting from login/register route
+      path: "/",          // Ensure root path is targeted
+    });
+
+    return res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    console.error("Logout Error:", error.message);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
 
 module.exports = {signup, login, logout}
