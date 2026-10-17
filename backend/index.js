@@ -11,20 +11,43 @@ const { getSearchResults } = require("./controllers/search-controllers")
 const { postComment, getComments } = require("./controllers/comment-controllers")
 const {app, server} = require("./socket/socket")
 const dotenv = require("dotenv")
-const { default: authRouter } = require("./routes/auth-routes")
-const { default: postsRouter } = require("./routes/posts-routes")
-const { default: momentsRouter } = require("./routes/moments-routes")
 
 
 dotenv.config()
 
+// const app = express()
+
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         let destinationPath = ""
+
+//         if(file.fieldname === "file"){
+//             destinationPath = "public/post-images"
+//         }
+
+//         else if(file.fieldname === "profileImage")
+//         {
+//             destinationPath = "public/profile-images"
+//         }
+//         return cb(null, destinationPath)
+//     },
+
+//     filename: (req, file, cb) => {
+//         return cb(null, `${Date.now()}-${file.originalname}`)
+//     }
+
+// })
 
 const storage = multer.memoryStorage()
 
 const upload = multer({storage})
 
+// {
+//     origin: "https://social-media-app-d66c.vercel.app",
+//     credentials: true
+// }
 app.use(cors({
-    origin: "http://localhost:5173", 
+    origin: "https://social-media-app-d66c.vercel.app",
     credentials: true
 }))
 
