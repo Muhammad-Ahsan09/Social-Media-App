@@ -11,43 +11,20 @@ const { getSearchResults } = require("./controllers/search-controllers")
 const { postComment, getComments } = require("./controllers/comment-controllers")
 const {app, server} = require("./socket/socket")
 const dotenv = require("dotenv")
+const { default: authRouter } = require("./routes/auth-routes")
+const { default: postsRouter } = require("./routes/posts-routes")
+const { default: momentsRouter } = require("./routes/moments-routes")
 
 
 dotenv.config()
 
-// const app = express()
-
-// const storage = multer.diskStorage({
-//     destination: (req, file, cb) => {
-//         let destinationPath = ""
-
-//         if(file.fieldname === "file"){
-//             destinationPath = "public/post-images"
-//         }
-
-//         else if(file.fieldname === "profileImage")
-//         {
-//             destinationPath = "public/profile-images"
-//         }
-//         return cb(null, destinationPath)
-//     },
-
-//     filename: (req, file, cb) => {
-//         return cb(null, `${Date.now()}-${file.originalname}`)
-//     }
-
-// })
 
 const storage = multer.memoryStorage()
 
 const upload = multer({storage})
 
-// {
-//     origin: "https://social-media-app-d66c.vercel.app",
-//     credentials: true
-// }
 app.use(cors({
-    origin: "https://social-media-app-d66c.vercel.app",
+    origin: "http://localhost:5173", 
     credentials: true
 }))
 
@@ -59,9 +36,11 @@ app.get("/", (req, res) => {
     return res.send("<h1>Server working</h1>")
 })
 
-app.post("/api/auth/signup", signup)
-app.post("/api/auth/login",  login)
-app.post("/api/auth/logout",  logout)
+app.use("/api/auth", authRouter)
+app.use("/api/posts", postsRouter)
+app.use("/api/moments", momentsRouter)
+
+
 
 app.get("/api/users/:userid", getUserData)
 app.get("/api/issignedin", isSignedIn)
@@ -70,13 +49,9 @@ app.get("/api/friendsuggestions/:userid", getFriendSuggestions)
 
 app.post("/api/friend_requests/:sender_id/:reciever_id", sendFollowRequest)
 
-app.post("/api/posts", upload.single("file"),  uploadPost)
-app.get("/api/posts" , getPosts)
-app.delete("/api/posts/:postid", deletePost)
 app.get("/api/userposts/:userid", getUserPosts)
 
 
-app.get("/api/posts/:post_id", getPost)
 
 app.patch("/api/friend_request/:sender_id/:reciever_id", acceptFriendRequest)
 app.delete("/api/friends/:user1_id/:user2_id", unfriendUser)
@@ -91,8 +66,6 @@ app.post("/api/chats/:friend_id", sendMessage)
 app.post("/api/comments/:user_id/:post_id", postComment)
 app.get("/api/comments/:post_id", getComments)
 
-app.patch("/api/posts/like/:postid/:userid", likePost)
-app.patch("/api/posts/unlike/:postid/:userid", unlikePost)
 
 app.get("/api/liked_posts/:userid", getLikedPosts)
 

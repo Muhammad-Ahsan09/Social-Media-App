@@ -1,5 +1,7 @@
-
 import { useEffect, useState } from "react";
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
+
+
 // https://r7s68t0l-5173.inc1.devtunnels.ms/
 const dummyMoments = [
   {
@@ -54,11 +56,59 @@ const dummyMoments = [
 ];
 
 const MomentsSection = () => {
-  const [moments, setMoments] = useState(dummyMoments);
+  const [moments, setMoments] = useState([]);
+  const [loadingMoments, setLoadingMoments] = useState(true);
+  const [momentsError, setMomentsError] = useState("");
   const [activeMoment, setActiveMoment] = useState(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [newMomentImage, setNewMomentImage] = useState(null);
   const [previewUrl, setPreviewUrl] = useState("");
+
+  useEffect(() => {
+  const fetchMoments = async () => {
+    try {
+      setLoadingMoments(true);
+      setMomentsError("");
+
+      const response = await fetch(`${BACKEND_URL}/api/moments`, {
+        method: "GET",
+        credentials: "include",
+      });
+
+      const data = await response.json();
+
+      console.log(data)
+
+      if (!data.success) {
+        throw new Error(data.message || "Failed to fetch moments.");
+      }
+
+      // Supports either an array or an object containing moments.
+      const fetchedMoments = Array.isArray(data)
+        ? data
+        : data.moments ?? data.data ?? [];
+
+      const formattedMoments = fetchedMoments.map((moment) => ({
+        id: moment.id,
+        name: moment.username,
+        avatar: moment.profile_pic_url,
+        image: moment.image_url || moment.image,
+        hasUnseen: true,
+        isOwn: false,
+      }));
+
+      setMoments(formattedMoments);
+    } catch (error) {
+      console.error("Error fetching moments:", error);
+      setMomentsError(error.message || "Unable to load moments.");
+    } finally {
+      setLoadingMoments(false);
+    }
+  };
+
+  fetchMoments();
+}, []);
+
 
   useEffect(() => {
     return () => {
@@ -71,35 +121,58 @@ const MomentsSection = () => {
   const handleImageSelect = (e) => {
     const file = e.target.files?.[0];
 
+
     if (!file) return;
 
     setNewMomentImage(file);
     setPreviewUrl(URL.createObjectURL(file));
   };
 
-  const handleCreateMoment = (e) => {
+
+  const handleCreateMoment = async (e) => {
     e.preventDefault();
 
-    if (!previewUrl) return;
+    if (!newMomentImage) return;
 
-    const newMoment = {
-      id: Date.now(),
-      name: "You",
-      avatar: previewUrl,
-      image: previewUrl,
-      hasUnseen: true,
-      isOwn: true,
-    };
+    const form = new FormData();
+    form.append("file", newMomentImage);
 
-    setMoments((previous) => [
-      ...previous.filter((moment) => !moment.isOwn),
-      newMoment,
-    ]);
+    try {
+      const res = await fetch(`${BACKEND_URL}/api/moments`, {
+        method: "POST",
+        body: form,
+        credentials: "include",
+      });
 
-    setShowCreateModal(false);
-    setNewMomentImage(null);
-    setPreviewUrl("");
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to create Moment");
+      }
+
+      const newMoment = {
+        id: data.id,
+        name: "You",
+        avatar: previewUrl,
+        image: data.image_url,
+        hasUnseen: true,
+        isOwn: true,
+      };
+
+      setMoments((previous) => [
+        ...previous.filter((moment) => !moment.isOwn),
+        newMoment,
+      ]);
+
+      setShowCreateModal(false);
+      setNewMomentImage(null);
+      setPreviewUrl("");
+    } catch (error) {
+      console.error("Error creating Moment:", error);
+      alert(error.message || "Something went wrong while creating your Moment.");
+    }
   };
+
 
   const handleOpenMoment = (moment) => {
     setActiveMoment(moment);
