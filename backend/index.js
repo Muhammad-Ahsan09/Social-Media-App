@@ -74,7 +74,7 @@ app.get("/api/search/:search_query", getSearchResults)
 app.patch("/api/profile_image/:userid", upload.single("profileImage") ,updateProfileImage)
 // upload.single("profileImage"), 
 
-const PORT = process.env.PORT || 8001
+const PORT = process.env.PORT || 8000
 
 server.listen(PORT,  () => {
     console.log("sever started at port 8000")
