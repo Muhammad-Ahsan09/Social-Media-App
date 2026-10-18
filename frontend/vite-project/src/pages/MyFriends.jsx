@@ -202,7 +202,7 @@ const MyFriends = ({ setUser, currentUserId }) => {
         </main>
       </div>
 
-      <BottomNavbar />
+      <BottomNavbar currentUserId={currentUserId}/>
     </div>
   );
 };

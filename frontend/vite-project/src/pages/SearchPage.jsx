@@ -301,7 +301,7 @@ return (
             </div>
         </div>
 
-        <BottomNavbar />
+        <BottomNavbar currentUserId={currentUserId} />
     </>
 );
 

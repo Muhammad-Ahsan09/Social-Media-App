@@ -264,7 +264,7 @@ const MyProfilePage = ({ currentUserId }) => {
 
 
         </div >
-        <BottomNavbar />
+        <BottomNavbar currentUserId={currentUserId} />
     </>
 
 
