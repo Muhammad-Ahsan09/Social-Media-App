@@ -3,7 +3,6 @@ import PostsSection from "../components/PostsSection";
 import RightSidebar from "../components/RightSidebar";
 import BottomNavbar from "../components/BottomNavbar";
 import TopNavbar from "../components/TopNavbar";
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 const Home = ({ setUser, currentUserId }) => {
     return <>

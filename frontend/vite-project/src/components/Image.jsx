@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react"
 
-const LazyImage = ({src}) => {
+const LazyImage = ({src, height}) => {
 
     
     const ref = useRef()
@@ -22,7 +22,7 @@ const LazyImage = ({src}) => {
         }
     },[])
 
-    return <img ref={ref} src={src} alt="" className={"mt-5 rounded w-full"} />
+    return <img ref={ref} src={src} alt="" className={"mt-5 rounded w-full object-contain"} height={height} />
 }
 
 

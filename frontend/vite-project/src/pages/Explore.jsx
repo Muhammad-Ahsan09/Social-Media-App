@@ -60,7 +60,7 @@ const Explore = ({ setUser, currentUserId }) => {
       </div>
     </div>
 
-    <BottomNavbar currentUserId={currentUserId}/>
+    <BottomNavbar currentUserId={currentUserId} />
   </>
 }
 

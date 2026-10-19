@@ -15,14 +15,19 @@ const Signup = () => {
     e.preventDefault()
     
 
+    if(!email) {
+      toast.error("please provide email")
+      return;
+    }
+
     if(!fullName) {
       toast.error("Please provide Full Name")
-      return
+      return;
     }
 
     if(!username){
       toast.error("Please provide a username")
-      return
+      return;
     }
 
     if(password.length < 6){
@@ -50,10 +55,11 @@ const Signup = () => {
     else{
       navigate("/login")
     }
-
-
-
   }
+
+  
+
+
 
 return (
   <>
@@ -233,6 +239,9 @@ return (
     <Toaster />
   </>
 );
+
+
+
 }
 
 export default Signup;

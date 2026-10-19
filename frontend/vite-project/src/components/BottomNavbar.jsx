@@ -64,9 +64,9 @@ const BottomNavbar = ({ currentUserId }) => {
                 to={`/profile/${currentUserId}`}
                 aria-label="Profile"
                 className="flex h-11 w-12 items-center justify-center rounded-xl
-            hover:bg-[#E9EFEB] hover:text-[#397E6D]
-            dark:hover:bg-[#253A31] dark:hover:text-[#A9DCC8]
-            transition-all duration-200"
+                hover:bg-[#E9EFEB] hover:text-[#397E6D]
+                dark:hover:bg-[#253A31] dark:hover:text-[#A9DCC8]
+                transition-all duration-200"
             >
                 <FaUser className="h-[18px] w-[18px]" />
             </Link>

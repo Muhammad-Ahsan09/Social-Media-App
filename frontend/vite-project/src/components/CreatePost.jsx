@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { IoMdPhotos } from "react-icons/io";
 import { useParams } from "react-router-dom";
 import toast, { Toaster } from "react-hot-toast";

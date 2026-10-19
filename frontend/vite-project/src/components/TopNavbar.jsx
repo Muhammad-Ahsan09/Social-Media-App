@@ -4,7 +4,7 @@ import CreatePost from "./CreatePost";
 import { IoMoon, IoSunny } from "react-icons/io5";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
-const TopNavbar = ({setUser}) => {
+const TopNavbar = ({ setUser }) => {
 
     const [darkMode, setDarkMode] = useState(false)
 
@@ -21,7 +21,7 @@ const TopNavbar = ({setUser}) => {
         await fetch(BACKEND_URL + "/api/auth/logout", {
             method: "POST",
             headers: {
-                "Content-Type" : "application/json"
+                "Content-Type": "application/json"
             },
             credentials: "include"
         })
@@ -29,8 +29,9 @@ const TopNavbar = ({setUser}) => {
         setUser(false)
         // navigate("/login")
 
-        
+
     }
+
 return (
     <div className="md:hidden fixed top-0 left-0 w-full h-14
         bg-[#F6F7F4] dark:bg-[#1D3028]
@@ -159,6 +160,7 @@ return (
         )}
     </div>
 );
-}; 
+
+};
 
 export default TopNavbar

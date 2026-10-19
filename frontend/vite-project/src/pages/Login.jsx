@@ -1,9 +1,12 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
 import toast, { Toaster } from 'react-hot-toast';
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 const Login = ({setUser}) => {
+
+  const navigate = useNavigate()
+
 
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -11,6 +14,16 @@ const Login = ({setUser}) => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault()
+
+    if(!email) {
+      toast.error("Please enter email")
+      return;
+    }
+
+    if(!password) {
+      toast.error("Please enter password")
+      return;
+    }
 
     const res = await fetch(BACKEND_URL + "/api/auth/login", {
       method: "POST",
@@ -27,12 +40,10 @@ const Login = ({setUser}) => {
 
     const data = await res.json()
     if(data.success){
-      
       setUser(data.user)
-      
     }
+    
     else{
-      console.log(data)
       toast.error(data.message)
     }
   }
@@ -157,6 +168,7 @@ return (
     <Toaster />
   </>
 );
+
 }
 
 export default Login;

@@ -5,9 +5,6 @@ const path = require("path")
 const fs = require("fs")
 const cloudinary = require("cloudinary").v2
 
-
-dotenv.config()
-
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
@@ -33,7 +30,6 @@ const getUserData = async (req, res) => {
 
 const isSignedIn = async (req, res) => {
     try {
-        dotenv.config()
         const token = req.cookies.jwt
 
         // const userid = req.params.userid

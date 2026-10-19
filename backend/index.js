@@ -14,6 +14,8 @@ const dotenv = require("dotenv")
 const { default: authRouter } = require("./routes/auth-routes")
 const { default: postsRouter } = require("./routes/posts-routes")
 const { default: momentsRouter } = require("./routes/moments-routes")
+const { journeyRouter } = require("./routes/journey-routes")
+const { default: authMiddleware } = require("./middlewares/authmiddleware")
 
 
 dotenv.config()
@@ -24,7 +26,7 @@ const storage = multer.memoryStorage()
 const upload = multer({storage})
 
 app.use(cors({
-    origin: "https://social-media-app-d66c.vercel.app",
+    origin: "http://localhost:5173", 
     credentials: true
 }))
 
@@ -39,6 +41,8 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRouter)
 app.use("/api/posts", postsRouter)
 app.use("/api/moments", momentsRouter)
+app.use("/api/journeys", journeyRouter)
+
 
 
 
@@ -77,5 +81,5 @@ app.patch("/api/profile_image/:userid", upload.single("profileImage") ,updatePro
 const PORT = process.env.PORT || 8000
 
 server.listen(PORT,  () => {
-    console.log("sever started at port 8000")
+    console.log("sever started at port " + PORT)
 })

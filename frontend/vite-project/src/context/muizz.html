@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        body{
+            overflow-y: hidden;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .items{
+            /* display: none; */
+        }
+    </style>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Shopping Cart</title>
+</head>
+<body>
+
+<div class="item1-container">
+    <h3>Deal 1</h3>
+    <button class="add-to-cart" data-item="Deal 1">Add to cart</button>
+    <button class="remove1" data-item="Deal 1">Remove deal 1</button>
+</div>
+
+
+<div class="item2-container">
+    <h3>Deal 2</h3>
+    <button class="add-to-cart" data-item="Deal 2">Add to cart</button>
+    <button class="remove2" data-item="Deal 2">Remove deal 2</button>
+</div>
+
+<form action="https://api.web3forms.com/submit" method="POST">
+    <input type="hidden" name="access_key" value="a4dc45e1-c29a-455e-a457-b21cf98b0204" />
+
+    <textarea class="items" name="items" rows="10" cols="30"></textarea><br />
+    <div>
+        <h3>Address</h3>
+    <textarea name="address" id="" cols="30" rows="10"></textarea>
+    </div>
+    <a href="www.google.com">
+    <button type="submit">order</button>
+    </a>
+</form>
+
+<script>
+    // Initialize an empty array to store the items in the cart
+    let itemsInCart = []; 
+
+    // Select the textarea where items will be displayed
+    const textarea = document.querySelector('.items');
+
+    // Select all "Add to cart" buttons
+    const addButtons = document.querySelectorAll('.add-to-cart');
+    // Select all "Remove" buttons
+    const removeButtons = document.querySelectorAll('.remove1, .remove2'); // Select both remove buttons
+
+    // Function to update the textarea content based on the itemsInCart array
+    function updateTextarea() {
+        textarea.value = itemsInCart.join('\n'); // Join array elements with newlines
+    }
+
+    // Add event listener to each "Add to cart" button
+    addButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const itemName = button.getAttribute('data-item');
+            itemsInCart.push(itemName); // Add item to the array
+            updateTextarea(); // Update the textarea
+        });
+    });
+
+    // Add event listener to each "Remove" button
+    removeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const itemToRemove = button.getAttribute('data-item');
+            const index = itemsInCart.indexOf(itemToRemove); // Find the first occurrence of the item
+
+            if (index > -1) { // If the item is found in the array
+                itemsInCart.splice(index, 1); // Remove it from the array
+                updateTextarea(); // Update the textarea
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

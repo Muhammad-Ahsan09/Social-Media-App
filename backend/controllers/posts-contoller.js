@@ -5,9 +5,6 @@ const fs = require("fs")
 const dotenv = require("dotenv")
 const cloudinary = require("cloudinary").v2
 
-
-dotenv.config()
-
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
@@ -16,67 +13,67 @@ cloudinary.config({
 
 const streamifier = require('streamifier'); // Clean utility to convert a Buffer into a Readable Stream
 
-const uploadPost = async (req, res) => { 
-  try { 
-    const { description, user_id } = req.body; 
-    
-    if (!req.file) {
-      return res.status(400).json({ error: "No file provided" });
+const uploadPost = async (req, res) => {
+    try {
+        const { description, user_id } = req.body;
+
+        if (!req.file) {
+            return res.status(400).json({ error: "No file provided" });
+        }
+
+        let resource_type = "image"
+
+        // Determine configuration options based on file type
+        let uploadOptions = {};
+        if (req.file.mimetype.startsWith("video/")) {
+
+            resource_type = "video";
+            uploadOptions = {
+                folder: "post-videos",
+                resource_type: "video",
+                eager: [{ streaming_profile: "full_hd", format: "m3u8" }],
+                eager_async: true
+            };
+        } else if (req.file.mimetype.startsWith("image/")) {
+            resource_type = "image";
+            uploadOptions = {
+                folder: "post-images",
+                resource_type: "image",
+                transformation: [{ width: 1200, crop: "limit", quality: "auto" }]
+            };
+        } else {
+            return res.status(400).json({ error: "Unsupported file type. Use an image or video." });
+        }
+
+        // Helper function to handle Cloudinary's callback-based stream via a Promise
+        const uploadToCloudinary = (fileBuffer, options) => {
+            return new Promise((resolve, reject) => {
+                const cStream = cloudinary.uploader.upload_stream(options, (error, result) => {
+                    if (error) return reject(error);
+                    resolve(result);
+                });
+
+                // Pipe the file buffer directly into the Cloudinary upload stream
+                streamifier.createReadStream(fileBuffer).pipe(cStream);
+            });
+        };
+
+        // Execute the stream upload
+        const result = await uploadToCloudinary(req.file.buffer, uploadOptions);
+        const media_url = result.secure_url;
+
+        // Save to the database
+        await pool.query(
+            "INSERT INTO posts(user_id, description, imageUrl, resource_type) values (?,?,?,?)",
+            [user_id, description, media_url, resource_type]
+        );
+
+        return res.status(200).json({ message: "Successful", url: media_url });
+
+    } catch (error) {
+        console.error("Stream upload error:", error.message);
+        return res.status(500).json({ error: "Internal server error" });
     }
-
-    let resource_type = "image"
-
-    // Determine configuration options based on file type
-    let uploadOptions = {};
-    if (req.file.mimetype.startsWith("video/")) {
-
-      resource_type = "video";
-      uploadOptions = {
-        folder: "post-videos",
-        resource_type: "video",
-        eager: [{ streaming_profile: "full_hd", format: "m3u8" }],
-        eager_async: true
-      };
-    } else if (req.file.mimetype.startsWith("image/")) {
-         resource_type = "image";
-      uploadOptions = {
-        folder: "post-images",
-        resource_type: "image",
-        transformation: [{ width: 1200, crop: "limit", quality: "auto" }]
-      };
-    } else {
-      return res.status(400).json({ error: "Unsupported file type. Use an image or video." });
-    }
-
-    // Helper function to handle Cloudinary's callback-based stream via a Promise
-    const uploadToCloudinary = (fileBuffer, options) => {
-      return new Promise((resolve, reject) => {
-        const cStream = cloudinary.uploader.upload_stream(options, (error, result) => {
-          if (error) return reject(error);
-          resolve(result);
-        });
-        
-        // Pipe the file buffer directly into the Cloudinary upload stream
-        streamifier.createReadStream(fileBuffer).pipe(cStream);
-      });
-    };
-
-    // Execute the stream upload
-    const result = await uploadToCloudinary(req.file.buffer, uploadOptions);
-    const media_url = result.secure_url; 
-
-    // Save to the database
-    await pool.query(
-      "INSERT INTO posts(user_id, description, imageUrl, resource_type) values (?,?,?,?)", 
-      [user_id, description, media_url, resource_type]
-    ); 
-
-    return res.status(200).json({ message: "Successful", url: media_url }); 
-
-  } catch (error) { 
-    console.error("Stream upload error:", error.message); 
-    return res.status(500).json({ error: "Internal server error" });
-  } 
 };
 
 
@@ -87,11 +84,6 @@ const getPosts = async (req, res) => {
          FROM posts JOIN users ON posts.user_id = users.id ORDER BY RAND() LIMIT 10;`);
 
         const posts = response[0];
-
-        // console.log(posts)
-
-        
-
         res.json(posts)
     } catch (error) {
         console.log(error.message)
@@ -112,7 +104,7 @@ const likePost = async (req, res) => {
             SELECT COUNT(*) FROM post_liked WHERE post_id = ?
         ) WHERE id = ?`, [postid, postid])
 
-        res.json({message: "post liked successfully"})
+        res.json({ message: "post liked successfully" })
     } catch (error) {
         console.log(error.message)
     }
@@ -122,7 +114,6 @@ const unlikePost = async (req, res) => {
     try {
         const userid = req.params.userid
         const postid = req.params.postid
-        console.log("UNliking")
 
         // await pool.query(`SET SQL_SAFE_UPDATES = 0;`)
         await pool.query(`DELETE FROM post_liked WHERE user_id = ? AND post_id = ?; `, [userid, postid])
@@ -131,7 +122,7 @@ const unlikePost = async (req, res) => {
             SELECT COUNT(*) FROM post_liked WHERE post_id = ?
         ) WHERE id = ?`, [postid, postid])
 
-        res.json({message: "Post unliked successfully"})
+        res.json({ message: "Post unliked successfully" })
 
     } catch (error) {
         console.log(error.message)
@@ -141,14 +132,12 @@ const unlikePost = async (req, res) => {
 const getLikedPosts = async (req, res) => {
     try {
         const userid = req.params.userid
-        
+
         const posts = await pool.query(`
         SELECT id FROM posts WHERE id IN (
             SELECT post_id FROM post_liked WHERE user_id = ?
         )
         `, [userid])
-
-        console.log(posts[0])
         res.json(posts[0])
     } catch (error) {
         console.log(error.message)
@@ -161,7 +150,6 @@ const getPost = async (req, res) => {
         const response = await pool.query(`SELECT * FROM posts WHERE id = ?;`, [post_id])
 
         const post = response[0][0]
-        console.log(post)
         res.json(post)
 
     } catch (error) {
@@ -178,7 +166,7 @@ const getUserPosts = async (req, res) => {
 
         res.json(posts)
 
-        
+
 
     } catch (error) {
         console.log(error.message)
@@ -192,10 +180,8 @@ const deletePost = async (req, res) => {
 
         const response = await pool.query(`SELECT imageUrl FROM posts WHERE id = ?; `, [postid])
 
-        console.log(response[0][0])
-
         fs.unlink(`public/post-images/${response[0][0].imageUrl}`, (err) => {
-            if(err){
+            if (err) {
                 console.log(err.message)
             }
         })
@@ -203,12 +189,12 @@ const deletePost = async (req, res) => {
         await pool.query(`DELETE FROM comments WHERE post_id = ?`, [postid])
         await pool.query(`DELETE FROM post_liked WHERE post_id = ?`, [postid])
         await pool.query(`DELETE FROM posts WHERE id = ?;`, [postid])
-        
 
-        res.status(200).json({message: "Post deleted succesfully"})
+
+        res.status(200).json({ message: "Post deleted succesfully" })
     } catch (error) {
         console.log(error.message)
     }
 }
 
-module.exports = {uploadPost, getPosts,likePost, getLikedPosts, unlikePost,getPost, getUserPosts, deletePost}
+module.exports = { uploadPost, getPosts, likePost, getLikedPosts, unlikePost, getPost, getUserPosts, deletePost }

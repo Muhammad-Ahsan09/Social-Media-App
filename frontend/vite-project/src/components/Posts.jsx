@@ -96,7 +96,8 @@ const Posts = () => {
                     </div>
 
                     {/* Post media */}
-                    <div className="overflow-hidden bg-[#E9EFEB] dark:bg-[#17251F] ">
+                    {/* Post media */}
+                    <div className="overflow-hidden bg-[#E9EFEB] dark:bg-[#17251F]">
                         {post.resource_type === "video" ? (
                             <video
                                 src={post.imageUrl}
@@ -104,17 +105,17 @@ const Posts = () => {
                                 muted
                                 loop
                                 playsInline
-                                className="block max-h-[65vh] w-full object-contain"
+                                className="block h-auto max-h-[65vh] w-full object-contain"
                             />
                         ) : (
                             <Link
                                 to={`/posts/${post.id}`}
-                                className="flex h-[65vh] min-h-[250px] max-h-[600px] w-full items-center justify-center overflow-hidden bg-[#E9EFEB] dark:bg-[#17251F]"
+                                className="block w-full overflow-hidden"
                             >
                                 <LazyImage
                                     src={post.imageUrl}
                                     alt={`Post by ${post.full_name}`}
-                                    height="100%"
+                                    height="auto"
                                 />
                             </Link>
                         )}
