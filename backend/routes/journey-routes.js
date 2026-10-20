@@ -18,12 +18,19 @@ const {
     linkJourneyPost,
     unlinkJourneyPost,
 } = require("../controllers/journey-post-controllers");
+const multer = require("multer");
+
+
+
+const storage = multer.memoryStorage()
+const upload = multer({storage})
+
 
 
 const journeyRouter = express.Router()
 
 journeyRouter.post("/", authMiddleware, upload.single("cover"), createJourney);
-journeyRouter.get("/", authMiddleware, getJourneys);
+journeyRouter.get("/", authMiddleware, getJourneys)
 journeyRouter.get("/:journey_id", authMiddleware, getJourneyById)
 journeyRouter.put("/:journeyId", authMiddleware, updateJourney);
 journeyRouter.delete("/:journeyId", authMiddleware, deleteJourney);
