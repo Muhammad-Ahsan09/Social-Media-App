@@ -35,14 +35,14 @@ journeyRouter.get("/:journey_id", authMiddleware, getJourneyById)
 journeyRouter.put("/:journeyId", authMiddleware, updateJourney);
 journeyRouter.delete("/:journeyId", authMiddleware, deleteJourney);
 
-journeyRouter.post("/:journey_id/entries", authMiddleware, createJourneyEntry)
+journeyRouter.post("/:journey_id/entries", authMiddleware, upload.array("media", 10), createJourneyEntry)
 journeyRouter.get("/:journey_id/entries", authMiddleware, getJourneyEntries)
 journeyRouter.get("/:journey_id/entries/:entryId", authMiddleware, getJourneyEntryById)
 journeyRouter.put("/:journey_id/entries/:entryId", authMiddleware, updateJourneyEntry)
 journeyRouter.delete("/:journey_id/entries/:entryId", authMiddleware, deleteJourneyEntry)
 
 // Journey entry media
-journeyRouter.post("/:journeyId/entries/:entryId/media", authMiddleware, addJourneyMedia);
+journeyRouter.post("/:journeyId/entries/:entryId/media", authMiddleware, upload.array("media", 10), addJourneyMedia);
 journeyRouter.delete("/:journeyId/entries/:entryId/media/:mediaId", authMiddleware, deleteJourneyMedia);
 
 // Posts linked to Journey entries

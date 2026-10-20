@@ -4,6 +4,7 @@ const path = require("path")
 const fs = require("fs")
 const dotenv = require("dotenv")
 const cloudinary = require("cloudinary").v2
+const streamifier = require('streamifier'); // Clean utility to convert a Buffer into a Readable Stream
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -11,7 +12,6 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 })
 
-const streamifier = require('streamifier'); // Clean utility to convert a Buffer into a Readable Stream
 
 const uploadPost = async (req, res) => {
     try {

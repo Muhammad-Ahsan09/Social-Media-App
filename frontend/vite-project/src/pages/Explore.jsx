@@ -200,7 +200,7 @@ const Explore = ({ setUser, currentUserId }) => {
                           loop
                           playsInline
                           preload="metadata"
-                          controls
+                          // controls
                           aria-label="Explore video"
                           className="block h-auto max-h-[520px] w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
                         />

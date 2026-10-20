@@ -1,17 +1,64 @@
 
 const { pool } = require("../database.js");
+const cloudinary = require("cloudinary").v2
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+})
+
+
+
+// Upload a file to Cloudinary using either memory or disk storage.
+const uploadToCloudinary = (file) => {
+    return new Promise((resolve, reject) => {
+        const options = {
+            folder: "solace/journey-entries",
+            resource_type: "auto",
+        };
+
+        if (file.buffer) {
+            const stream = cloudinary.uploader.upload_stream(
+                options,
+                (error, result) => {
+                    if (error) return reject(error);
+                    resolve(result);
+                }
+            );
+
+            stream.end(file.buffer);
+        } else if (file.path) {
+            cloudinary.uploader
+                .upload(file.path, options)
+                .then(resolve)
+                .catch(reject);
+        } else {
+            reject(new Error("Uploaded file has no buffer or path"));
+        }
+    });
+};
+
 
 // POST /journeys/:journey_id/entries
+
 const createJourneyEntry = async (req, res) => {
+    const connection = await pool.getConnection();
+    const uploadedAssets = [];
+
     try {
         const userId = req.user.id;
         const { journey_id } = req.params;
+
         const {
             title = null,
             content = null,
             entry_date,
-            sort_order = 0,
+            sort_order = "0",
         } = req.body;
+
+        const files = req.files || [];
+        const parsedSortOrder = Number(sort_order);
 
         if (!/^\d+$/.test(journey_id)) {
             return res.status(400).json({
@@ -38,9 +85,9 @@ const createJourneyEntry = async (req, res) => {
         }
 
         if (
-            !Number.isInteger(sort_order) ||
-            sort_order < -2147483648 ||
-            sort_order > 2147483647
+            !Number.isInteger(parsedSortOrder) ||
+            parsedSortOrder < -2147483648 ||
+            parsedSortOrder > 2147483647
         ) {
             return res.status(400).json({
                 success: false,
@@ -48,8 +95,32 @@ const createJourneyEntry = async (req, res) => {
             });
         }
 
-        const [journeys] = await pool.query(
-            `SELECT id FROM journeys
+        if (!title?.trim() && !content?.trim() && files.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Add a title, reflection, or media file",
+            });
+        }
+
+        // Validate media types before uploading.
+        const invalidFile = files.find(
+            (file) =>
+                !["image", "video"].some((type) =>
+                    file.mimetype?.startsWith(`${type}/`)
+                )
+        );
+
+        if (invalidFile) {
+            return res.status(400).json({
+                success: false,
+                message: "Only image and video files are allowed",
+            });
+        }
+
+        // Verify ownership of the Journey.
+        const [journeys] = await connection.query(
+            `SELECT id
+             FROM journeys
              WHERE id = ? AND user_id = ?`,
             [journey_id, userId]
         );
@@ -61,39 +132,112 @@ const createJourneyEntry = async (req, res) => {
             });
         }
 
-        const [result] = await pool.query(
+        // Upload all selected files to Cloudinary.
+        // Keep each file's type and original selection order.
+        const uploadedMedia = [];
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const result = await uploadToCloudinary(file);
+
+            uploadedAssets.push({
+                public_id: result.public_id,
+                resource_type: result.resource_type,
+            });
+
+            uploadedMedia.push({
+                media_url: result.secure_url,
+                media_type: file.mimetype.startsWith("video/")
+                    ? "video"
+                    : "image",
+                sort_order: i,
+            });
+        }
+
+        // Save the entry and its media records together in a DB transaction.
+        await connection.beginTransaction();
+
+        const [result] = await connection.query(
             `INSERT INTO journey_entries
                 (journey_id, user_id, title, content, entry_date, sort_order)
              VALUES (?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP), ?)`,
             [
                 journey_id,
                 userId,
-                title,
-                content,
+                title?.trim() || null,
+                content?.trim() || null,
                 entry_date || null,
-                sort_order,
+                parsedSortOrder,
             ]
         );
 
-        const [entries] = await pool.query(
+        const entryId = result.insertId;
+
+        for (const media of uploadedMedia) {
+            await connection.query(
+                `INSERT INTO journey_entry_media
+                    (entry_id, media_url, media_type, sort_order)
+                 VALUES (?, ?, ?, ?)`,
+                [
+                    entryId,
+                    media.media_url,
+                    media.media_type,
+                    media.sort_order,
+                ]
+            );
+        }
+
+        const [entries] = await connection.query(
             `SELECT *
              FROM journey_entries
              WHERE id = ? AND journey_id = ?`,
-            [result.insertId, journey_id]
+            [entryId, journey_id]
         );
+
+        const [mediaRows] = await connection.query(
+            `SELECT id, entry_id, media_url, media_type,
+                    caption, sort_order, created_at
+             FROM journey_entry_media
+             WHERE entry_id = ?
+             ORDER BY sort_order ASC, id ASC`,
+            [entryId]
+        );
+
+        await connection.commit();
 
         return res.status(201).json({
             success: true,
             message: "Memory added successfully",
-            entry: entries[0],
+            entry: {
+                ...entries[0],
+                media: mediaRows,
+            },
         });
     } catch (error) {
+        await connection.rollback();
+
         console.error("Create Journey Entry Error:", error);
+
+        // Remove files already uploaded if the request fails.
+        for (const asset of uploadedAssets) {
+            try {
+                await cloudinary.uploader.destroy(asset.public_id, {
+                    resource_type: asset.resource_type,
+                });
+            } catch (cleanupError) {
+                console.error(
+                    "Cloudinary cleanup error:",
+                    cleanupError.message
+                );
+            }
+        }
 
         return res.status(500).json({
             success: false,
             message: "Failed to create memory",
         });
+    } finally {
+        connection.release();
     }
 };
 
@@ -111,8 +255,10 @@ const getJourneyEntries = async (req, res) => {
             });
         }
 
+        // Verify journey ownership
         const [journeys] = await pool.query(
-            `SELECT id FROM journeys
+            `SELECT id
+             FROM journeys
              WHERE id = ? AND user_id = ?`,
             [journey_id, userId]
         );
@@ -124,6 +270,7 @@ const getJourneyEntries = async (req, res) => {
             });
         }
 
+        // Fetch journey entries
         const [entries] = await pool.query(
             `SELECT *
              FROM journey_entries
@@ -132,9 +279,53 @@ const getJourneyEntries = async (req, res) => {
             [journey_id]
         );
 
+        // If there are no entries, return an empty array
+        if (entries.length === 0) {
+            return res.status(200).json({
+                success: true,
+                entries: [],
+            });
+        }
+
+        // Fetch media belonging to these entries
+        const [media] = await pool.query(
+            `SELECT
+                id,
+                entry_id,
+                media_url,
+                media_type,
+                caption,
+                sort_order,
+                created_at
+             FROM journey_entry_media
+             WHERE entry_id IN (
+                 SELECT id
+                 FROM journey_entries
+                 WHERE journey_id = ?
+             )
+             ORDER BY sort_order ASC, id ASC`,
+            [journey_id]
+        );
+
+        // Attach media to the corresponding entry
+        const mediaByEntry = {};
+
+        for (const item of media) {
+            if (!mediaByEntry[item.entry_id]) {
+                mediaByEntry[item.entry_id] = [];
+            }
+
+            mediaByEntry[item.entry_id].push(item);
+        }
+
+        const entriesWithMedia = entries.map((entry) => ({
+            ...entry,
+            media: mediaByEntry[entry.id] || [],
+        }));
+
         return res.status(200).json({
             success: true,
-            entries,
+            entries: entriesWithMedia,
         });
     } catch (error) {
         console.error("Get Journey Entries Error:", error);
