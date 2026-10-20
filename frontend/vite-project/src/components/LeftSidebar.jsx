@@ -33,7 +33,7 @@ const LeftSidebar = ({ setUser, currentUserId }) => {
   const handleLogout = async (e) => {
     e.preventDefault()
 
-    await fetch(`${BACKEND_URL}/api/auth/logout`, {
+    const res = await fetch(`${BACKEND_URL}/api/auth/logout`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -41,7 +41,12 @@ const LeftSidebar = ({ setUser, currentUserId }) => {
       credentials: "include"
     })
 
-    setUser(false)
+    const data = await res.json()
+
+    if(data.success) {
+      setUser(false)
+    }
+
   }
 
   return (
