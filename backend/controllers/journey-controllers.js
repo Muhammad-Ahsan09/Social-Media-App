@@ -1,22 +1,31 @@
 
 const { pool } = require("../database.js");
+const cloudinary = require("cloudinary").v2
+const streamifier = require('streamifier');
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+})
+
 
 // POST /journeys
+
 const createJourney = async (req, res) => {
     try {
         const userId = req.user.id;
+
         const {
             title,
             description = null,
-            cover_url = null,
             visibility = "private",
             status = "ongoing",
             start_date = null,
             end_date = null,
         } = req.body;
 
-        console.log(title)
-
+        // Validate title
         if (!title || !title.trim()) {
             return res.status(400).json({
                 success: false,
@@ -24,14 +33,13 @@ const createJourney = async (req, res) => {
             });
         }
 
+        // Validate visibility
         const allowedVisibility = [
             "private",
             "public",
             "followers",
             "selected",
         ];
-
-        const allowedStatus = ["ongoing", "completed"];
 
         if (!allowedVisibility.includes(visibility)) {
             return res.status(400).json({
@@ -40,6 +48,9 @@ const createJourney = async (req, res) => {
             });
         }
 
+        // Validate status
+        const allowedStatus = ["ongoing", "completed"];
+
         if (!allowedStatus.includes(status)) {
             return res.status(400).json({
                 success: false,
@@ -47,6 +58,56 @@ const createJourney = async (req, res) => {
             });
         }
 
+        // Upload the cover image to Cloudinary if provided
+        let coverUrl = null;
+
+        if (req.file) {
+            if (!req.file.mimetype.startsWith("image/")) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Journey cover must be an image",
+                });
+            }
+
+            const uploadOptions = {
+                folder: "journey-covers",
+                resource_type: "image",
+                transformation: [
+                    {
+                        width: 1600,
+                        height: 900,
+                        crop: "limit",
+                        quality: "auto",
+                    },
+                ],
+            };
+
+            const uploadToCloudinary = (fileBuffer, options) => {
+                return new Promise((resolve, reject) => {
+                    const cloudinaryStream =
+                        cloudinary.uploader.upload_stream(
+                            options,
+                            (error, result) => {
+                                if (error) return reject(error);
+                                resolve(result);
+                            }
+                        );
+
+                    streamifier
+                        .createReadStream(fileBuffer)
+                        .pipe(cloudinaryStream);
+                });
+            };
+
+            const result = await uploadToCloudinary(
+                req.file.buffer,
+                uploadOptions
+            );
+
+            coverUrl = result.secure_url;
+        }
+
+        // Save Journey to the database
         const [result] = await pool.query(
             `INSERT INTO journeys
                 (user_id, title, description, cover_url, visibility,
@@ -55,15 +116,16 @@ const createJourney = async (req, res) => {
             [
                 userId,
                 title.trim(),
-                description,
-                cover_url,
+                description || null,
+                coverUrl,
                 visibility,
                 status,
-                start_date,
-                end_date,
+                start_date || null,
+                end_date || null,
             ]
         );
 
+        // Fetch the created Journey
         const [journeys] = await pool.query(
             `SELECT *
              FROM journeys
@@ -85,6 +147,7 @@ const createJourney = async (req, res) => {
         });
     }
 };
+
 
 
 // GET /journeys

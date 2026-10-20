@@ -104,7 +104,10 @@ export default function Journeys() {
         title: "",
         description: "",
         visibility: "private",
+        coverFile: null,
     });
+
+    const [coverPreview, setCoverPreview] = useState("");
 
     const navigate = useNavigate();
 
@@ -170,12 +173,20 @@ export default function Journeys() {
         };
 
         try {
+            const formData = new FormData();
+
+            formData.append("title", newJourney.title.trim());
+            formData.append("description", newJourney.description.trim());
+            formData.append("visibility", newJourney.visibility);
+            formData.append("status", "ongoing");
+
+            if (newJourney.coverFile) {
+                formData.append("cover", newJourney.coverFile);
+            }
+
             const response = await fetch(`${BACKEND_URL}/api/journeys`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(journey),
+                body: formData,
                 credentials: "include",
             });
 
@@ -184,12 +195,11 @@ export default function Journeys() {
             if (!response.ok) {
                 throw new Error(data.message || "Failed to create Journey");
             }
-
             // Use the actual Journey returned by your backend.
             const createdJourney = {
                 ...data.journey,
                 entries: 0,
-                cover: "from-[#D9E4D6] via-[#B8CCBD] to-[#8CA99A]",
+                cover_url: data.journey.cover_url || "",
                 date: new Date(data.journey.created_at).toLocaleDateString(
                     "en-US",
                     { month: "long", year: "numeric" }
@@ -202,8 +212,9 @@ export default function Journeys() {
                 title: "",
                 description: "",
                 visibility: "private",
+                coverFile: null
             });
-
+            setCoverPreview("");
             setFilter("ongoing");
             setActiveTab("mine");
             setSearch("");
@@ -557,6 +568,99 @@ export default function Journeys() {
                                     className="w-full resize-none rounded-xl border border-[#D6DFD9] bg-white p-4 text-sm leading-6 outline-none transition placeholder:text-[#A0AAA2] focus:border-[#86A895] focus:ring-2 focus:ring-[#DDEBE2] dark:border-[#40574C] dark:bg-[#182823] dark:text-[#E1EAE4] dark:placeholder:text-[#84998B] dark:focus:border-[#6B967C] dark:focus:ring-[#30483B]"
                                 />
                             </div>
+
+
+                            {/* Journey Cover Image */}
+                            <div>
+                                <label
+                                    htmlFor="journey-cover"
+                                    className="mb-2 block text-xs font-semibold"
+                                >
+                                    Cover image
+                                    <span className="ml-2 font-normal text-[#89968D]">
+                                        Optional
+                                    </span>
+                                </label>
+
+                                <label
+                                    htmlFor="journey-cover"
+                                    className="group relative flex min-h-40 w-full cursor-pointer items-center justify-center overflow-hidden rounded-2xl border border-dashed border-[#C8D7CA] bg-[#EDF2EB] transition hover:border-[#86A895] dark:border-[#40574C] dark:bg-[#182823]"
+                                >
+                                    {coverPreview ? (
+                                        <>
+                                            <img
+                                                src={coverPreview}
+                                                alt="Journey cover preview"
+                                                className="absolute inset-0 h-full w-full object-cover"
+                                            />
+
+                                            <div className="absolute inset-0 bg-black/30 opacity-0 transition group-hover:opacity-100" />
+
+                                            <div className="absolute bottom-3 right-3 rounded-full bg-white/90 px-3 py-2 text-xs font-medium text-[#294C46] shadow-sm">
+                                                Change cover
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <div className="flex flex-col items-center px-5 py-7 text-center">
+                                            <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-white text-[#527B66] shadow-sm dark:bg-[#30483B] dark:text-[#D5E5D8]">
+                                                <FaPlus />
+                                            </div>
+
+                                            <span className="text-sm font-medium">
+                                                Choose a cover image
+                                            </span>
+
+                                            <span className="mt-1 text-xs text-[#89968D] dark:text-[#A6B7AA]">
+                                                JPG, PNG or WebP
+                                            </span>
+                                        </div>
+                                    )}
+
+                                    <input
+                                        id="journey-cover"
+                                        type="file"
+                                        accept="image/jpeg,image/png,image/webp"
+                                        className="sr-only"
+                                        onChange={(event) => {
+                                            const file = event.target.files?.[0];
+                                            if (!file) return;
+
+                                            if (file.size > 5 * 1024 * 1024) {
+                                                alert("Please choose an image smaller than 5 MB.");
+                                                event.target.value = "";
+                                                return;
+                                            }
+
+                                            setNewJourney((previous) => ({
+                                                ...previous,
+                                                coverFile: file,
+                                            }));
+
+                                            setCoverPreview(URL.createObjectURL(file));
+                                        }}
+                                    />
+                                </label>
+
+                                {coverPreview && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setNewJourney((previous) => ({
+                                                ...previous,
+                                                coverFile: null,
+                                            }));
+                                            setCoverPreview("");
+
+                                            const input = document.getElementById("journey-cover");
+                                            if (input) input.value = "";
+                                        }}
+                                        className="mt-2 text-xs font-medium text-[#89968D] transition hover:text-red-500"
+                                    >
+                                        Remove cover image
+                                    </button>
+                                )}
+                            </div>
+
 
                             <div>
                                 <label

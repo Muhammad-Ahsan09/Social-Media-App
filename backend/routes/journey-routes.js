@@ -22,8 +22,8 @@ const {
 
 const journeyRouter = express.Router()
 
-journeyRouter.post("/", authMiddleware, createJourney);
-journeyRouter.get("/", authMiddleware, getJourneys)
+journeyRouter.post("/", authMiddleware, upload.single("cover"), createJourney);
+journeyRouter.get("/", authMiddleware, getJourneys);
 journeyRouter.get("/:journey_id", authMiddleware, getJourneyById)
 journeyRouter.put("/:journeyId", authMiddleware, updateJourney);
 journeyRouter.delete("/:journeyId", authMiddleware, deleteJourney);

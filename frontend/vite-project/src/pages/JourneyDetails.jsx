@@ -167,7 +167,7 @@ export default function JourneyDetails() {
 
   const VisibilityIcon = visibility.Icon;
 
-  
+
 
   const handleAddEntry = async (e) => {
     e.preventDefault();
@@ -265,33 +265,48 @@ export default function JourneyDetails() {
         </Link>
 
         {/* Journey cover */}
-        <section className={`relative overflow-hidden rounded-3xl
-          ${journey.cover} px-6 py-10 text-white sm:px-10 sm:py-14`}>
+        <section
+          className={`relative overflow-hidden rounded-3xl
+          ${journey.cover || "bg-gradient-to-br from-[#789786] to-[#294C46]"}
+          px-6 py-10 text-white sm:px-10 sm:py-14`}
+        >
+          {/* Actual cover image */}
+          {journey.cover && (
+            <img
+              src={journey.cover}
+              alt={`${journey.title} cover`}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          )}
 
-          <div className="absolute -right-12 -top-12 h-48 w-48
-            rounded-full border border-white/15" />
-          <div className="absolute -right-4 -top-4 h-32 w-32
-            rounded-full border border-white/15" />
+          {/* Dark overlay for readability */}
+          <div className="absolute inset-0 bg-black/35" />
 
-          <div className="relative max-w-2xl">
+          {/* Decorative circles */}
+          <div className="pointer-events-none absolute -right-12 -top-12 h-48 w-48
+    rounded-full border border-white/20" />
+          <div className="pointer-events-none absolute -right-4 -top-4 h-32 w-32
+    rounded-full border border-white/20" />
+
+          {/* Journey details */}
+          <div className="relative z-10 max-w-2xl">
             <div className="mb-5 inline-flex items-center gap-2
-              rounded-full bg-black/15 px-3 py-1.5 text-xs">
-              <VisibilityIcon />
+      rounded-full border border-white/20 bg-black/20
+      px-3 py-1.5 text-xs backdrop-blur-sm">
+              <VisibilityIcon visibility={journey.visibility} />
               {visibility.label} Journey
             </div>
 
-            <h1 className="text-3xl font-semibold tracking-tight
-              sm:text-4xl">
+            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
               {journey.title}
             </h1>
 
-            <p className="mt-4 max-w-xl text-sm leading-7
-              text-white/85 sm:text-base">
+            <p className="mt-4 max-w-xl text-sm leading-7 text-white/90 sm:text-base">
               {journey.description}
             </p>
 
             <div className="mt-5 flex flex-wrap items-center gap-4
-              text-sm text-white/85">
+      text-sm text-white/90">
               <span className="inline-flex items-center gap-2">
                 <FaBookOpen />
                 {journey.entries.length} entries
@@ -299,9 +314,7 @@ export default function JourneyDetails() {
 
               <span className="inline-flex items-center gap-2">
                 <FaCalendarAlt />
-                {journey.status === "ongoing"
-                  ? "In progress"
-                  : "Completed"}
+                {journey.status === "ongoing" ? "In progress" : "Completed"}
               </span>
             </div>
 
@@ -309,20 +322,18 @@ export default function JourneyDetails() {
               <button
                 onClick={() => setShowEntryForm(true)}
                 className="inline-flex items-center gap-2 rounded-xl
-                  bg-white px-4 py-2.5 text-sm font-semibold
-                  text-[#294C46] transition hover:bg-[#EDF3EE]"
+          bg-white px-4 py-2.5 text-sm font-semibold
+          text-[#294C46] transition hover:bg-[#EDF3EE]"
               >
                 <FaPlus />
                 Add memory
               </button>
 
               <button
-                onClick={() =>
-                  alert("Connect this button to Journey editing.")
-                }
+                onClick={() => alert("Connect this button to Journey editing.")}
                 className="inline-flex items-center gap-2 rounded-xl
-                  border border-white/35 bg-white/10 px-4 py-2.5
-                  text-sm font-medium transition hover:bg-white/20"
+          border border-white/40 bg-white/10 px-4 py-2.5
+          text-sm font-medium backdrop-blur-sm transition hover:bg-white/20"
               >
                 Edit Journey
               </button>
@@ -333,8 +344,8 @@ export default function JourneyDetails() {
                 }
                 aria-label="Share Journey"
                 className="flex h-10 w-10 items-center justify-center
-                  rounded-xl border border-white/35 transition
-                  hover:bg-white/20"
+          rounded-xl border border-white/40 bg-white/10
+          backdrop-blur-sm transition hover:bg-white/20"
               >
                 <FaShareAlt />
               </button>

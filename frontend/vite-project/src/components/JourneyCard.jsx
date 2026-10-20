@@ -19,14 +19,28 @@ function JourneyCard({ journey, onOpen }) {
   return (
     <article className="group min-w-0 overflow-hidden rounded-2xl border border-[#DDE4DD] bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[#BDCEC1] hover:shadow-lg hover:shadow-[#294C46]/5 dark:border-[#344A40] dark:bg-[#20342B] dark:hover:border-[#526C5B]">
       {/* Cover */}
+      {/* Cover */}
       <button
         type="button"
         onClick={() => onOpen(journey)}
-        className={`relative flex h-44 w-full items-end overflow-hidden bg-gradient-to-br ${journey.cover} p-5 text-left sm:h-48`}
+        className={`group/cover relative flex h-44 w-full items-end overflow-hidden bg-gradient-to-br ${journey.cover || "from-[#A8BDAE] to-[#294C46]"
+          } p-5 text-left sm:h-48`}
       >
-        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-white/10 transition-opacity group-hover:from-black/40" />
+        {/* Actual journey cover */}
+        {journey.cover_url && (
+          <img
+            src={journey.cover_url}
+            alt={`${journey.title} cover`}
+            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
+          />
+        )}
 
-        <div className="relative flex w-full items-end justify-between gap-3">
+        {/* Overlay for readability */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-transparent transition-opacity group-hover/cover:from-black/60" />
+
+        {/* Cover content */}
+        <div className="relative z-10 flex w-full items-end justify-between gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/40 bg-white/20 text-white backdrop-blur-sm">
             <FaBookOpen className="h-4 w-4" />
           </div>
