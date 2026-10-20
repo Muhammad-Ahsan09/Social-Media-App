@@ -81,7 +81,7 @@ const getPosts = async (req, res) => {
     try {
         const response = await pool.query(`SELECT posts.id, posts.user_id, posts.description, posts.imageUrl, posts.resource_type, posts.likes,
          users.profile_pic_url, users.full_name
-         FROM posts JOIN users ON posts.user_id = users.id ORDER BY RAND() LIMIT 10;`);
+         FROM posts JOIN users ON posts.user_id = users.id ORDER BY RAND() LIMIT 20;`);
 
         const posts = response[0];
         res.json(posts)
