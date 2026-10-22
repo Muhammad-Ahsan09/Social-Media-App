@@ -59,7 +59,44 @@ const TopNavbar = ({ setUser }) => {
                     <FaRegPlusSquare className="w-5 h-5 text-[#397E6D] dark:text-[#A9DCC8]" />
 
                     {/* Keep your existing Create Dropdown here */}
-                    {/* ... */}
+                    {/* Create Dropdown */}
+                    <div
+                        className={`${create ? "" : "hidden"}
+                    absolute top-12 left-0
+                    bg-[#F6F7F4] dark:bg-[#20342B]
+                    border border-[#D6DFD9] dark:border-[#40574C]
+                    rounded-xl w-40 shadow-lg
+                    shadow-[#294C46]/10 dark:shadow-black/20
+                    overflow-hidden z-50`}
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <button
+                            type="button"
+                            className="flex items-center w-full h-11 px-3
+                        text-sm font-medium
+                        hover:bg-[#E9EFEB] dark:hover:bg-[#2B4035]
+                        transition-colors"
+                            onClick={() => {
+                                setPosting(true);
+                                setCreate(false);
+                            }}
+                        >
+                            Post
+                        </button>
+
+                        <div className="h-px bg-[#D6DFD9] dark:bg-[#344A43]" />
+
+                        <button
+                            type="button"
+                            className="flex items-center w-full h-11 px-3
+                        text-sm font-medium
+                        hover:bg-[#E9EFEB] dark:hover:bg-[#2B4035]
+                        transition-colors"
+                            onClick={() => setCreate(false)}
+                        >
+                            AI
+                        </button>
+                    </div>
                 </div>
 
                 {/* Journeys Link */}
