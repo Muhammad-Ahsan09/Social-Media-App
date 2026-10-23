@@ -6,7 +6,7 @@ import { BiSolidMoviePlay } from "react-icons/bi";
 import { FaRegHeart } from "react-icons/fa6";
 import { FaRegPlusSquare } from "react-icons/fa";
 import CreatePost from "./CreatePost";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { BiLogOut } from "react-icons/bi";
 import { FaUserFriends } from "react-icons/fa";
 import { IoMoon } from "react-icons/io5";
@@ -21,7 +21,6 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 const LeftSidebar = ({ setUser, currentUserId }) => {
 
   const [darkMode, setDarkMode] = useState(false)
-  const location = useLocation();
 
   const [selectedSection, setSelectedSection] = useState(null);
   const [create, setCreate] = useState(false)
@@ -136,8 +135,8 @@ const LeftSidebar = ({ setUser, currentUserId }) => {
           </Link>
 
           {/* Scenes */}
-          <button
-            type="button"
+          <Link
+            to="/Scenes"
             onClick={() => setSelectedSection(3)}
             className={`flex h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-[14px] transition-all duration-200 ${selectedSection === 3
               ? "bg-[#DDEBE2] font-semibold text-[#294C46] dark:bg-[#30483B] dark:text-[#E0F0E5]"
@@ -146,7 +145,7 @@ const LeftSidebar = ({ setUser, currentUserId }) => {
           >
             <BiSolidMoviePlay className="h-[20px] w-[20px] shrink-0" />
             <span>Scenes</span>
-          </button>
+          </Link>
 
           {/* Friends */}
           <Link

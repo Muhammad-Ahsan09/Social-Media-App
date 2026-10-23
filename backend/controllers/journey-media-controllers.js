@@ -1,7 +1,4 @@
 const { pool } = require("../database.js");
-
-// POST /journeys/:journeyId/entries/:entryId/media
-
 const streamifier = require("streamifier");
 const cloudinary = require("cloudinary").v2
 
@@ -10,9 +7,6 @@ cloudinary.config({
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
 })
-
-// Use your existing configured Cloudinary instance.
-// Example: const { cloudinary } = require("../utils/cloudinary");
 
 // POST /journeys/:journeyId/entries/:entryId/media
 const addJourneyMedia = async (req, res) => {

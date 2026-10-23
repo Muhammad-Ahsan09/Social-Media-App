@@ -16,6 +16,7 @@ const { default: postsRouter } = require("./routes/posts-routes")
 const { default: momentsRouter } = require("./routes/moments-routes")
 const { journeyRouter } = require("./routes/journey-routes")
 const { default: authMiddleware } = require("./middlewares/authmiddleware")
+const sceneRouter = require("./routes/scenes-router")
 
 
 dotenv.config()
@@ -42,6 +43,7 @@ app.use("/api/auth", authRouter)
 app.use("/api/posts", postsRouter)
 app.use("/api/moments", momentsRouter)
 app.use("/api/journeys", journeyRouter)
+app.use("/api/scenes", sceneRouter)
 
 
 

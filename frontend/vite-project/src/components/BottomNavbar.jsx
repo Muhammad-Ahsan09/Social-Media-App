@@ -1,3 +1,4 @@
+import { BiSolidMoviePlay } from "react-icons/bi"
 import { FaSearch, FaUserFriends, FaUser } from "react-icons/fa"
 import { IoHomeSharp } from "react-icons/io5"
 import { MdExplore } from "react-icons/md"
@@ -38,13 +39,25 @@ const BottomNavbar = ({ currentUserId }) => {
                 <FaSearch className="h-[18px] w-[18px]" />
             </Link>
 
+            {/* Scenes */}
+            <Link
+                to="/scenes"
+                aria-label="Scenes"
+               className="flex h-11 w-12 items-center justify-center rounded-xl
+                hover:bg-[#E9EFEB] hover:text-[#397E6D]
+                dark:hover:bg-[#253A31] dark:hover:text-[#A9DCC8]
+                transition-all duration-200"
+            >
+                <BiSolidMoviePlay className="h-[20px] w-[20px] shrink-0" />
+            </Link>
+
             <Link
                 to="/explore"
                 aria-label="Explore"
                 className="flex h-11 w-12 items-center justify-center rounded-xl
-            hover:bg-[#E9EFEB] hover:text-[#397E6D]
-            dark:hover:bg-[#253A31] dark:hover:text-[#A9DCC8]
-            transition-all duration-200"
+                hover:bg-[#E9EFEB] hover:text-[#397E6D]
+                dark:hover:bg-[#253A31] dark:hover:text-[#A9DCC8]
+                transition-all duration-200"
             >
                 <MdExplore className="h-6 w-6" />
             </Link>

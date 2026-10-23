@@ -1,6 +1,7 @@
 import { Suspense, lazy } from "react"
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 import { useEffect, useState } from "react"
+import Scenes from "./pages/Scenes"
 
 const Home = lazy(() => import("./pages/Home"))
 const Signup = lazy(() => import("./pages/Signup"))
@@ -54,6 +55,7 @@ function App() {
       <Route path="/explore" element={user ? <Suspense fallback={<div>Loading...</div>}>  <Explore setUser={setUser} currentUserId={user.id} /> </Suspense> : <Navigate to="/login" />} />
       <Route path="/journeys" element={user ? <Suspense fallback={<div>Loading...</div>} > <Journeys /></Suspense> : <Navigate to="/signup" />} />
       <Route path="/journeys/:journeyId" element={user ? <Suspense fallback={<div>Loading...</div>} > <JourneyDetails /></Suspense> : <Navigate to="/signup" />} />
+      <Route path="/scenes" element={user ? <Suspense fallback={<div>Loading...</div>} > <Scenes /></Suspense> : <Navigate to="/signup" />} />
     </Routes>
   </BrowserRouter>
   // <Home/>
