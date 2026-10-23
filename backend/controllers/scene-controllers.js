@@ -160,7 +160,8 @@ const createScene = async (req, res) => {
         const [rows] = await pool.query(
             `SELECT
                 s.*,
-                u.username
+                u.username,
+                u.profile_pic_url
              FROM scenes s
              JOIN users u ON u.id = s.user_id
              WHERE s.id = ? AND s.user_id = ?`,
