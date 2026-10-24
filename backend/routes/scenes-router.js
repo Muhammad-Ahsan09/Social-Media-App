@@ -8,8 +8,16 @@ const {
     deleteScene,
 } = require("../controllers/scene-controllers");
 
+
+const {
+    getSceneComments,
+    createSceneComment
+} = require("../controllers/scene-comments-controllers");
+
+
 const multer = require("multer");
 const { default: authMiddleware } = require("../middlewares/authmiddleware");
+const { likeScene, unlikeScene } = require("../controllers/scene-likes-controllers");
 
 
 const storage = multer.memoryStorage()
@@ -28,5 +36,22 @@ sceneRouter.post(
 
 // Delete a scene owned by the authenticated user
 sceneRouter.delete("/:sceneId", authMiddleware, deleteScene);
+
+
+sceneRouter.post("/:sceneId/like", authMiddleware, likeScene);
+sceneRouter.delete("/:sceneId/like", authMiddleware, unlikeScene);
+
+
+sceneRouter.get(
+    "/:sceneId/comments",
+    authMiddleware,
+    getSceneComments
+);
+
+sceneRouter.post(
+    "/:sceneId/comments",
+    authMiddleware,
+    createSceneComment
+);
 
 module.exports = sceneRouter;
