@@ -136,7 +136,7 @@ const LeftSidebar = ({ setUser, currentUserId }) => {
 
           {/* Scenes */}
           <Link
-            to="/Scenes"
+            to="/scenes"
             onClick={() => setSelectedSection(3)}
             className={`flex h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-[14px] transition-all duration-200 ${selectedSection === 3
               ? "bg-[#DDEBE2] font-semibold text-[#294C46] dark:bg-[#30483B] dark:text-[#E0F0E5]"

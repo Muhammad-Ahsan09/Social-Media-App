@@ -9,12 +9,12 @@ import {
     FaPaperPlane,
 } from "react-icons/fa";
 
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
+
 const Scene = ({
     scene,
     isActive,
     onVisible,
-    onLike,
-    onComment,
 }) => {
     const videoRef = useRef(null);
     const sectionRef = useRef(null);
@@ -23,11 +23,72 @@ const Scene = ({
     const [isMuted, setIsMuted] = useState(true);
     const [commentsOpen, setCommentsOpen] = useState(false);
     const [commentText, setCommentText] = useState("");
+    const [likesCount, setLikesCount] = useState(
+        Number(scene.likes_count) || 0
+    );
+    const [isLiked, setIsLiked] = useState(Boolean(scene.is_liked));
+
+    const [comments, setComments] = useState([]);
+    const [commentsCount, setCommentsCount] = useState(
+        Number(scene.comments_count) || 0
+    );
+    const [commentsLoading, setCommentsLoading] = useState(false);
+    const [commentsError, setCommentsError] = useState("");
+
 
     const videoUrl = scene.video_url || scene.media_url || "";
     const creator = scene.username || "solace_user";
     const avatar = scene.profile_pic_url || "";
     const caption = scene.caption || "";
+
+    useEffect(() => {
+        if (!commentsOpen) return;
+
+        let cancelled = false;
+
+        const fetchComments = async () => {
+            setCommentsLoading(true);
+            setCommentsError("");
+
+            try {
+                const response = await fetch(
+                    `${BACKEND_URL}/api/scenes/${scene.id}/comments`,
+                    {
+                        method: "GET",
+                        credentials: "include",
+                    }
+                );
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(
+                        data.message || "Failed to fetch comments."
+                    );
+                }
+
+                if (!cancelled) {
+                    setComments(data.comments || []);
+                    setCommentsCount((data.comments || []).length);
+                }
+            } catch (error) {
+                if (!cancelled) {
+                    setCommentsError(error.message);
+                    console.error("Fetch Scene comments error:", error);
+                }
+            } finally {
+                if (!cancelled) {
+                    setCommentsLoading(false);
+                }
+            }
+        };
+
+        fetchComments();
+
+        return () => {
+            cancelled = true;
+        };
+    }, [commentsOpen, scene.id]);
 
     // Detect the scene currently visible in the scrolling feed.
     useEffect(() => {
@@ -85,17 +146,82 @@ const Scene = ({
         }
     };
 
-    const submitComment = (event) => {
+    const submitComment = async (event) => {
         event.preventDefault();
 
         const content = commentText.trim();
         if (!content) return;
 
-        onComment?.(scene.id, content);
-        setCommentText("");
+        try {
+            const response = await fetch(
+                `${BACKEND_URL}/api/scenes/${scene.id}/comments`,
+                {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ content }),
+                }
+            );
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    data.message || "Failed to post comment."
+                );
+            }
+
+            if (data.comment) {
+                setComments((previous) => [
+                    ...previous,
+                    data.comment,
+                ]);
+
+                setCommentsCount((previous) => previous + 1);
+            }
+
+            setCommentText("");
+        } catch (error) {
+            console.error("Post comment error:", error);
+        }
     };
 
-    const comments = scene.comments || [];
+
+    const handleLike = async () => {
+        const previousLiked = isLiked;
+        const previousCount = likesCount;
+        const nextLiked = !previousLiked;
+
+        // Update UI immediately.
+        setIsLiked(nextLiked);
+        setLikesCount(Math.max(0, previousCount + (nextLiked ? 1 : -1)));
+
+        try {
+            const response = await fetch(
+                `${BACKEND_URL}/api/scenes/${scene.id}/like`,
+                {
+                    method: nextLiked ? "POST" : "DELETE",
+                    credentials: "include",
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to update Scene like.");
+            }
+
+            const data = await response.json();
+
+            setIsLiked(Boolean(data.is_liked));
+            setLikesCount(Number(data.likes_count) || 0);
+        } catch (error) {
+            setIsLiked(previousLiked);
+            setLikesCount(previousCount);
+
+            console.error("Scene like error:", error);
+        }
+    };
 
     return (
         <section
@@ -146,19 +272,20 @@ const Scene = ({
                 {/* Action buttons */}
                 <div className="absolute bottom-6 right-3 z-10 flex flex-col items-center gap-5 text-white sm:right-4">
                     <button
-                        onClick={() => onLike?.(scene.id)}
+                        onClick={handleLike}
                         className="group flex flex-col items-center gap-1.5"
-                        aria-label={scene.is_liked ? "Unlike scene" : "Like scene"}
+                        aria-label={isLiked ? "Unlike scene" : "Like scene"}
                     >
                         <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/15 backdrop-blur-xl transition group-hover:bg-white/20 group-active:scale-90">
-                            {scene.is_liked ? (
+                            {isLiked ? (
                                 <FaHeart className="text-[18px] text-rose-400" />
                             ) : (
                                 <FaRegHeart className="text-[18px]" />
                             )}
                         </span>
+
                         <span className="text-[11px] font-medium tabular-nums text-white/90">
-                            {scene.likes_count}
+                            {likesCount}
                         </span>
                     </button>
 
@@ -171,7 +298,7 @@ const Scene = ({
                             <FaRegComment className="text-[18px]" />
                         </span>
                         <span className="text-[11px] font-medium tabular-nums text-white/90">
-                            {scene.comments_count}
+                            {commentsCount}
                         </span>
                     </button>
 
@@ -255,32 +382,43 @@ const Scene = ({
 
                             <div className="h-px bg-[#294C46]/10 dark:bg-white/10" />
 
+
                             {/* Comment list */}
                             <div className="min-h-24 flex-1 space-y-5 overflow-y-auto px-6 py-5">
-                                {comments.length === 0 ? (
-                                    <div className="py-8 text-center">
-                                        <FaRegComment className="mx-auto mb-3 text-xl opacity-30" />
-                                        <p className="text-sm font-medium">
-                                            Start the conversation
-                                        </p>
-                                        <p className="mt-1 text-xs text-[#294C46]/55 dark:text-white/50">
-                                            Be the first to comment on this scene.
-                                        </p>
-                                    </div>
+                                {commentsLoading ? (
+                                    <p className="text-center text-sm text-gray-500">
+                                        Loading comments...
+                                    </p>
+                                ) : commentsError ? (
+                                    <p className="text-center text-sm text-red-500">
+                                        {commentsError}
+                                    </p>
+                                ) : comments.length === 0 ? (
+                                    <p className="text-center text-sm text-gray-500">
+                                        No comments yet. Start the conversation!
+                                    </p>
                                 ) : (
                                     comments.map((comment) => (
-                                        <div key={comment.id} className="flex gap-3">
-                                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#294C46]/10 text-xs font-semibold dark:bg-white/10">
-                                                {(comment.username || "u")
-                                                    .charAt(0)
-                                                    .toUpperCase()}
-                                            </div>
+                                        <div key={comment.id} className="flex items-start gap-3">
+                                            <img
+                                                src={
+                                                    comment.profile_pic_url ||
+                                                    "/default-avatar.png"
+                                                }
+                                                alt={`${comment.username || "User"}'s profile`}
+                                                className="h-10 w-10 shrink-0 rounded-full object-cover"
+                                                onError={(e) => {
+                                                    e.currentTarget.onerror = null;
+                                                    e.currentTarget.src = "/default-avatar.png";
+                                                }}
+                                            />
 
                                             <div className="min-w-0 flex-1">
-                                                <p className="text-xs font-semibold">
-                                                    @{(comment.username || "user").replace(/^@/, "")}
+                                                <p className="text-sm font-semibold text-[#294C46]">
+                                                    {comment.username || "solace_user"}
                                                 </p>
-                                                <p className="mt-0.5 break-words text-[13px] leading-relaxed text-[#294C46]/85 dark:text-white/80">
+
+                                                <p className="mt-1 whitespace-pre-wrap break-words text-sm text-gray-700">
                                                     {comment.content}
                                                 </p>
                                             </div>
@@ -288,6 +426,7 @@ const Scene = ({
                                     ))
                                 )}
                             </div>
+
 
                             {/* Add a comment */}
                             <form

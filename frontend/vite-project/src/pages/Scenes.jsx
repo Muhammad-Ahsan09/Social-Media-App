@@ -6,38 +6,6 @@ import BottomNavbar from "../components/BottomNavbar";
 import TopNavbar from "../components/TopNavbar";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
-// const INITIAL_SCENES = [
-//   {
-//     id: "demo-1",
-//     video_url:
-//       "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-//     caption: "Little things that make an ordinary day beautiful 🌸",
-//     username: "alex",
-//     profile_picture: "https://i.pravatar.cc/150?img=12",
-//     likes_count: 128,
-//     comments_count: 8,
-//     is_liked: false,
-//     created_at: "2026-10-23T12:00:00Z",
-//     comments: [
-//       { id: 1, username: "sarah", content: "Such a peaceful vibe 🌿" },
-//       { id: 2, username: "james", content: "Love this!" },
-//     ],
-//   },
-//   {
-//     id: "demo-2",
-//     video_url: "https://www.w3schools.com/html/mov_bbb.mp4",
-//     caption: "Sometimes, slowing down is all you need. ✨",
-//     username: "sarah",
-//     profile_picture: "https://i.pravatar.cc/150?img=47",
-//     likes_count: 86,
-//     comments_count: 3,
-//     is_liked: false,
-//     created_at: "2026-10-22T12:00:00Z",
-//     comments: [
-//       { id: 3, username: "alex", content: "Needed this reminder." },
-//     ],
-//   },
-// ];
 
 const Scenes = ({ setUser, currentUserId }) => {
 
@@ -80,6 +48,7 @@ const Scenes = ({ setUser, currentUserId }) => {
         });
 
         const data = await response.json();
+        console.log(data)
 
         if (!response.ok) {
           throw new Error(data.message || "Failed to fetch Scenes.");
@@ -91,7 +60,7 @@ const Scenes = ({ setUser, currentUserId }) => {
           ...scene,
           likes_count: Number(scene.likes_count || 0),
           comments_count: Number(scene.comments_count || 0),
-          is_liked: false,
+          // is_liked: scene.is_liked,
           comments: [],
         }));
 
@@ -207,6 +176,7 @@ const Scenes = ({ setUser, currentUserId }) => {
       const newScene = {
         ...data.scene,
         username: data.scene.username || "you",
+        profile_pic_url: data.profile_pic_url || "N",
         likes_count: 0,
         comments_count: 0,
         is_liked: false,
@@ -235,22 +205,6 @@ const Scenes = ({ setUser, currentUserId }) => {
     }
   };
 
-  const handleLike = (sceneId) => {
-    setScenes((previous) =>
-      previous.map((scene) =>
-        scene.id === sceneId
-          ? {
-            ...scene,
-            is_liked: !scene.is_liked,
-            likes_count: Math.max(
-              0,
-              scene.likes_count + (scene.is_liked ? -1 : 1)
-            ),
-          }
-          : scene
-      )
-    );
-  };
 
   const handleComment = (sceneId, content) => {
     setScenes((previous) =>
@@ -334,8 +288,6 @@ const Scenes = ({ setUser, currentUserId }) => {
                   scene={scene}
                   isActive={activeSceneId === scene.id}
                   onVisible={() => setActiveSceneId(scene.id)}
-                  onLike={handleLike}
-                  onComment={handleComment}
                 />
               ))
             )}

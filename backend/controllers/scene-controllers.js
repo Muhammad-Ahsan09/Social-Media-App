@@ -212,16 +212,32 @@ const getScenes = async (req, res) => {
 
         const [scenes] = await pool.query(
             `SELECT
-                s.*,
-                u.username,
-                u.profile_pic_url
-             FROM scenes s
-             JOIN users u ON u.id = s.user_id
-             WHERE s.status = 'published'
-               AND (s.visibility = 'public' OR s.user_id = ?)
-             ORDER BY s.created_at DESC
-             LIMIT ? OFFSET ?`,
-            [userId, limit, offset]
+        s.*,
+        u.username,
+        u.profile_pic_url,
+
+        (
+            SELECT COUNT(*)
+            FROM scene_likes sl
+            WHERE sl.scene_id = s.id
+        ) AS likes_count,
+
+        EXISTS (
+            SELECT 1
+            FROM scene_likes sl
+            WHERE sl.scene_id = s.id
+              AND sl.user_id = ?
+        ) AS is_liked
+
+     FROM scenes s
+     JOIN users u ON u.id = s.user_id
+
+     WHERE s.status = 'published'
+       AND (s.visibility = 'public' OR s.user_id = ?)
+
+     ORDER BY s.created_at DESC
+     LIMIT ? OFFSET ?`,
+            [userId, userId, limit, offset]
         );
 
         return res.status(200).json({
