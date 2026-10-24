@@ -29,7 +29,7 @@ const BottomNavbar = ({ currentUserId }) => {
             </Link>
 
             <Link
-                to="/search"
+                to="/discover"
                 aria-label="Search"
                 className="flex h-11 w-12 items-center justify-center rounded-xl
             hover:bg-[#E9EFEB] hover:text-[#397E6D]
@@ -51,7 +51,7 @@ const BottomNavbar = ({ currentUserId }) => {
                 <BiSolidMoviePlay className="h-[20px] w-[20px] shrink-0" />
             </Link>
 
-            <Link
+            {/* <Link
                 to="/explore"
                 aria-label="Explore"
                 className="flex h-11 w-12 items-center justify-center rounded-xl
@@ -60,7 +60,7 @@ const BottomNavbar = ({ currentUserId }) => {
                 transition-all duration-200"
             >
                 <MdExplore className="h-6 w-6" />
-            </Link>
+            </Link> */}
 
             <Link
                 to="/my_friends"

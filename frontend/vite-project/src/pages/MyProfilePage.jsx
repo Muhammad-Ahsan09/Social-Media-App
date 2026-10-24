@@ -18,6 +18,17 @@ const MyProfilePage = ({ currentUserId }) => {
     const [posts, setPosts] = useState([])
 
 
+    
+const cardCorners = [
+    "rounded-[26px_26px_26px_12px]",
+    "rounded-[20px_28px_14px_28px]",
+    "rounded-[28px_16px_28px_28px]",
+    "rounded-[16px_28px_24px_28px]",
+    "rounded-[28px_24px_16px_28px]",
+];
+
+
+
 
     useEffect(() => {
         const checkSentRequest = async () => {
@@ -227,44 +238,122 @@ const MyProfilePage = ({ currentUserId }) => {
 
 
                 </div>
+
                 <div className="mt-8 w-full">
+                    <div className="mb-5 flex items-center justify-between">
+                        <div>
+                            <h2 className="text-lg font-semibold text-[#294C46] dark:text-[#E1EAE4]">
+                                Posts
+                            </h2>
+                            <p className="mt-1 text-sm text-[#82978C] dark:text-gray-400">
+                                A collection of shared moments
+                            </p>
+                        </div>
 
-                    <div className="mb-4 flex w-full items-center text-sm font-semibold text-[#294C46] dark:text-[#E1EAE4]">
-                        Posts
+                        <span className="rounded-full bg-[#E8EEE7] px-3 py-1 text-xs font-semibold text-[#42675A] dark:bg-gray-800 dark:text-[#B4D0BE]">
+                            {posts.length} {posts.length === 1 ? "post" : "posts"}
+                        </span>
                     </div>
 
-                    <div className="grid w-full grid-cols-2 gap-2 sm:gap-3 md:grid-cols-3 md:gap-4">
+                    {posts.length === 0 ? (
+                        <div className="flex min-h-56 flex-col items-center justify-center rounded-[28px] border border-dashed border-[#D8E1D6] px-5 text-center dark:border-gray-700">
+                            <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E8EEE7] text-[#42675A] dark:bg-gray-800 dark:text-[#B4D0BE]">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="26"
+                                    height="26"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="1.6"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    aria-hidden="true"
+                                >
+                                    <rect x="3" y="3" width="18" height="18" rx="4" />
+                                    <circle cx="8.5" cy="8.5" r="1.5" />
+                                    <path d="m21 15-5-5L5 21" />
+                                </svg>
+                            </div>
 
-                        {
-                            posts.map((post) => <div className={`aspect-square cursor-pointer overflow-hidden rounded-xl border border-[#D6DFD9] bg-[#E9EFEB] transition hover:border-[#78BFA7] hover:opacity-80 dark:border-[#344A43] dark:bg-[#17251F]`}>
-                                {
-                                    post.resource_type === "video" ? (
-                                        <video
-                                            src={post.imageUrl}
-                                            controls
-                                            muted
-                                            loop
-                                            playsInline
-                                            className="block max-h-[65vh] w-full object-contain"
-                                        />
-                                    ) : (
+                            <h3 className="text-base font-semibold">
+                                No posts yet
+                            </h3>
 
-                                        <Link to={`/posts/${post.id}`} className="block h-full w-full [&_img]:h-full [&_img]:w-full [&_img]:object-cover">
-                                            <LazyImage src={`${post.imageUrl}`} className="h-full w-full object-cover" />
-                                        </Link>
-                                    )
-                                }
+                            <p className="mt-2 max-w-sm text-sm text-[#75877E] dark:text-gray-400">
+                                Shared moments will find their place here.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className="columns-2 gap-3 sm:columns-3 sm:gap-4 lg:columns-4 lg:gap-5 xl:columns-5">
+                            {posts.map((post, index) => (
+                                <article
+                                    key={post.id ?? post._id}
+                                    className="group mb-4 break-inside-avoid sm:mb-5"
+                                >
+                                    <Link
+                                        to={`/posts/${post.id ?? post._id}`}
+                                        aria-label={`View post ${index + 1}`}
+                                        className="block rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[#719987] focus-visible:ring-offset-4 dark:focus-visible:ring-offset-gray-950"
+                                    >
+                                        <div
+                                            className={`relative isolate overflow-hidden bg-[#E9EDE7] dark:bg-gray-800 ${cardCorners[index % cardCorners.length]
+                                                }`}
+                                        >
+                                            {post.resource_type === "video" ? (
+                                                <video
+                                                    src={post.imageUrl}
+                                                    muted
+                                                    loop
+                                                    playsInline
+                                                    preload="metadata"
+                                                    className="block h-auto max-h-[560px] w-full object-cover transition-transform duration-500 group-hover:scale-[1.025]"
+                                                />
+                                            ) : (
+                                                <img
+                                                    src={post.imageUrl}
+                                                    alt={post.caption || "Profile post"}
+                                                    loading="lazy"
+                                                    className="block h-auto max-h-[560px] w-full object-cover transition-transform duration-500 group-hover:scale-[1.035]"
+                                                />
+                                            )}
 
-                            </div>)
-                        }
-                    </div>
+                                            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
+                                            {post.resource_type === "video" && (
+                                                <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-black/40 p-2 text-white backdrop-blur-sm">
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        width="15"
+                                                        height="15"
+                                                        viewBox="0 0 24 24"
+                                                        fill="currentColor"
+                                                        aria-hidden="true"
+                                                    >
+                                                        <path d="m8 5 12 7-12 7z" />
+                                                    </svg>
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        {post.caption && (
+                                            <p className="mt-2 px-1 text-sm font-medium leading-5 text-[#354F45] dark:text-gray-200">
+                                                {post.caption}
+                                            </p>
+                                        )}
+                                    </Link>
+                                </article>
+                            ))}
+                        </div>
+                    )}
                 </div>
+
             </div>
 
 
 
         </div>
-        <BottomNavbar currentUserId={currentUserId}/>
+        <BottomNavbar currentUserId={currentUserId} />
     </>
 
 

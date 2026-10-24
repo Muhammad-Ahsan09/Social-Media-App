@@ -95,9 +95,9 @@ const LeftSidebar = ({ setUser, currentUserId }) => {
             <span>Home</span>
           </Link>
 
-          {/* Search */}
+          {/* Discover */}
           <Link
-            to="/search"
+            to="/discover"
             onClick={() => setSelectedSection(1)}
             className={`flex h-11 items-center gap-3 rounded-xl px-3 text-[14px] transition-all duration-200 ${selectedSection === 1
               ? "bg-[#DDEBE2] font-semibold text-[#294C46] dark:bg-[#30483B] dark:text-[#E0F0E5]"
@@ -105,11 +105,11 @@ const LeftSidebar = ({ setUser, currentUserId }) => {
               }`}
           >
             <FaSearch className="h-[18px] w-[18px] shrink-0" />
-            <span>Search</span>
+            <span>Discover</span>
           </Link>
 
           {/* Explore */}
-          <Link
+          {/* <Link
             to="/explore"
             onClick={() => setSelectedSection(2)}
             className={`flex h-11 items-center gap-3 rounded-xl px-3 text-[14px] transition-all duration-200 ${selectedSection === 2
@@ -119,7 +119,7 @@ const LeftSidebar = ({ setUser, currentUserId }) => {
           >
             <MdExplore className="h-[20px] w-[20px] shrink-0" />
             <span>Explore</span>
-          </Link>
+          </Link> */}
 
           {/* Journeys */}
           <Link

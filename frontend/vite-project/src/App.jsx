@@ -2,6 +2,7 @@ import { Suspense, lazy } from "react"
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 import { useEffect, useState } from "react"
 import Scenes from "./pages/Scenes"
+import Discover from "./pages/Discover"
 
 const Home = lazy(() => import("./pages/Home"))
 const Signup = lazy(() => import("./pages/Signup"))
@@ -50,12 +51,14 @@ function App() {
       <Route path="/friend_requests" element={user ? <Suspense fallback={<div>Loading...</div>}> <FriendRequests setUser={setUser} currentUserId={user.id} /> </Suspense> : <Navigate to="/signup" />} />
       <Route path="/my_friends" element={user ? <Suspense fallback={<div>Loading...</div>}>  <MyFriends setUser={setUser} currentUserId={user.id} /> </Suspense> : <Navigate to="/login" />} />
       <Route path="chats/:friend_id" element={user ? <Suspense fallback={<div>Loading...</div>}>  <Chat setUser={setUser} currentUserId={user.id} /> </Suspense> : <Navigate to={"/login"} />} />
-      <Route path="/search" element={user ? <Suspense fallback={<div>Loading...</div>}>  <SearchPage setUser={setUser} currentUserId={user.id} /></Suspense> : <Navigate to="/login" />} />
+      {/* <Route path="/search" element={user ? <Suspense fallback={<div>Loading...</div>}>  <SearchPage setUser={setUser} currentUserId={user.id} /></Suspense> : <Navigate to="/login" />} /> */}
       <Route path="/posts/:post_id" element={user ? <Suspense fallback={<div>Loading...</div>}>  <PostDetail setUser={setUser} currentUserId={user.id} /></Suspense> : <Navigate to="/login" />} />
-      <Route path="/explore" element={user ? <Suspense fallback={<div>Loading...</div>}>  <Explore setUser={setUser} currentUserId={user.id} /> </Suspense> : <Navigate to="/login" />} />
-      <Route path="/journeys" element={user ? <Suspense fallback={<div>Loading...</div>} > <Journeys /></Suspense> : <Navigate to="/signup" />} />
+      {/* <Route path="/explore" element={user ? <Suspense fallback={<div>Loading...</div>}>  <Explore setUser={setUser} currentUserId={user.id} /> </Suspense> : <Navigate to="/login" />} /> */}
+      <Route path="/journeys" element={user ? <Suspense fallback={<div>Loading...</div>} > <Journeys setUser={setUser} currentUserId={user.id}/></Suspense> : <Navigate to="/signup" />} />
       <Route path="/journeys/:journeyId" element={user ? <Suspense fallback={<div>Loading...</div>} > <JourneyDetails /></Suspense> : <Navigate to="/signup" />} />
       <Route path="/scenes" element={user ? <Suspense fallback={<div>Loading...</div>} > <Scenes setUser={setUser} currentUserId={user.id} /></Suspense> : <Navigate to="/signup" />} />
+      <Route path="/discover" element={user ? <Suspense fallback={<div>Loading...</div>} > <Discover setUser={setUser} currentUserId={user.id} /></Suspense> : <Navigate to="/signup" />} />
+
     </Routes>
   </BrowserRouter>
   // <Home/>
