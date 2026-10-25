@@ -235,10 +235,10 @@ export default function Journeys({setUser, currentUserId}) {
     return (
         <div className="flex min-h-screen flex-col bg-[#F6F7F4] text-[#294C46] transition-colors duration-300 dark:bg-gray-950 dark:text-[#E1EAE4] md:flex-row">
 
-            <LeftSidebar
+            {/* <LeftSidebar
                 setUser={setUser}
                 currentUserId={currentUserId}
-            />
+            /> */}
 
             <main className="min-w-0 flex-1 px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
                 <div className="mx-auto max-w-7xl">

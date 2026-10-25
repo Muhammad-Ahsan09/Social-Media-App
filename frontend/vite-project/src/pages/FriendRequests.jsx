@@ -39,9 +39,9 @@ const FriendRequests = ({currentUserId}) => {
     }
 return (
   <>
-    <div className="min-h-screen bg-[#F5F7F3] text-[#294C46] transition-colors dark:bg-[#17251F] dark:text-[#E1EAE4]">
+    <div className="min-h-screen bg-[#F5F7F3] text-[#294C46] transition-colors dark:bg-gray-950 dark:text-[#E1EAE4]">
       <div className="flex min-h-screen flex-col md:flex-row">
-        <LeftSidebar currentUserId={currentUserId} />
+        {/* <LeftSidebar currentUserId={currentUserId} /> */}
 
         <main className="min-w-0 flex-1 px-4 py-6 pb-24 sm:px-6 md:px-8 md:py-10 md:pb-10">
           {/* Page heading */}

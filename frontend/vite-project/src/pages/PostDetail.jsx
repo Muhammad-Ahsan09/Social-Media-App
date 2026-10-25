@@ -66,9 +66,9 @@ return (
   <>
     <TopNavbar />
 
-    <div className="min-h-screen bg-[#DDE7DF] text-[#294C46] transition-colors duration-200 dark:bg-[#14241D] dark:text-[#E1EAE4]">
+    <div className="min-h-screen bg-[#DDE7DF] text-[#294C46] transition-colors duration-200 dark:bg-gray-950 dark:text-[#E1EAE4]">
       <div className="flex flex-col md:flex-row">
-        <LeftSidebar setUser={setUser} currentUserId={currentUserId} />
+        {/* <LeftSidebar setUser={setUser} currentUserId={currentUserId} /> */}
 
         <main className="mx-auto w-full max-w-[1400px] flex-1 pb-24 pt-16 md:px-6 md:pb-10 md:pt-8 lg:px-8">
           <article className="grid grid-cols-1 overflow-hidden bg-white dark:bg-[#1E3027] md:rounded-xl md:border md:border-[#C3D2C7] md:dark:border-[#34493D] lg:h-[calc(100vh-6rem)] lg:grid-cols-[minmax(0,1fr)_380px] xl:grid-cols-[minmax(0,1fr)_420px]">

@@ -230,16 +230,16 @@ const Scenes = ({ setUser, currentUserId }) => {
   return (
     <div className="h-[100dvh] overflow-hidden bg-[#F6F7F4] text-[#294C46] dark:bg-black dark:text-white">
       {/* Mobile top navigation */}
-      <TopNavbar setUser={setUser} />
+      {/* <TopNavbar setUser={setUser} /> */}
 
       <div className="flex h-full md:pt-0">
         {/* Desktop sidebar */}
-        <div className="hidden md:block">
+        {/* <div className="hidden md:block">
           <LeftSidebar
             setUser={setUser}
             currentUserId={currentUserId}
           />
-        </div>
+        </div> */}
 
         {/* Scenes content */}
         <main className="relative min-w-0 flex-1 overflow-hidden bg-[#F6F7F4] dark:bg-black">
@@ -456,7 +456,7 @@ const Scenes = ({ setUser, currentUserId }) => {
           )}
         </main>
 
-        <BottomNavbar currentUserId={currentUserId} />
+        {/* <BottomNavbar currentUserId={currentUserId} /> */}
       </div>
       </div>
       );

@@ -26,7 +26,7 @@ const RightSidebar = () => {
     }, [])
 
 return (
-  <aside className="hidden pt-10 text-[#294C46] transition-colors duration-300 dark:text-[#E1EAE4] lg:block lg:w-1/5 lg:min-w-[240px] lg:pr-6">
+  <aside className="hidden pt-10 text-[#294C46] transition-colors duration-300 dark:text-[#E1EAE4] lg:block shrink-0 lg:pr-6">
 
     {/* Current user */}
     <div className="mb-8 rounded-2xl border border-[#D6DFD9] bg-[#F6F7F4] p-4 dark:border-[#344A43] dark:bg-[#1D3028]">

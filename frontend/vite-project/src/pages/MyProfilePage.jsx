@@ -124,7 +124,7 @@ const cardCorners = [
 
 
     return <>
-        <TopNavbar />
+        {/* <TopNavbar /> */}
         <div className={`flex flex-col md:flex-row transition-all w-full pt-14 md:pt-0`}>
 
             {
@@ -182,9 +182,9 @@ const cardCorners = [
 
                 </div>
             }
-            <LeftSidebar currentUserId={currentUserId} />
+            {/* <LeftSidebar currentUserId={currentUserId} /> */}
 
-            <div className="main-section w-full px-4 pb-32 pt-6 text-[#294C46] sm:px-6 md:w-4/6 md:pb-40 md:pt-10 dark:text-[#E1EAE4]">
+            <div className="main-section w-full px-4 pb-32 pt-6 text-[#294C46] sm:px-6 md:pb-40 md:pt-10 dark:text-[#E1EAE4]">
                 <div className="flex w-full flex-col items-center justify-center rounded-2xl border border-[#D6DFD9] bg-[#F6F7F4] px-5 py-8 shadow-[0_8px_30px_-24px_rgba(41,76,70,0.25)] transition-colors duration-300 dark:border-[#344A43] dark:bg-[#1D3028] md:flex-row md:px-8 md:py-10">
                     <div className="cursor-pointer" onClick={() => { currentUserId == userid && setClickedProfilePic(true) }}  >
                         <div className="rounded-full border-2 border-[#78BFA7] p-1 transition hover:border-[#397E6D] dark:hover:border-[#A9DCC8]">
@@ -353,7 +353,7 @@ const cardCorners = [
 
 
         </div>
-        <BottomNavbar currentUserId={currentUserId} />
+        {/* <BottomNavbar currentUserId={currentUserId} /> */}
     </>
 
 

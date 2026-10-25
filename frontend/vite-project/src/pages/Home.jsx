@@ -6,15 +6,13 @@ import TopNavbar from "../components/TopNavbar";
 
 const Home = ({ setUser, currentUserId }) => {
     return <>
-        <TopNavbar setUser={setUser} />
+        {/* <TopNavbar setUser={setUser} /> */}
         <div className="flex flex-col md:flex-row">
-
-            <LeftSidebar setUser={setUser} currentUserId={currentUserId} />
             <PostsSection />
             <RightSidebar />
         </div>
 
-        <BottomNavbar currentUserId={currentUserId} />
+        {/* <BottomNavbar currentUserId={currentUserId} /> */}
     </>
 }
 
