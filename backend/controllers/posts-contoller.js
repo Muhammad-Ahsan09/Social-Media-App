@@ -169,7 +169,7 @@ const getPosts = async (req, res) => {
         LIMIT 20;`, [userid]);
 
         const posts = response[0];
-        res.json(posts);
+        res.status(200).json({success: true, posts});
 
     } catch (error) {
         console.log(error.message);

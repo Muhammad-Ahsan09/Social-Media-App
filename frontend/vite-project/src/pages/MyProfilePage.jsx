@@ -19,13 +19,13 @@ const MyProfilePage = ({ currentUserId }) => {
 
 
     
-const cardCorners = [
-    "rounded-[26px_26px_26px_12px]",
-    "rounded-[20px_28px_14px_28px]",
-    "rounded-[28px_16px_28px_28px]",
-    "rounded-[16px_28px_24px_28px]",
-    "rounded-[28px_24px_16px_28px]",
-];
+    const cardCorners = [
+        "rounded-[26px_26px_26px_12px]",
+        "rounded-[20px_28px_14px_28px]",
+        "rounded-[28px_16px_28px_28px]",
+        "rounded-[16px_28px_24px_28px]",
+        "rounded-[28px_24px_16px_28px]",
+    ];
 
 
 
@@ -41,6 +41,7 @@ const cardCorners = [
         checkSentRequest()
     }, [])
 
+    
     useEffect(() => {
         const getUser = async () => {
             const res = await fetch(BACKEND_URL + `/api/users/${userid}`)

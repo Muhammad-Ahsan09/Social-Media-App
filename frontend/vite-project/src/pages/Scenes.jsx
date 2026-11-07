@@ -5,8 +5,6 @@ import LeftSidebar from "../components/LeftSidebar";
 import BottomNavbar from "../components/BottomNavbar";
 import TopNavbar from "../components/TopNavbar";
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
-
-
 const Scenes = ({ setUser, currentUserId }) => {
 
 
