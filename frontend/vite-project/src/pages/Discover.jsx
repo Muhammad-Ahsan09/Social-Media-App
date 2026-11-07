@@ -45,6 +45,7 @@ const Discover = ({ setUser, currentUserId }) => {
 
                 const response = await fetch(`${BACKEND_URL}/api/posts`, {
                     signal: controller.signal,
+                    credentials: "include"
                 });
 
                 if (!response.ok) {
