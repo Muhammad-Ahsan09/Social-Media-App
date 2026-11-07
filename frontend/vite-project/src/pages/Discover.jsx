@@ -1,10 +1,11 @@
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { FaSearch, FaTimes } from "react-icons/fa";
 import LeftSidebar from "../components/LeftSidebar";
 import BottomNavbar from "../components/BottomNavbar";
 import TopNavbar from "../components/TopNavbar";
+import { useQuery } from "@tanstack/react-query";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
@@ -16,13 +17,8 @@ const cardCorners = [
     "rounded-[28px_24px_16px_28px]",
 ];
 
-const Discover = ({ setUser, currentUserId }) => {
+const Discover = () => {
     const [search, setSearch] = useState("");
-
-    // The default Discover feed
-    const [allPosts, setAllPosts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState("");
 
     // Search results
     const [searchPosts, setSearchPosts] = useState([]);
@@ -31,46 +27,41 @@ const Discover = ({ setUser, currentUserId }) => {
     const [searchLoading, setSearchLoading] = useState(false);
     const [searchError, setSearchError] = useState("");
 
-    const isSearchMode = hasSearched;
-    const displayedPosts = isSearchMode ? searchPosts : allPosts;
+    const {
+        data: allPosts = [],
+        isLoading,
+        isError,
+        error,
+    } = useQuery({
+        queryKey: ["posts"],
 
-    // Fetch the default Discover feed
-    useEffect(() => {
-        const controller = new AbortController();
+        queryFn: async () => {
+            const response = await fetch(`${BACKEND_URL}/api/posts`, {
+                credentials: "include",
+            });
 
-        const getPosts = async () => {
-            try {
-                setLoading(true);
-                setError("");
-
-                const response = await fetch(`${BACKEND_URL}/api/posts`, {
-                    signal: controller.signal,
-                    credentials: "include"
-                });
-
-                if (!response.ok) {
-                    throw new Error("Unable to load posts.");
-                }
-
-                const data = await response.json();
-
-                setAllPosts(Array.isArray(data) ? data : []);
-            } catch (err) {
-                if (err.name !== "AbortError") {
-                    setError("Something went wrong while loading posts.");
-                    console.error("Discover posts error:", err);
-                }
-            } finally {
-                if (!controller.signal.aborted) {
-                    setLoading(false);
-                }
+            if (!response.ok) {
+                throw new Error("Unable to load posts.");
             }
-        };
 
-        getPosts();
+            const data = await response.json();
 
-        return () => controller.abort();
-    }, []);
+            if (!data.success) {
+                throw new Error("Unable to load posts.");
+            }
+
+            return Array.isArray(data.posts) ? data.posts : [];
+        },
+
+        staleTime: 1000 * 120,
+        gcTime: 1000 * 60 * 5,
+    });
+
+    const isSearchMode = hasSearched;
+
+    const displayedPosts = isSearchMode
+        ? searchPosts
+        : allPosts;
 
     // Search for posts and people
     const handleSearch = async (event) => {
@@ -126,10 +117,6 @@ const Discover = ({ setUser, currentUserId }) => {
             {/* <TopNavbar /> */}
 
             <div className="flex min-h-screen flex-col bg-[#F7F8F5] pt-14 text-[#294C46] transition-colors dark:bg-gray-950 dark:text-gray-100 md:flex-row md:pt-0">
-                {/* <LeftSidebar
-                    setUser={setUser}
-                    currentUserId={currentUserId}
-                /> */}
 
                 <main className="min-w-0 flex-1 px-3 pb-24 pt-5 sm:px-5 md:px-7 md:pb-8 md:pt-8 lg:px-9">
 
@@ -256,7 +243,7 @@ const Discover = ({ setUser, currentUserId }) => {
                     </div>
 
                     {/* Loading skeletons */}
-                    {(loading || searchLoading) ? (
+                    {(isLoading || searchLoading) ? (
                         <div
                             className="columns-2 gap-3 sm:columns-3 sm:gap-4 lg:columns-4 lg:gap-5"
                             aria-label="Loading posts"
@@ -268,17 +255,17 @@ const Discover = ({ setUser, currentUserId }) => {
                                 >
                                     <div
                                         className={`rounded-[24px] bg-[#E7EBE5] dark:bg-gray-800 ${index % 3 === 0
-                                                ? "h-64"
-                                                : index % 3 === 1
-                                                    ? "h-44"
-                                                    : "h-52"
+                                            ? "h-64"
+                                            : index % 3 === 1
+                                                ? "h-44"
+                                                : "h-52"
                                             }`}
                                     />
                                     <div className="mt-3 h-3 w-2/3 rounded-full bg-[#E7EBE5] dark:bg-gray-800" />
                                 </div>
                             ))}
                         </div>
-                    ) : error && !isSearchMode ? (
+                    ) : isError && !isSearchMode ? (
                         <div className="rounded-[28px] border border-[#E2E8E0] bg-white px-5 py-12 text-center dark:border-gray-800 dark:bg-gray-900">
                             <p className="text-sm text-[#75877E] dark:text-gray-300">
                                 {error}

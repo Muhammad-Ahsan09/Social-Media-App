@@ -1,52 +1,100 @@
-import { useEffect, useState } from "react";
 import { FaRegHeart } from "react-icons/fa";
 import { IoChatbubbleOutline } from "react-icons/io5";
 import { TbLocationShare } from "react-icons/tb";
 import { Link, useParams } from "react-router-dom";
 import { IoIosHeart } from "react-icons/io";
 import LazyImage from "./Image";
+import {useQuery, useMutation, useQueryClient} from "@tanstack/react-query"
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
 
 const Posts = () => {
-    const [posts, setPosts] = useState([]);
-    const [likedPostsId, setLikedPostsId] = useState([]);
     const params = useParams();
 
     const current_user_id = params.userid;
-
-    useEffect(() => {
-        const getPosts = async () => {
+    
+    const {data: posts = [], loading: postsLoading, error} = useQuery({
+        queryKey: ['posts'],
+        staleTime: 1000 * 120,
+        queryFn: async () => {
             const res = await fetch(BACKEND_URL + "/api/posts", {
                 credentials: "include"
             });
-            setPosts(await res.json());
+
+            const data = await res.json()
+
+            if(data.success) {
+                return data.posts
+            }
+
+            if(!res.ok) {
+                throw new Error("Failed to fetch posts")
+            }
         }
-        getPosts();
-    }, []);
+    })
 
-    useEffect(() => {
-        const getLikedPosts = async () => {
-            const res = await fetch(BACKEND_URL + `/api/liked_posts/${current_user_id}`, {
-                credentials: "include"
-            });
-            let data = await res.json();
-            data = data.map((post) => post.id);
-            setLikedPostsId(data);
+    
+const queryClient = useQueryClient();
+
+const likeMutation = useMutation({
+    mutationFn: async ({ postId, shouldLike }) => {
+        const action = shouldLike ? "like" : "unlike";
+
+        const res = await fetch(
+            `${BACKEND_URL}/api/posts/${action}/${postId}/${current_user_id}`,
+            {
+                method: "PATCH",
+                credentials: "include",
+            }
+        );
+
+        if (!res.ok) {
+            throw new Error(`Failed to ${action} post`);
         }
-        getLikedPosts();
-    }, [current_user_id]);
+    },
 
-    const handleLikePost = async (postid) => {
-        setLikedPostsId([...likedPostsId, postid]);
-        await fetch(BACKEND_URL + `/api/posts/like/${postid}/${current_user_id}`, {
-            method: "PATCH"
-        });
-    };
+    // Optimistically update the UI
+    onMutate: async ({ postId, shouldLike }) => {
+        await queryClient.cancelQueries({ queryKey: ["posts"] });
 
-    const handleUnlikePost = async (postid) => {
-        setLikedPostsId(likedPostsId.filter((id) => id != postid));
-        await fetch(BACKEND_URL + `/api/posts/unlike/${postid}/${current_user_id}`, {
-            method: "PATCH"
+        const previousPosts = queryClient.getQueryData(["posts"]);
+
+        queryClient.setQueryData(["posts"], (oldPosts = []) =>
+            oldPosts.map((post) =>
+                post.id === postId
+                    ? {
+                        ...post,
+                        is_liked: shouldLike ? 1 : 0,
+                        likes: Math.max(
+                            0,
+                            Number(post.likes) + (shouldLike ? 1 : -1)
+                        ),
+                    }
+                    : post
+            )
+        );
+
+        return { previousPosts };
+    },
+
+    // Rollback if the request fails
+    onError: (error, variables, context) => {
+        if (context?.previousPosts) {
+            queryClient.setQueryData(
+                ["posts"],
+                context.previousPosts
+            );
+        }
+
+        console.error(error);
+    },
+});
+
+    const handleLikeToggle = (post) => {
+        const shouldLike = Number(post.is_liked) !== 1;
+
+        likeMutation.mutate({
+            postId: post.id,
+            shouldLike,
         });
     };
 
@@ -124,22 +172,20 @@ const Posts = () => {
 
                     {/* Actions */}
                     <div className="flex items-center gap-1 px-3 pt-3 sm:px-4">
+                        
                         <button
                             type="button"
-                            aria-label={likedPostsId.includes(post.id) ? "Unlike post" : "Like post"}
-                            onClick={() =>
-                                likedPostsId.includes(post.id)
-                                    ? handleUnlikePost(post.id)
-                                    : handleLikePost(post.id)
-                            }
+                            aria-label={Number(post.is_liked) === 1 ? "Unlike post" : "Like post"}
+                            onClick={() => handleLikeToggle(post)}
                             className="flex h-10 w-10 items-center justify-center rounded-full transition hover:bg-[#E9EFEB] active:scale-90 dark:hover:bg-[#30483B]"
                         >
-                            {likedPostsId.includes(post.id) ? (
+                            {Number(post.is_liked) === 1 ? (
                                 <IoIosHeart className="h-6 w-6 text-[#C96D70]" />
                             ) : (
                                 <FaRegHeart className="h-[21px] w-[21px] text-[#536E62] dark:text-[#C4D9CC]" />
                             )}
                         </button>
+
 
                         <Link
                             to={`/posts/${post.id}`}
