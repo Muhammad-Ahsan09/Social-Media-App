@@ -16,7 +16,9 @@ const Posts = () => {
 
     useEffect(() => {
         const getPosts = async () => {
-            const res = await fetch(BACKEND_URL + "/api/posts");
+            const res = await fetch(BACKEND_URL + "/api/posts", {
+                credentials: "include"
+            });
             setPosts(await res.json());
         }
         getPosts();
@@ -24,7 +26,9 @@ const Posts = () => {
 
     useEffect(() => {
         const getLikedPosts = async () => {
-            const res = await fetch(BACKEND_URL + `/api/liked_posts/${current_user_id}`);
+            const res = await fetch(BACKEND_URL + `/api/liked_posts/${current_user_id}`, {
+                credentials: "include"
+            });
             let data = await res.json();
             data = data.map((post) => post.id);
             setLikedPostsId(data);
@@ -59,9 +63,6 @@ const Posts = () => {
             e.target.value = "";
         }
     };
-
-    // 🎥 Helper function to safely detect video assets
-
 
     return (
         <div className="mt-8 mb-32 w-full px-0 text-[#294C46] sm:px-6 md:mb-40 md:pl-20 md:pr-8">
