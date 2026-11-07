@@ -1,5 +1,5 @@
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL
@@ -18,88 +18,14 @@ import {
 } from "react-icons/fa";
 import JourneyCard from "../components/JourneyCard";
 import LeftSidebar from "../components/LeftSidebar";
-
-const initialJourneys = [
-    {
-        id: 1,
-        title: "My University Years",
-        description:
-            "The friendships, lessons, and little moments that made these years unforgettable.",
-        cover: "from-[#D9E4D6] via-[#B8CCBD] to-[#8CA99A]",
-        visibility: "private",
-        status: "ongoing",
-        entries: 18,
-        date: "September 2024",
-    },
-    {
-        id: 2,
-        title: "Building Something of My Own",
-        description:
-            "Ideas, setbacks, progress, and the small wins along the way.",
-        cover: "from-[#E9D8C6] via-[#D6BBA2] to-[#B58E72]",
-        visibility: "public",
-        status: "ongoing",
-        entries: 9,
-        date: "January 2026",
-    },
-    {
-        id: 3,
-        title: "A Summer to Remember",
-        description:
-            "A collection of places, people, and memories from one special summer.",
-        cover: "from-[#D6E3E7] via-[#A7C5C9] to-[#73999B]",
-        visibility: "private",
-        status: "completed",
-        entries: 12,
-        date: "June 2025",
-    },
-];
-
-const discoverJourneys = [
-    {
-        id: 101,
-        title: "Somewhere Along the Way",
-        description:
-            "Little adventures, unfamiliar places, and finding beauty in the ordinary.",
-        creator: "Alex Morgan",
-        username: "@alexmorgan",
-        cover: "from-[#D6E2D1] via-[#A7BFA2] to-[#6D8B75]",
-        entries: 14,
-        date: "Updated recently",
-    },
-    {
-        id: 102,
-        title: "Learning to Begin Again",
-        description:
-            "A new chapter, a different perspective, and the courage to start over.",
-        creator: "Sarah Ahmed",
-        username: "@sarahahmed",
-        cover: "from-[#EADBD5] via-[#D6B9AE] to-[#B18A81]",
-        entries: 8,
-        date: "Updated recently",
-    },
-    {
-        id: 103,
-        title: "The Places We Called Home",
-        description:
-            "The people and places that stay with us long after we leave.",
-        creator: "Hamza Ali",
-        username: "@hamzaali",
-        cover: "from-[#D8DFE9] via-[#B0BDD1] to-[#788EAC]",
-        entries: 21,
-        date: "Updated this week",
-    },
-];
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 
-
-
-
-export default function Journeys({setUser, currentUserId}) {
+export default function Journeys() {
     const [activeTab, setActiveTab] = useState("mine");
     const [filter, setFilter] = useState("ongoing");
     const [search, setSearch] = useState("");
-    const [journeys, setJourneys] = useState([]);
+    // const [journeys, setJourneys] = useState([]);
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [newJourney, setNewJourney] = useState({
         title: "",
@@ -112,22 +38,105 @@ export default function Journeys({setUser, currentUserId}) {
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const getMyJourneys = async () => {
+    const queryClient = useQueryClient();
 
-            const res = await fetch(BACKEND_URL + "/api/journeys", {
+    const {
+        data: journeys = [],
+        isLoading: journeysLoading,
+        isError: journeysError,
+        error,
+    } = useQuery({
+        queryKey: ["myJourneys"],
+
+        queryFn: async () => {
+            const res = await fetch(`${BACKEND_URL}/api/journeys`, {
                 method: "GET",
-                credentials: "include"
-            })
-            const data = await res.json()
+                credentials: "include",
+            });
+
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                throw new Error(data.message || "Failed to fetch Journeys");
+            }
+
+            return data.journeys;
+        },
+    });
 
 
+    const {
+        data: discoverJourneys = [],
+        isLoading: discoverLoading,
+        isError: discoverError,
+        error: discoverErrorMessage,
+    } = useQuery({
+        queryKey: ["publicJourneys"],
 
-            setJourneys(data.journeys)
-        }
+        queryFn: async () => {
+            const res = await fetch(
+                `${BACKEND_URL}/api/journeys/public?page=1&limit=12`
+            );
 
-        getMyJourneys()
-    }, [])
+            const data = await res.json();
+
+            if (!res.ok || !data.success) {
+                throw new Error(
+                    data.message || "Failed to fetch public Journeys"
+                );
+            }
+
+            return data.journeys;
+        },
+
+        enabled: activeTab === "discover",
+    });
+
+    const createJourneyMutation = useMutation({
+        mutationFn: async (formData) => {
+            const response = await fetch(`${BACKEND_URL}/api/journeys`, {
+                method: "POST",
+                body: formData,
+                credentials: "include",
+            });
+
+            const data = await response.json();
+
+            if (!response.ok || !data.success) {
+                throw new Error(data.message || "Failed to create Journey");
+            }
+
+            return data.journey;
+        },
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["myJourneys"],
+            });
+
+            queryClient.invalidateQueries({
+                queryKey: ["publicJourneys"],
+            });
+
+            setNewJourney({
+                title: "",
+                description: "",
+                visibility: "private",
+                coverFile: null,
+            });
+
+            setCoverPreview("");
+
+            setFilter("ongoing");
+            setActiveTab("mine");
+            setSearch("");
+            setShowCreateModal(false);
+        },
+
+        onError: (error) => {
+            console.error("Create Journey failed:", error);
+        },
+    });
 
 
 
@@ -153,77 +162,32 @@ export default function Journeys({setUser, currentUserId}) {
         return discoverJourneys.filter((journey) => {
             return (
                 !query ||
-                journey.title.toLowerCase().includes(query) ||
-                journey.description.toLowerCase().includes(query) ||
-                journey.creator.toLowerCase().includes(query)
+                journey.title?.toLowerCase().includes(query) ||
+                journey.description?.toLowerCase().includes(query) ||
+                journey.full_name?.toLowerCase().includes(query) ||
+                journey.username?.toLowerCase().includes(query)
             );
         });
-    }, [search]);
+    }, [discoverJourneys, search]);
 
 
-    const handleCreateJourney = async (event) => {
+    const handleCreateJourney = (event) => {
         event.preventDefault();
 
         if (!newJourney.title.trim()) return;
 
-        const journey = {
-            title: newJourney.title.trim(),
-            description: newJourney.description.trim(),
-            visibility: newJourney.visibility,
-            status: "ongoing",
-        };
+        const formData = new FormData();
 
-        try {
-            const formData = new FormData();
+        formData.append("title", newJourney.title.trim());
+        formData.append("description", newJourney.description.trim());
+        formData.append("visibility", newJourney.visibility);
+        formData.append("status", "ongoing");
 
-            formData.append("title", newJourney.title.trim());
-            formData.append("description", newJourney.description.trim());
-            formData.append("visibility", newJourney.visibility);
-            formData.append("status", "ongoing");
-
-            if (newJourney.coverFile) {
-                formData.append("cover", newJourney.coverFile);
-            }
-
-            const response = await fetch(`${BACKEND_URL}/api/journeys`, {
-                method: "POST",
-                body: formData,
-                credentials: "include",
-            });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.message || "Failed to create Journey");
-            }
-            // Use the actual Journey returned by your backend.
-            const createdJourney = {
-                ...data.journey,
-                entries: 0,
-                cover_url: data.journey.cover_url || "",
-                date: new Date(data.journey.created_at).toLocaleDateString(
-                    "en-US",
-                    { month: "long", year: "numeric" }
-                ),
-            };
-
-            setJourneys((previous) => [createdJourney, ...previous]);
-
-            setNewJourney({
-                title: "",
-                description: "",
-                visibility: "private",
-                coverFile: null
-            });
-            setCoverPreview("");
-            setFilter("ongoing");
-            setActiveTab("mine");
-            setSearch("");
-            setShowCreateModal(false);
-        } catch (error) {
-            console.error("Create Journey failed:", error);
-            // Display this error in your UI if you have an error state.
+        if (newJourney.coverFile) {
+            formData.append("cover", newJourney.coverFile);
         }
+
+        createJourneyMutation.mutate(formData);
     };
 
 
@@ -234,11 +198,6 @@ export default function Journeys({setUser, currentUserId}) {
 
     return (
         <div className="flex min-h-screen flex-col bg-[#F6F7F4] text-[#294C46] transition-colors duration-300 dark:bg-gray-950 dark:text-[#E1EAE4] md:flex-row">
-
-            {/* <LeftSidebar
-                setUser={setUser}
-                currentUserId={currentUserId}
-            /> */}
 
             <main className="min-w-0 flex-1 px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
                 <div className="mx-auto max-w-7xl">
@@ -358,7 +317,36 @@ export default function Journeys({setUser, currentUserId}) {
                                 </div>
                             </div>
 
-                            {visibleJourneys.length > 0 ? (
+                            {journeysLoading ? (
+
+                                <div className="flex min-h-72 items-center justify-center">
+                                    <p className="text-sm text-[#89968D]">
+                                        Loading your Journeys...
+                                    </p>
+                                </div>
+
+                            ) : journeysError ? (
+
+                                <div className="flex min-h-72 flex-col items-center justify-center text-center">
+                                    <h3 className="text-lg font-semibold">
+                                        Couldn't load your Journeys
+                                    </h3>
+
+                                    <p className="mt-2 text-sm text-[#89968D]">
+                                        {error.message}
+                                    </p>
+
+                                    <button
+                                        onClick={() => queryClient.invalidateQueries({
+                                            queryKey: ["myJourneys"],
+                                        })}
+                                        className="mt-4 rounded-xl bg-[#385B50] px-4 py-2 text-sm text-white"
+                                    >
+                                        Try again
+                                    </button>
+                                </div>
+
+                            ) : visibleJourneys.length > 0 ? (
                                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
                                     {visibleJourneys.map((journey) => (
                                         <JourneyCard
@@ -404,61 +392,125 @@ export default function Journeys({setUser, currentUserId}) {
                     )}
 
                     {/* Discover */}
+                    {/* Discover */}
                     {activeTab === "discover" && (
                         <>
                             <div className="mb-6">
                                 <h2 className="text-lg font-semibold">
                                     Stories from others
                                 </h2>
+
                                 <p className="mt-1 text-xs text-[#89968D] dark:text-[#A6B7AA]">
                                     Discover the chapters people choose to share with the world.
                                 </p>
                             </div>
 
-                            {visibleDiscoverJourneys.length > 0 ? (
+                            {/* Loading */}
+                            {discoverLoading ? (
+                                <div className="flex min-h-72 items-center justify-center">
+                                    <p className="text-sm text-[#89968D] dark:text-[#A6B7AA]">
+                                        Discovering stories...
+                                    </p>
+                                </div>
+
+                            ) : discoverError ? (
+
+                                /* Error */
+                                <div className="flex min-h-72 flex-col items-center justify-center text-center">
+                                    <h3 className="text-lg font-semibold">
+                                        Couldn't load Discover
+                                    </h3>
+
+                                    <p className="mt-2 text-sm text-[#89968D]">
+                                        {discoverErrorMessage.message}
+                                    </p>
+
+                                    <button
+                                        onClick={() =>
+                                            queryClient.invalidateQueries({
+                                                queryKey: ["publicJourneys"],
+                                            })
+                                        }
+                                        className="mt-4 rounded-xl bg-[#385B50] px-4 py-2 text-sm text-white"
+                                    >
+                                        Try again
+                                    </button>
+                                </div>
+
+                            ) : visibleDiscoverJourneys.length > 0 ? (
+
+                                /* Journey Cards */
                                 <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+
                                     {visibleDiscoverJourneys.map((journey) => (
                                         <article
                                             key={journey.id}
                                             className="group min-w-0 overflow-hidden rounded-2xl border border-[#DDE4DD] bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[#BDCEC1] hover:shadow-lg hover:shadow-[#294C46]/5 dark:border-[#344A40] dark:bg-[#20342B] dark:hover:border-[#526C5B]"
                                         >
+
+                                            {/* Cover */}
                                             <button
                                                 type="button"
                                                 onClick={() => handleOpenJourney(journey)}
-                                                className={`relative flex h-44 w-full items-end overflow-hidden bg-gradient-to-br ${journey.cover} p-5 text-left sm:h-48`}
+                                                className="relative flex h-44 w-full items-end overflow-hidden bg-gradient-to-br from-[#D6E2D1] via-[#A7BFA2] to-[#6D8B75] p-5 text-left sm:h-48"
                                             >
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                                                {journey.cover_url && (
+                                                    <img
+                                                        src={journey.cover_url}
+                                                        alt={`${journey.title} cover`}
+                                                        className="absolute inset-0 h-full w-full object-cover"
+                                                    />
+                                                )}
+
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+
                                                 <div className="relative flex w-full items-center justify-between">
                                                     <FaBookOpen className="text-xl text-white" />
+
                                                     <span className="rounded-full border border-white/40 bg-white/20 px-3 py-1 text-[11px] text-white backdrop-blur-sm">
-                                                        {journey.entries} entries
+                                                        {Number(journey.entries) || 0} entries
                                                     </span>
                                                 </div>
                                             </button>
 
+                                            {/* Details */}
                                             <div className="p-4 sm:p-5">
+
                                                 <h3 className="text-base font-semibold">
                                                     {journey.title}
                                                 </h3>
 
                                                 <p className="mt-2 line-clamp-2 min-h-10 text-[13px] leading-5 text-[#78877F] dark:text-[#ADBCB1]">
-                                                    {journey.description}
+                                                    {journey.description || "No description provided."}
                                                 </p>
 
+                                                {/* Creator */}
                                                 <div className="mt-4 flex items-center gap-3 border-t border-[#EDF0EC] pt-3 dark:border-[#344A40]">
-                                                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#E3EBE2] text-xs font-semibold text-[#385B50] dark:bg-[#385344] dark:text-[#D5E5D8]">
-                                                        {journey.creator
-                                                            .split(" ")
-                                                            .map((part) => part[0])
-                                                            .join("")}
-                                                    </div>
+
+                                                    {journey.profile_pic_url ? (
+                                                        <img
+                                                            src={journey.profile_pic_url}
+                                                            alt={journey.full_name}
+                                                            className="h-9 w-9 shrink-0 rounded-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#E3EBE2] text-xs font-semibold text-[#385B50] dark:bg-[#385344] dark:text-[#D5E5D8]">
+                                                            {(journey.full_name || journey.username || "?")
+                                                                .split(" ")
+                                                                .map((part) => part[0])
+                                                                .join("")
+                                                                .slice(0, 2)
+                                                                .toUpperCase()}
+                                                        </div>
+                                                    )}
 
                                                     <div className="min-w-0 flex-1">
                                                         <p className="truncate text-xs font-semibold">
-                                                            {journey.creator}
+                                                            {journey.full_name || journey.username}
                                                         </p>
+
                                                         <p className="truncate text-[11px] text-[#89968D] dark:text-[#A6B7AA]">
-                                                            {journey.username}
+                                                            @{journey.username}
                                                         </p>
                                                     </div>
 
@@ -470,14 +522,35 @@ export default function Journeys({setUser, currentUserId}) {
                                                     >
                                                         <FaArrowRight className="text-xs" />
                                                     </button>
+
                                                 </div>
                                             </div>
                                         </article>
                                     ))}
+
                                 </div>
+
                             ) : (
-                                <div className="py-16 text-center text-sm text-[#89968D] dark:text-[#A6B7AA]">
-                                    No Journeys match your search.
+
+                                /* Empty State */
+                                <div className="py-16 text-center">
+                                    <div className="mb-4 flex justify-center">
+                                        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#E7EEE6] text-[#527B66] dark:bg-[#30483B] dark:text-[#C2DCC8]">
+                                            <FaBookOpen className="text-xl" />
+                                        </div>
+                                    </div>
+
+                                    <h3 className="text-lg font-semibold">
+                                        {search
+                                            ? "No Journeys found"
+                                            : "No public Journeys yet"}
+                                    </h3>
+
+                                    <p className="mt-2 text-sm text-[#89968D] dark:text-[#A6B7AA]">
+                                        {search
+                                            ? "Try a different search term."
+                                            : "Be among the first to share your story with the world."}
+                                    </p>
                                 </div>
                             )}
                         </>
@@ -707,13 +780,24 @@ export default function Journeys({setUser, currentUserId}) {
                                     >
                                         Cancel
                                     </button>
-
+                                    {createJourneyMutation.isError && (
+                                        <p className="text-sm text-red-500">
+                                            {createJourneyMutation.error.message}
+                                        </p>
+                                    )}
                                     <button
                                         type="submit"
-                                        className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#385B50] px-5 text-sm font-medium text-white transition hover:bg-[#294C46] dark:bg-[#D5E5D8] dark:text-[#203A30] dark:hover:bg-[#E4EFE5]"
+                                        disabled={createJourneyMutation.isPending}
+                                        className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#385B50] px-5 text-sm font-medium text-white transition hover:bg-[#294C46] disabled:cursor-not-allowed disabled:opacity-60 dark:bg-[#D5E5D8] dark:text-[#203A30]"
                                     >
-                                        <FaPlus className="text-xs" />
-                                        Create Journey
+                                        {createJourneyMutation.isPending ? (
+                                            "Creating..."
+                                        ) : (
+                                            <>
+                                                <FaPlus className="text-xs" />
+                                                Create Journey
+                                            </>
+                                        )}
                                     </button>
                                 </div>
                             </form>
@@ -721,6 +805,6 @@ export default function Journeys({setUser, currentUserId}) {
                     </div>
                 )}
             </main>
-            </div>
-            );
+        </div>
+    );
 }

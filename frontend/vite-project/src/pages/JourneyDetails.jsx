@@ -12,6 +12,7 @@ import {
   FaLock,
   FaPlus,
   FaShareAlt,
+  FaTrash,
   FaUsers,
 } from "react-icons/fa";
 
@@ -23,8 +24,9 @@ const visibilityOptions = {
   followers: { label: "Followers", Icon: FaUsers },
 };
 
-function JourneyEntry({ entry, onAddMedia, uploadingMedia, mediaUploadError }) {
+function JourneyEntry({ entry, onAddMedia, onDeleteEntry, uploadingMedia, mediaUploadError }) {
   const media = entry.media || [];
+  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <article className="relative pb-9 pl-10">
@@ -59,6 +61,41 @@ function JourneyEntry({ entry, onAddMedia, uploadingMedia, mediaUploadError }) {
         className="overflow-hidden rounded-2xl border border-[#DCE5DE]
           bg-white dark:border-[#34483D] dark:bg-[#1D2B24]"
       >
+
+        {/* Entry options menu */}
+        <div className="relative px-3 pt-3">
+          <button
+            type="button"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-label="Memory options"
+            className="rounded-lg p-2 text-[#7A8C80] hover:bg-[#E9EFEB]
+      dark:text-[#A4B8AA] dark:hover:bg-[#304238]"
+          >
+            <FaEllipsisH />
+          </button>
+
+          {menuOpen && (
+            <div
+              className="absolute left-3 top-12 z-10 min-w-[140px]
+        rounded-xl border border-[#DCE5DE] bg-white py-1 shadow-lg
+        dark:border-[#34483D] dark:bg-[#1D2B24]"
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  onDeleteEntry(entry.id);
+                }}
+                className="flex w-full items-center gap-2 px-4 py-2 text-sm
+          text-red-600 hover:bg-[#F3F6F3] dark:hover:bg-[#304238]"
+              >
+                <FaTrash />
+                Delete memory
+              </button>
+            </div>
+          )}
+        </div>
+
         <div className="p-5">
           {/* Title */}
           {entry.title && (
@@ -82,18 +119,19 @@ function JourneyEntry({ entry, onAddMedia, uploadingMedia, mediaUploadError }) {
         </div>
 
         {/* Media gallery */}
+
         {media.length > 0 && (
           <div
-            className={`grid gap-1.5 px-5 pb-5 ${media.length === 1
-              ? "grid-cols-1"
-              : "grid-cols-2"
+            className={`gap-1.5 px-5 pb-5 ${media.length === 1
+              ? "columns-1"
+              : "columns-2"
               }`}
           >
             {media.map((item) => (
               <div
                 key={item.id || item.media_url}
-                className="min-w-0 overflow-hidden rounded-xl
-                  bg-[#EDF1ED] dark:bg-[#142019]"
+                className="mb-1.5 min-w-0 break-inside-avoid overflow-hidden
+          rounded-xl bg-[#EDF1ED] dark:bg-[#142019]"
               >
                 {item.media_type === "video" ? (
                   <video
@@ -101,7 +139,7 @@ function JourneyEntry({ entry, onAddMedia, uploadingMedia, mediaUploadError }) {
                     controls
                     preload="metadata"
                     playsInline
-                    className="max-h-[420px] w-full object-contain"
+                    className="block h-auto max-h-[420px] w-full object-contain"
                   >
                     Your browser does not support video playback.
                   </video>
@@ -118,8 +156,8 @@ function JourneyEntry({ entry, onAddMedia, uploadingMedia, mediaUploadError }) {
                       src={item.media_url}
                       alt={item.caption || entry.title || "Memory photo"}
                       loading="lazy"
-                      className="max-h-[420px] w-full object-cover
-                        transition-opacity hover:opacity-90"
+                      className="block h-auto max-h-[420px] w-full object-cover
+                transition-opacity hover:opacity-90"
                     />
                   </a>
                 )}
@@ -127,7 +165,7 @@ function JourneyEntry({ entry, onAddMedia, uploadingMedia, mediaUploadError }) {
                 {item.caption && (
                   <p
                     className="px-3 py-2 text-xs leading-5
-                      text-[#64766B] dark:text-[#B3C6B9]"
+              text-[#64766B] dark:text-[#B3C6B9]"
                   >
                     {item.caption}
                   </p>
@@ -333,6 +371,35 @@ export default function JourneyDetails() {
       setMediaUploadError(error.message || "Failed to upload media.");
     } finally {
       setUploadingMediaEntryId(null);
+    }
+  };
+
+  const handleDeleteEntry = async (entryId) => {
+    try {
+      // Dummy route - replace with your real endpoint
+      const response = await fetch(
+        `${BACKEND_URL}/api/journeys/${journeyId}/entries/${entryId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Failed to delete memory.");
+      }
+
+      setJourney((current) => ({
+        ...current,
+        entries: (current.entries || []).filter(
+          (entry) => entry.id !== entryId
+        ),
+      }));
+    } catch (error) {
+      console.error("Delete Memory Error:", error);
+      alert(error.message || "Failed to delete memory.");
     }
   };
 
@@ -591,6 +658,7 @@ export default function JourneyDetails() {
                   key={entry.id}
                   entry={entry}
                   onAddMedia={handleAddMedia}
+                  onDeleteEntry={handleDeleteEntry}
                   uploadingMedia={uploadingMediaEntryId === entry.id}
                   mediaUploadError={
                     mediaUploadError && uploadingMediaEntryId === entry.id

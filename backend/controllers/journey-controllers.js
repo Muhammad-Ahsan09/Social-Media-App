@@ -1,18 +1,34 @@
 
 const { pool } = require("../database.js");
-const cloudinary = require("cloudinary").v2
-const streamifier = require('streamifier');
 
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-})
+const {uploadToR2, deleteFromR2} = require("../misc/cloudflare-r2-helpers.js")
+const {
+    S3Client,
+    PutObjectCommand,
+    DeleteObjectCommand,
+} = require("@aws-sdk/client-s3");
+
+
+
+const R2 = new S3Client({
+    region: "auto",
+    endpoint: process.env.R2_ENDPOINT,
+    credentials: {
+        accessKeyId: process.env.R2_ACCESS_KEY_ID,
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+    },
+});
+
+const R2_BUCKET = process.env.R2_BUCKET_NAME;
+const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL;
+
 
 
 // POST /journeys
 
 const createJourney = async (req, res) => {
+    let uploadedCoverUrl = null;
+
     try {
         const userId = req.user.id;
 
@@ -25,7 +41,6 @@ const createJourney = async (req, res) => {
             end_date = null,
         } = req.body;
 
-        // Validate title
         if (!title || !title.trim()) {
             return res.status(400).json({
                 success: false,
@@ -33,7 +48,6 @@ const createJourney = async (req, res) => {
             });
         }
 
-        // Validate visibility
         const allowedVisibility = [
             "private",
             "public",
@@ -48,7 +62,6 @@ const createJourney = async (req, res) => {
             });
         }
 
-        // Validate status
         const allowedStatus = ["ongoing", "completed"];
 
         if (!allowedStatus.includes(status)) {
@@ -58,56 +71,17 @@ const createJourney = async (req, res) => {
             });
         }
 
-        // Upload the cover image to Cloudinary if provided
+        // Upload cover to R2
         let coverUrl = null;
 
         if (req.file) {
-            if (!req.file.mimetype.startsWith("image/")) {
-                return res.status(400).json({
-                    success: false,
-                    message: "Journey cover must be an image",
-                });
-            }
+            const uploaded = await uploadToR2(req.file);
 
-            const uploadOptions = {
-                folder: "journey-covers",
-                resource_type: "image",
-                transformation: [
-                    {
-                        width: 1600,
-                        height: 900,
-                        crop: "limit",
-                        quality: "auto",
-                    },
-                ],
-            };
-
-            const uploadToCloudinary = (fileBuffer, options) => {
-                return new Promise((resolve, reject) => {
-                    const cloudinaryStream =
-                        cloudinary.uploader.upload_stream(
-                            options,
-                            (error, result) => {
-                                if (error) return reject(error);
-                                resolve(result);
-                            }
-                        );
-
-                    streamifier
-                        .createReadStream(fileBuffer)
-                        .pipe(cloudinaryStream);
-                });
-            };
-
-            const result = await uploadToCloudinary(
-                req.file.buffer,
-                uploadOptions
-            );
-
-            coverUrl = result.secure_url;
+            coverUrl = uploaded.url;
+            uploadedCoverUrl = uploaded.url;
         }
 
-        // Save Journey to the database
+        // Save Journey
         const [result] = await pool.query(
             `INSERT INTO journeys
                 (user_id, title, description, cover_url, visibility,
@@ -125,7 +99,6 @@ const createJourney = async (req, res) => {
             ]
         );
 
-        // Fetch the created Journey
         const [journeys] = await pool.query(
             `SELECT *
              FROM journeys
@@ -138,7 +111,13 @@ const createJourney = async (req, res) => {
             message: "Journey created successfully",
             journey: journeys[0],
         });
+
     } catch (error) {
+        // Clean up uploaded image if database operation fails.
+        if (uploadedCoverUrl) {
+            await deleteFromR2(uploadedCoverUrl);
+        }
+
         console.error("Create Journey Error:", error);
 
         return res.status(500).json({
@@ -259,7 +238,67 @@ const getJourneyById = async (req, res) => {
 };
 
 
+const getPublicJourneys = async (req, res) => {
+    try {
+        const page = Math.max(1, parseInt(req.query.page) || 1);
+        const limit = Math.min(30, Math.max(1, parseInt(req.query.limit) || 12));
+        const offset = (page - 1) * limit;
+
+        const [journeys] = await pool.query(
+            `SELECT
+        j.*,
+        u.username,
+        u.full_name,
+        u.profile_pic_url,
+
+        (
+            SELECT COUNT(*)
+            FROM journey_entries je
+            WHERE je.journey_id = j.id
+        ) AS entries
+
+    FROM journeys j
+
+    JOIN users u ON j.user_id = u.id
+
+    WHERE j.visibility = 'public'
+
+    ORDER BY j.updated_at DESC
+
+    LIMIT ? OFFSET ?`,
+            [limit, offset]
+        );
+
+        const [[countResult]] = await pool.query(
+            `SELECT COUNT(*) AS total
+             FROM journeys
+             WHERE visibility = 'public'`
+        );
+
+        return res.status(200).json({
+            success: true,
+            journeys,
+            pagination: {
+                currentPage: page,
+                totalPages: Math.ceil(countResult.total / limit),
+                totalJourneys: countResult.total,
+                hasMore: page * limit < countResult.total
+            }
+        });
+
+    } catch (error) {
+        console.error("Get public Journeys error:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Failed to fetch public Journeys"
+        });
+    }
+};
+
 const updateJourney = async (req, res) => {
+    let uploadedCoverUrl = null;
+
     try {
         const userId = req.user.id;
         const { journey_id } = req.params;
@@ -270,6 +309,22 @@ const updateJourney = async (req, res) => {
                 message: "Invalid Journey ID",
             });
         }
+
+        const [existing] = await pool.query(
+            `SELECT id, cover_url
+             FROM journeys
+             WHERE id = ? AND user_id = ?`,
+            [journey_id, userId]
+        );
+
+        if (existing.length === 0) {
+            return res.status(404).json({
+                success: false,
+                message: "Journey not found",
+            });
+        }
+
+        const oldCoverUrl = existing[0].cover_url;
 
         const allowedFields = [
             "title",
@@ -287,19 +342,13 @@ const updateJourney = async (req, res) => {
         for (const field of allowedFields) {
             if (Object.prototype.hasOwnProperty.call(req.body, field)) {
                 updates.push(`${field} = ?`);
+
                 values.push(
                     field === "title" && typeof req.body[field] === "string"
                         ? req.body[field].trim()
                         : req.body[field]
                 );
             }
-        }
-
-        if (updates.length === 0) {
-            return res.status(400).json({
-                success: false,
-                message: "No valid fields provided to update",
-            });
         }
 
         if (
@@ -334,16 +383,20 @@ const updateJourney = async (req, res) => {
             });
         }
 
-        const [existing] = await pool.query(
-            `SELECT id FROM journeys
-             WHERE id = ? AND user_id = ?`,
-            [journey_id, userId]
-        );
+        // Upload replacement cover if provided.
+        if (req.file) {
+            const uploaded = await uploadToR2(req.file);
 
-        if (existing.length === 0) {
-            return res.status(404).json({
+            uploadedCoverUrl = uploaded.url;
+
+            updates.push("cover_url = ?");
+            values.push(uploadedCoverUrl);
+        }
+
+        if (updates.length === 0) {
+            return res.status(400).json({
                 success: false,
-                message: "Journey not found",
+                message: "No valid fields provided to update",
             });
         }
 
@@ -364,12 +417,27 @@ const updateJourney = async (req, res) => {
             [journey_id, userId]
         );
 
+        // Delete old cover only after successful database update.
+        if (
+            uploadedCoverUrl &&
+            oldCoverUrl &&
+            oldCoverUrl !== uploadedCoverUrl
+        ) {
+            await deleteFromR2(oldCoverUrl);
+        }
+
         return res.status(200).json({
             success: true,
             message: "Journey updated successfully",
             journey: updated[0],
         });
+
     } catch (error) {
+        // Clean up newly uploaded cover if update fails.
+        if (uploadedCoverUrl) {
+            await deleteFromR2(uploadedCoverUrl);
+        }
+
         console.error("Update Journey Error:", error);
 
         return res.status(500).json({
@@ -399,10 +467,10 @@ const deleteJourney = async (req, res) => {
         await connection.beginTransaction();
 
         const [journeys] = await connection.query(
-            `SELECT id
-             FROM journeys
-             WHERE id = ? AND user_id = ?
-             FOR UPDATE`,
+            `SELECT id, cover_url
+            FROM journeys
+            WHERE id = ? AND user_id = ?
+            FOR UPDATE`,
             [journey_id, userId]
         );
 
@@ -449,6 +517,11 @@ const deleteJourney = async (req, res) => {
 
         await connection.commit();
 
+        // Delete Journey cover from R2 after successful DB deletion.
+        if (journeys[0].cover_url) {
+            await deleteFromR2(journeys[0].cover_url);
+        }
+
         return res.status(200).json({
             success: true,
             message: "Journey deleted successfully",
@@ -479,5 +552,6 @@ module.exports = {
     getJourneys,
     getJourneyById,
     updateJourney,
-    deleteJourney
+    deleteJourney,
+    getPublicJourneys
 };

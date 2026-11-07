@@ -1,6 +1,6 @@
 const express = require("express")
 const { default: authMiddleware } = require("../middlewares/authmiddleware")
-const { createJourney, getJourneys, getJourneyById, updateJourney, deleteJourney } = require("../controllers/journey-controllers");
+const { createJourney, getJourneys, getJourneyById, updateJourney, deleteJourney, getPublicJourneys } = require("../controllers/journey-controllers");
 const {
     createJourneyEntry,
     getJourneyEntries,
@@ -31,8 +31,9 @@ const journeyRouter = express.Router()
 
 journeyRouter.post("/", authMiddleware, upload.single("cover"), createJourney);
 journeyRouter.get("/", authMiddleware, getJourneys)
+journeyRouter.get("/public", getPublicJourneys);
 journeyRouter.get("/:journey_id", authMiddleware, getJourneyById)
-journeyRouter.put("/:journeyId", authMiddleware, updateJourney);
+journeyRouter.put("/:journeyId", authMiddleware, upload.single("cover"), updateJourney);
 journeyRouter.delete("/:journeyId", authMiddleware, deleteJourney);
 
 journeyRouter.post("/:journey_id/entries", authMiddleware, upload.array("media", 10), createJourneyEntry)

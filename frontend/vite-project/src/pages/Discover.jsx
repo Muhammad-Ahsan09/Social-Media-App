@@ -117,7 +117,6 @@ const Discover = () => {
             {/* <TopNavbar /> */}
 
             <div className="flex min-h-screen flex-col bg-[#F7F8F5] pt-14 text-[#294C46] transition-colors dark:bg-gray-950 dark:text-gray-100 md:flex-row md:pt-0">
-
                 <main className="min-w-0 flex-1 px-3 pb-24 pt-5 sm:px-5 md:px-7 md:pb-8 md:pt-8 lg:px-9">
 
                     {/* Page heading */}

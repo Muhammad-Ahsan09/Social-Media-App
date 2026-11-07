@@ -1,12 +1,10 @@
-const { pool } = require("../database.js");
-const streamifier = require("streamifier");
-const cloudinary = require("cloudinary").v2
 
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-})
+const { pool } = require("../database.js");
+const {
+    uploadToR2,
+    deleteFromR2,
+} = require("../misc/cloudflare-r2-helpers.js");
+
 
 // POST /journeys/:journeyId/entries/:entryId/media
 const addJourneyMedia = async (req, res) => {
@@ -28,7 +26,7 @@ const addJourneyMedia = async (req, res) => {
             });
         }
 
-        // Multer must provide an array of files
+        // Validate files
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({
                 success: false,
@@ -54,7 +52,7 @@ const addJourneyMedia = async (req, res) => {
             });
         }
 
-        // Validate starting sort order
+        // Validate sort order
         const parsedSortOrder =
             sort_order === undefined || sort_order === ""
                 ? 0
@@ -71,11 +69,11 @@ const addJourneyMedia = async (req, res) => {
             });
         }
 
-        // Validate all files before uploading any of them
+        // Validate all files before uploading
         for (const file of req.files) {
             if (
-                !file.mimetype.startsWith("image/") &&
-                !file.mimetype.startsWith("video/")
+                !file.mimetype?.startsWith("image/") &&
+                !file.mimetype?.startsWith("video/")
             ) {
                 return res.status(400).json({
                     success: false,
@@ -102,71 +100,30 @@ const addJourneyMedia = async (req, res) => {
             });
         }
 
-        // Upload all files to Cloudinary
+        // Upload all files to Cloudflare R2
         const mediaRecords = [];
 
         for (let i = 0; i < req.files.length; i++) {
             const file = req.files[i];
 
-            const resourceType = file.mimetype.startsWith("video/")
+            const mediaType = file.mimetype.startsWith("video/")
                 ? "video"
                 : "image";
 
-            const uploadOptions = {
-                folder: `journey-media/${resourceType === "video" ? "videos" : "images"}`,
-                resource_type: resourceType,
-            };
+            const result = await uploadToR2(file);
 
-            if (resourceType === "image") {
-                uploadOptions.transformation = [
-                    {
-                        width: 1200,
-                        crop: "limit",
-                        quality: "auto",
-                    },
-                ];
-            } else {
-                uploadOptions.eager = [
-                    {
-                        streaming_profile: "full_hd",
-                        format: "m3u8",
-                    },
-                ];
-                uploadOptions.eager_async = true;
-            }
-
-            const result = await new Promise((resolve, reject) => {
-                const uploadStream = cloudinary.uploader.upload_stream(
-                    uploadOptions,
-                    (error, result) => {
-                        if (error) {
-                            return reject(error);
-                        }
-
-                        resolve(result);
-                    }
-                );
-
-                streamifier
-                    .createReadStream(file.buffer)
-                    .pipe(uploadStream);
-            });
-
-            // Track immediately so a later failure can clean it up
-            uploadedAssets.push({
-                public_id: result.public_id,
-                resource_type: resourceType,
-            });
+            // Track uploaded URL for cleanup if a later operation fails
+            uploadedAssets.push(result.url);
 
             mediaRecords.push({
-                media_url: result.secure_url,
-                media_type: resourceType,
+                media_url: result.url,
+                media_type: mediaType,
                 caption,
                 sort_order: parsedSortOrder + i,
             });
         }
 
-        // Save every media record in a transaction
+        // Save media records in a transaction
         const connection = await pool.getConnection();
 
         try {
@@ -208,26 +165,26 @@ const addJourneyMedia = async (req, res) => {
                 message: "Media uploaded and attached successfully",
                 media: savedMedia,
             });
+
         } catch (dbError) {
             await connection.rollback();
             throw dbError;
+
         } finally {
             connection.release();
         }
+
     } catch (error) {
         console.error("Journey Media Upload Error:", error);
 
-        // Delete successfully uploaded assets if the operation fails
+        // Clean up successfully uploaded R2 files if operation fails
         await Promise.all(
-            uploadedAssets.map(async (asset) => {
+            uploadedAssets.map(async (fileUrl) => {
                 try {
-                    await cloudinary.uploader.destroy(
-                        asset.public_id,
-                        { resource_type: asset.resource_type }
-                    );
+                    await deleteFromR2(fileUrl);
                 } catch (cleanupError) {
                     console.error(
-                        "Cloudinary cleanup error:",
+                        "R2 cleanup error:",
                         cleanupError.message
                     );
                 }
@@ -242,9 +199,10 @@ const addJourneyMedia = async (req, res) => {
 };
 
 
-
 // DELETE /journeys/:journeyId/entries/:entryId/media/:mediaId
 const deleteJourneyMedia = async (req, res) => {
+    let connection;
+
     try {
         const userId = req.user.id;
         const { journeyId, entryId, mediaId } = req.params;
@@ -260,38 +218,79 @@ const deleteJourneyMedia = async (req, res) => {
             });
         }
 
-        const [result] = await pool.query(
-            `DELETE m
+        connection = await pool.getConnection();
+        await connection.beginTransaction();
+
+        // Fetch media URL and verify ownership
+        const [media] = await connection.query(
+            `SELECT m.id, m.media_url
              FROM journey_entry_media m
              INNER JOIN journey_entries e ON e.id = m.entry_id
              INNER JOIN journeys j ON j.id = e.journey_id
              WHERE j.id = ?
                AND j.user_id = ?
                AND e.id = ?
-               AND m.id = ?`,
+               AND m.id = ?
+             FOR UPDATE`,
             [journeyId, userId, entryId, mediaId]
         );
 
-        if (result.affectedRows === 0) {
+        if (media.length === 0) {
+            await connection.rollback();
+
             return res.status(404).json({
                 success: false,
                 message: "Media not found",
             });
         }
 
+        // Delete database record
+        await connection.query(
+            `DELETE FROM journey_entry_media
+             WHERE id = ? AND entry_id = ?`,
+            [mediaId, entryId]
+        );
+
+        await connection.commit();
+
+        // Delete actual file from R2 after successful DB deletion
+        try {
+            await deleteFromR2(media[0].media_url);
+        } catch (cleanupError) {
+            console.error(
+                "R2 media deletion error:",
+                cleanupError.message
+            );
+        }
+
         return res.status(200).json({
             success: true,
             message: "Media removed from memory successfully",
         });
+
     } catch (error) {
+        if (connection) {
+            try {
+                await connection.rollback();
+            } catch (rollbackError) {
+                console.error("Rollback Error:", rollbackError);
+            }
+        }
+
         console.error("Delete Journey Media Error:", error);
 
         return res.status(500).json({
             success: false,
             message: "Failed to remove media",
         });
+
+    } finally {
+        if (connection) {
+            connection.release();
+        }
     }
 };
+
 
 module.exports = {
     addJourneyMedia,

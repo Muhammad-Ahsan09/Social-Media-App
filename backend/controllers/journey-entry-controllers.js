@@ -1,47 +1,9 @@
 
 const { pool } = require("../database.js");
-const cloudinary = require("cloudinary").v2
-
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-})
-
-
-
-// Upload a file to Cloudinary using either memory or disk storage.
-const uploadToCloudinary = (file) => {
-    return new Promise((resolve, reject) => {
-        const options = {
-            folder: "solace/journey-entries",
-            resource_type: "auto",
-        };
-
-        if (file.buffer) {
-            const stream = cloudinary.uploader.upload_stream(
-                options,
-                (error, result) => {
-                    if (error) return reject(error);
-                    resolve(result);
-                }
-            );
-
-            stream.end(file.buffer);
-        } else if (file.path) {
-            cloudinary.uploader
-                .upload(file.path, options)
-                .then(resolve)
-                .catch(reject);
-        } else {
-            reject(new Error("Uploaded file has no buffer or path"));
-        }
-    });
-};
+const {uploadToR2, deleteFromR2} = require("../misc/cloudflare-r2-helpers.js")
 
 
 // POST /journeys/:journey_id/entries
-
 const createJourneyEntry = async (req, res) => {
     const connection = await pool.getConnection();
     const uploadedAssets = [];
@@ -132,21 +94,19 @@ const createJourneyEntry = async (req, res) => {
             });
         }
 
-        // Upload all selected files to Cloudinary.
-        // Keep each file's type and original selection order.
+        // Upload files to Cloudflare R2.
         const uploadedMedia = [];
 
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
-            const result = await uploadToCloudinary(file);
 
-            uploadedAssets.push({
-                public_id: result.public_id,
-                resource_type: result.resource_type,
-            });
+            const result = await uploadToR2(file);
+
+            // Keep the returned object key for cleanup.
+            uploadedAssets.push(result.key);
 
             uploadedMedia.push({
-                media_url: result.secure_url,
+                media_url: result.url,
                 media_type: file.mimetype.startsWith("video/")
                     ? "video"
                     : "image",
@@ -154,7 +114,7 @@ const createJourneyEntry = async (req, res) => {
             });
         }
 
-        // Save the entry and its media records together in a DB transaction.
+        // Start DB transaction.
         await connection.beginTransaction();
 
         const [result] = await connection.query(
@@ -213,20 +173,25 @@ const createJourneyEntry = async (req, res) => {
                 media: mediaRows,
             },
         });
+
     } catch (error) {
-        await connection.rollback();
+        if (connection) {
+            try {
+                await connection.rollback();
+            } catch (rollbackError) {
+                console.error("Rollback Error:", rollbackError);
+            }
+        }
 
         console.error("Create Journey Entry Error:", error);
 
-        // Remove files already uploaded if the request fails.
-        for (const asset of uploadedAssets) {
+        // Delete uploaded R2 objects if the request fails.
+        for (const key of uploadedAssets) {
             try {
-                await cloudinary.uploader.destroy(asset.public_id, {
-                    resource_type: asset.resource_type,
-                });
+                await deleteFromR2(key);
             } catch (cleanupError) {
                 console.error(
-                    "Cloudinary cleanup error:",
+                    "R2 cleanup error:",
                     cleanupError.message
                 );
             }
@@ -236,6 +201,7 @@ const createJourneyEntry = async (req, res) => {
             success: false,
             message: "Failed to create memory",
         });
+
     } finally {
         connection.release();
     }
@@ -502,6 +468,7 @@ const updateJourneyEntry = async (req, res) => {
 
 
 // DELETE /journeys/:journey_id/entries/:entryId
+// DELETE /journeys/:journey_id/entries/:entryId
 const deleteJourneyEntry = async (req, res) => {
     let connection;
 
@@ -539,13 +506,24 @@ const deleteJourneyEntry = async (req, res) => {
             });
         }
 
+        // Fetch media before deleting database records.
+        const [media] = await connection.query(
+            `SELECT media_url
+             FROM journey_entry_media
+             WHERE entry_id = ?`,
+            [entryId]
+        );
+
+        // Delete database records.
         await connection.query(
-            `DELETE FROM journey_entry_media WHERE entry_id = ?`,
+            `DELETE FROM journey_entry_media
+             WHERE entry_id = ?`,
             [entryId]
         );
 
         await connection.query(
-            `DELETE FROM journey_entry_posts WHERE entry_id = ?`,
+            `DELETE FROM journey_entry_posts
+             WHERE entry_id = ?`,
             [entryId]
         );
 
@@ -557,10 +535,23 @@ const deleteJourneyEntry = async (req, res) => {
 
         await connection.commit();
 
+        // Delete corresponding R2 objects after DB commit.
+        for (const item of media) {
+            try {
+                await deleteFromR2(item.media_url);
+            } catch (cleanupError) {
+                console.error(
+                    "R2 media deletion error:",
+                    cleanupError.message
+                );
+            }
+        }
+
         return res.status(200).json({
             success: true,
             message: "Memory deleted successfully",
         });
+
     } catch (error) {
         if (connection) {
             try {
@@ -576,6 +567,7 @@ const deleteJourneyEntry = async (req, res) => {
             success: false,
             message: "Failed to delete memory",
         });
+
     } finally {
         if (connection) {
             connection.release();
