@@ -1,4 +1,3 @@
-
 const { pool } = require("../database.js");
 const {uploadToR2, deleteFromR2} = require("../misc/cloudflare-r2-helpers.js")
 
@@ -100,7 +99,7 @@ const createJourneyEntry = async (req, res) => {
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
 
-            const result = await uploadToR2(file);
+            const result = await uploadToR2(file, "journeys/memories");
 
             // Keep the returned object key for cleanup.
             uploadedAssets.push(result.key);

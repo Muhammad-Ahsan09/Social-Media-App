@@ -69,17 +69,6 @@ const login = async (req, res) => {
     try {
         const secretkey = process.env.SECRET_KEY;
 
-        // profile_pic_url = path.join(__dirname, "../public/profile-images/default-profile-pic.png" )
-        // const cloudinary_image_data = await cloudinary.uploader.upload(
-        //     `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`,
-        //     {
-        //         folder: "post-images"
-        //     }
-        // );
-
-        // const profile_pic_url = cloudinary_image_data.secure_url
-        // console.log(profile_pic_url)
-
         const {email, password} = req.body;
 
         if(!email || !password) {

@@ -24,9 +24,10 @@ const visibilityOptions = {
   followers: { label: "Followers", Icon: FaUsers },
 };
 
-function JourneyEntry({ entry, onAddMedia, onDeleteEntry, uploadingMedia, mediaUploadError }) {
+function JourneyEntry({ entry, onAddMedia, onDeleteEntry, onDeleteMedia, uploadingMedia, mediaUploadError, isOwner }) {
   const media = entry.media || [];
   const [menuOpen, setMenuOpen] = useState(false);
+  const [openMediaMenuId, setOpenMediaMenuId] = useState(null);
 
   return (
     <article className="relative pb-9 pl-10">
@@ -69,7 +70,7 @@ function JourneyEntry({ entry, onAddMedia, onDeleteEntry, uploadingMedia, mediaU
             onClick={() => setMenuOpen((open) => !open)}
             aria-label="Memory options"
             className="rounded-lg p-2 text-[#7A8C80] hover:bg-[#E9EFEB]
-      dark:text-[#A4B8AA] dark:hover:bg-[#304238]"
+            dark:text-[#A4B8AA] dark:hover:bg-[#304238]"
           >
             <FaEllipsisH />
           </button>
@@ -77,8 +78,8 @@ function JourneyEntry({ entry, onAddMedia, onDeleteEntry, uploadingMedia, mediaU
           {menuOpen && (
             <div
               className="absolute left-3 top-12 z-10 min-w-[140px]
-        rounded-xl border border-[#DCE5DE] bg-white py-1 shadow-lg
-        dark:border-[#34483D] dark:bg-[#1D2B24]"
+              rounded-xl border border-[#DCE5DE] bg-white py-1 shadow-lg
+              dark:border-[#34483D] dark:bg-[#1D2B24]"
             >
               <button
                 type="button"
@@ -130,9 +131,52 @@ function JourneyEntry({ entry, onAddMedia, onDeleteEntry, uploadingMedia, mediaU
             {media.map((item) => (
               <div
                 key={item.id || item.media_url}
-                className="mb-1.5 min-w-0 break-inside-avoid overflow-hidden
-          rounded-xl bg-[#EDF1ED] dark:bg-[#142019]"
+                className="relative mb-1.5 min-w-0 break-inside-avoid
+                overflow-hidden rounded-xl bg-[#EDF1ED]
+                dark:bg-[#142019]"
               >
+                {/* Media options - journey owner only */}
+                {isOwner && (
+                  <div className="absolute left-2 top-2 z-20">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setOpenMediaMenuId((current) =>
+                          current === item.id ? null : item.id
+                        )
+                      }
+                      aria-label="Media options"
+                      className="flex h-8 w-8 items-center justify-center
+                      rounded-full bg-black/50 text-white
+                      backdrop-blur-sm transition hover:bg-black/70"
+                    >
+                      <FaEllipsisH />
+                    </button>
+
+                    {openMediaMenuId === item.id && (
+                      <div
+                        className="absolute left-0 top-10 z-30 min-w-[150px]
+                        rounded-xl border border-[#DCE5DE] bg-white py-1
+                        shadow-lg dark:border-[#34483D] dark:bg-[#1D2B24]"
+                      >
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setOpenMediaMenuId(null);
+                            onDeleteMedia(entry.id, item.id);
+                          }}
+                          className="flex w-full items-center gap-2
+                          px-4 py-2.5 text-sm text-red-600
+                          hover:bg-[#F3F6F3] dark:hover:bg-[#304238]"
+                        >
+                          <FaTrash />
+                          Delete media
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {item.media_type === "video" ? (
                   <video
                     src={item.media_url}
@@ -149,15 +193,14 @@ function JourneyEntry({ entry, onAddMedia, onDeleteEntry, uploadingMedia, mediaU
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block"
-                    aria-label={`View ${item.caption || "memory image"
-                      } in full size`}
+                    aria-label={`View ${item.caption || "memory image"} in full size`}
                   >
                     <img
                       src={item.media_url}
                       alt={item.caption || entry.title || "Memory photo"}
                       loading="lazy"
-                      className="block h-auto max-h-[420px] w-full object-cover
-                transition-opacity hover:opacity-90"
+                      className="block h-auto max-h-[420px] w-full
+                      object-cover transition-opacity hover:opacity-90"
                     />
                   </a>
                 )}
@@ -165,7 +208,7 @@ function JourneyEntry({ entry, onAddMedia, onDeleteEntry, uploadingMedia, mediaU
                 {item.caption && (
                   <p
                     className="px-3 py-2 text-xs leading-5
-              text-[#64766B] dark:text-[#B3C6B9]"
+          text-[#64766B] dark:text-[#B3C6B9]"
                   >
                     {item.caption}
                   </p>
@@ -403,6 +446,49 @@ export default function JourneyDetails() {
     }
   };
 
+  const handleDeleteMedia = async (entryId, mediaId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this media?"
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const response = await fetch(
+        `${BACKEND_URL}/api/journeys/${journeyId}/entries/${entryId}/media/${mediaId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.message || "Failed to delete media.");
+      }
+
+      // Remove the deleted media from the corresponding entry.
+      setJourney((current) => ({
+        ...current,
+        entries: current.entries.map((entry) =>
+          entry.id === entryId
+            ? {
+              ...entry,
+              media: entry.media.filter(
+                (item) => item.id !== mediaId
+              ),
+            }
+            : entry
+        ),
+      }));
+
+    } catch (error) {
+      console.error("Delete Journey Media Error:", error);
+      alert(error.message || "Failed to delete media.");
+    }
+  };
+
 
   if (loading) {
     return (
@@ -437,7 +523,7 @@ export default function JourneyDetails() {
   }
 
   const visibility =
-    visibilityOptions[journey.visibility] || visibilityOptions.private;
+  visibilityOptions[journey.visibility] || visibilityOptions.private;
 
   const VisibilityIcon = visibility.Icon;
 
@@ -659,6 +745,8 @@ export default function JourneyDetails() {
                   entry={entry}
                   onAddMedia={handleAddMedia}
                   onDeleteEntry={handleDeleteEntry}
+                  onDeleteMedia={handleDeleteMedia}
+                  isOwner={journey.isOwner}
                   uploadingMedia={uploadingMediaEntryId === entry.id}
                   mediaUploadError={
                     mediaUploadError && uploadingMediaEntryId === entry.id

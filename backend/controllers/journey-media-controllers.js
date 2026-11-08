@@ -110,7 +110,7 @@ const addJourneyMedia = async (req, res) => {
                 ? "video"
                 : "image";
 
-            const result = await uploadToR2(file);
+            const result = await uploadToR2(file, "journeys/memories");
 
             // Track uploaded URL for cleanup if a later operation fails
             uploadedAssets.push(result.url);

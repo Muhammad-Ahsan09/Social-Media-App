@@ -1,7 +1,5 @@
 import { FaArrowRight, FaBookOpen, FaGlobe, FaLock, FaRegCalendarAlt, FaUsers } from "react-icons/fa";
 
-
-
 function VisibilityIcon({ visibility }) {
   if (visibility === "public") {
     return <FaGlobe />;
@@ -18,7 +16,6 @@ function VisibilityIcon({ visibility }) {
 function JourneyCard({ journey, onOpen }) {
   return (
     <article className="group min-w-0 overflow-hidden rounded-2xl border border-[#DDE4DD] bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[#BDCEC1] hover:shadow-lg hover:shadow-[#294C46]/5 dark:border-[#344A40] dark:bg-[#20342B] dark:hover:border-[#526C5B]">
-      {/* Cover */}
       {/* Cover */}
       <button
         type="button"

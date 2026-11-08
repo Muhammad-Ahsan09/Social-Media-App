@@ -17,7 +17,6 @@ import {
     FaRegCalendarAlt,
 } from "react-icons/fa";
 import JourneyCard from "../components/JourneyCard";
-import LeftSidebar from "../components/LeftSidebar";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 
@@ -55,6 +54,7 @@ export default function Journeys() {
             });
 
             const data = await res.json();
+            console.log(data)
 
             if (!res.ok || !data.success) {
                 throw new Error(data.message || "Failed to fetch Journeys");
@@ -390,8 +390,6 @@ export default function Journeys() {
                             )}
                         </>
                     )}
-
-                    {/* Discover */}
                     {/* Discover */}
                     {activeTab === "discover" && (
                         <>
