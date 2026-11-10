@@ -118,6 +118,7 @@ const deleteFromR2 = async (file) => {
 
     } catch (error) {
         console.error("R2 Delete Error:", error);
+        throw error
     }
 };
 

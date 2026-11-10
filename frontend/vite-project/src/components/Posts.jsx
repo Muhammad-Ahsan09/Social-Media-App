@@ -145,7 +145,6 @@ const likeMutation = useMutation({
                     </div>
 
                     {/* Post media */}
-                    {/* Post media */}
                     <div className="overflow-hidden bg-[#E9EFEB] dark:bg-[#17251F]">
                         {post.resource_type === "video" ? (
                             <video

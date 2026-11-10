@@ -6,6 +6,7 @@ const {
     createScene,
     getScenes,
     deleteScene,
+    getUserScenes,
 } = require("../controllers/scene-controllers");
 
 
@@ -33,6 +34,9 @@ sceneRouter.post(
     upload.single("file"),
     createScene
 );
+
+// Get specific users scenes
+sceneRouter.get("/:userId", authMiddleware, getUserScenes);
 
 // Delete a scene owned by the authenticated user
 sceneRouter.delete("/:sceneId", authMiddleware, deleteScene);

@@ -1,18 +1,12 @@
-import LeftSidebar from "../components/LeftSidebar";
 import PostsSection from "../components/PostsSection";
-import RightSidebar from "../components/RightSidebar";
-import BottomNavbar from "../components/BottomNavbar";
-import TopNavbar from "../components/TopNavbar";
+import RightSidebar from "../components/RightSidebar";;
 
-const Home = ({ setUser, currentUserId }) => {
+const Home = () => {
     return <>
-        {/* <TopNavbar setUser={setUser} /> */}
         <div className="flex flex-col md:flex-row">
             <PostsSection />
             <RightSidebar />
         </div>
-
-        {/* <BottomNavbar currentUserId={currentUserId} /> */}
     </>
 }
 

@@ -1,8 +1,6 @@
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
 const {pool} = require("../database.js")
-const dotenv = require("dotenv")
-const path = require("path")
 
 const signup = async (req, res) => {
     const secretkey = process.env.SECRET_KEY;

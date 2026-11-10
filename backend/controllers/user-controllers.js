@@ -148,14 +148,13 @@ const sendFollowRequest = async (req, res) => {
 
 const getFriendRequests =  async (req, res) => {
     try {
-        console.log("I am here")
+
         const userid = req.params.userid
-        console.log("userid" , userid, typeof userid)
+
         const requests = await pool.query(`SELECT * FROM users WHERE id IN  (
             SELECT sender_id FROM follow_requests WHERE reciever_id = ? AND status = ?
         ) ;`, [userid, "pending"])
         
-        console.log("requests", requests)
         res.json(requests[0])
 
         // console.log(requests)
