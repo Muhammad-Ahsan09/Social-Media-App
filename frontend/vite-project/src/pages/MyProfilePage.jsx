@@ -137,8 +137,8 @@ const MyProfilePage = ({ currentUserId }) => {
 
             const res = await fetch(
                 `${BACKEND_URL}/api/scenes/${userid}`, {
-                    credentials: "include"
-                }
+                credentials: "include"
+            }
             );
 
             const data = await res.json();
@@ -412,11 +412,10 @@ const MyProfilePage = ({ currentUserId }) => {
                                 <button
                                     type="button"
                                     onClick={() => setActiveTab("posts")}
-                                    className={`relative flex items-center gap-2 px-5 py-4 text-sm font-semibold transition ${
-                                        activeTab === "posts"
+                                    className={`relative flex items-center gap-2 px-5 py-4 text-sm font-semibold transition ${activeTab === "posts"
                                             ? "text-[#397E6D] dark:text-[#A9DCC8]"
                                             : "text-[#82978C] hover:text-[#294C46] dark:hover:text-[#E1EAE4]"
-                                    }`}
+                                        }`}
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -445,11 +444,10 @@ const MyProfilePage = ({ currentUserId }) => {
                                 <button
                                     type="button"
                                     onClick={handleScenesTabClick}
-                                    className={`relative flex items-center gap-2 px-5 py-4 text-sm font-semibold transition ${
-                                        activeTab === "scenes"
+                                    className={`relative flex items-center gap-2 px-5 py-4 text-sm font-semibold transition ${activeTab === "scenes"
                                             ? "text-[#397E6D] dark:text-[#A9DCC8]"
                                             : "text-[#82978C] hover:text-[#294C46] dark:hover:text-[#E1EAE4]"
-                                    }`}
+                                        }`}
                                 >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -534,9 +532,8 @@ const MyProfilePage = ({ currentUserId }) => {
                                                     className="block rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[#719987] focus-visible:ring-offset-4 dark:focus-visible:ring-offset-gray-950"
                                                 >
                                                     <div
-                                                        className={`relative isolate overflow-hidden bg-[#E9EDE7] dark:bg-gray-800 ${
-                                                            cardCorners[index % cardCorners.length]
-                                                        }`}
+                                                        className={`relative isolate overflow-hidden bg-[#E9EDE7] dark:bg-gray-800 ${cardCorners[index % cardCorners.length]
+                                                            }`}
                                                     >
                                                         {post.resource_type === "video" ? (
                                                             <video
@@ -556,9 +553,20 @@ const MyProfilePage = ({ currentUserId }) => {
                                                             />
                                                         )}
 
+                                                        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+
                                                         {post.resource_type === "video" && (
                                                             <span className="pointer-events-none absolute right-3 top-3 rounded-full bg-black/40 p-2 text-white backdrop-blur-sm">
-                                                                ▶
+                                                                <svg
+                                                                    xmlns="http://www.w3.org/2000/svg"
+                                                                    width="15"
+                                                                    height="15"
+                                                                    viewBox="0 0 24 24"
+                                                                    fill="currentColor"
+                                                                    aria-hidden="true"
+                                                                >
+                                                                    <path d="m8 5 12 7-12 7z" />
+                                                                </svg>
                                                             </span>
                                                         )}
                                                     </div>
